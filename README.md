@@ -80,4 +80,3 @@ go to <http://localhost:8000/>
 - [X] autogenerate the files in slides/
 - [X] find a way to call `Reveal.layout()` whenever a slide changes
 - [ ] feature idea for `thebe`: make the kernel execute certain cells on load or when they first appear
-- [ ] integrate [iracket](https://github.com/rmculpepper/iracket)
