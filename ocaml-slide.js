@@ -16,7 +16,7 @@ function thebe_init() {
         mathjaxUrl: "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js",
         mathjaxConfig: "TeX-AMS_CHTML-full,Safe",
         codeMirrorConfig: {
-            mode: "ocaml",
+            mode: "text/x-ocaml",
             theme: "monokai"
         },
         on_output_change: () => { Reveal.layout(); }
