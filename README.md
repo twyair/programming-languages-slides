@@ -74,6 +74,7 @@ go to <http://localhost:8000/>
   - [ ] references, mutable data structures
   - [ ] objects and classes (?)
   - [ ] standard library modules (?)
+- [ ] write about the so-called sequencing operator (`;`) of OCaml
 - [X] adapt the SML notebooks to OCaml
 - [ ] write the prolog tutorials
 - [X] autogenerate the files in slides/
