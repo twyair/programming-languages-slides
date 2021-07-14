@@ -834,64 +834,53 @@ a solution that generates the same code:
 
 ## Pairs, Lists, and Racket Syntax <!-- 4 -->
 
-The `cons` function actually accepts any two values, not just a list for
-the second argument. When the second argument is not `empty` and not
-itself produced by `cons`, the result prints in a special way. The two
-values joined with `cons` are printed between parentheses, but with a
-dot (i.e., a period surrounded by whitespace) in between:
+`cons` actually accepts any two values and creates a __pair__
 
 ```scheme
-> (cons 1 2)
-'(1 . 2)
-> (cons "banana" "split")
-'("banana" . "split")
+(cons 1 2)
+;; '(1 . 2)
+(cons "banana" "split")
+;; '("banana" . "split")
 ```
 
-Thus, a value produced by `cons` is not always a list. In general, the
-result of `cons` is a _pair_. The more traditional name for the `cons?`
-function is `pair?`, and we'll use the traditional name from now on.
+---vert---
 
-The name `rest` also makes less sense for non-list pairs; the more
-traditional names for `first` and `rest` are `car` and `cdr`,
-respectively. (Granted, the traditional names are also nonsense. Just
-remember that "a" comes before "d," and `cdr` is pronounced "could-er.")
-
-Examples:
+note that a pair is printed differently than a list
 
 ```scheme
-> (car (cons 1 2))
-1
-> (cdr (cons 1 2))
-2
-> (pair? empty)
-#f
-> (pair? (cons 1 2))
-#t
-> (pair? (list 1 2 3))
-#t
+(cons 1 2)
+;; '(1 . 2)
+(list 1 2)
+;; '(1 2)
 ```
 
-Racket's pair datatype and its relation to lists is essentially a
-historical curiosity, along with the dot notation for printing and the
-funny names `car` and `cdr`. Pairs are deeply wired into the culture,
-specification, and implementation of Racket, however, so they survive in
-the language.
+---vert---
 
-You are perhaps most likely to encounter a non-list pair when making a
-mistake, such as accidentally reversing the arguments to `cons`:
+`car` and `cdr` get the first and second elements (respectively) of a pair
 
 ```scheme
-> (cons (list 2 3) 1)
-'((2 3) . 1)
-> (cons 1 (list 2 3))
-'(1 2 3)
+(car (cons 1 2))
+;; 1
+(cdr (cons 1 2))
+;; 2
 ```
 
-Non-list pairs are used intentionally, sometimes. For example, the
-`make-hash` function takes a list of pairs, where the `car` of each pair
-is a key and the `cdr` is an arbitrary value.
+! remember `a` comes before `d`
 
-The only thing more confusing to new Racketeers than non-list pairs is
+---vert---
+
+the more traditional name for `cons?` is `pair?`
+
+```scheme
+(pair? empty)
+;; #f
+(pair? (cons 1 2))
+;; #t
+(pair? (list 1 2 3))
+;; #t
+```
+
+<!-- The only thing more confusing to new Racketeers than non-list pairs is
 the printing convention for pairs where the second element _is_ a pair,
 but _is not_ a list:
 
@@ -904,9 +893,11 @@ In general, the rule for printing a pair is as follows: use the dot
 notation unless the dot is immediately followed by an open parenthesis.
 In that case, remove the dot, the open parenthesis, and the matching
 close parenthesis. Thus, `'(0 . (1 . 2))` becomes `'(0 1 . 2)`, and `'(1
-. (2 . (3 . ())))` becomes `'(1 2 3)`.
+. (2 . (3 . ())))` becomes `'(1 2 3)`. -->
 
-### 4.1. Quoting Pairs and Symbols with `quote`
+---
+
+### TODO: Quoting Pairs and Symbols with `quote` <!-- 4.1 -->
 
 A list prints with a quote mark before it, but if an element of a list
 is itself a list, then no quote mark is printed for the inner list:
@@ -1016,37 +1007,31 @@ or string:
 "on the record"
 ```
 
-### 4.2. Abbreviating `quote` with `'`
+### Abbreviating `quote` with `'` <!-- 4.2 -->
 
-As you may have guessed, you can abbreviate a use of `quote` by just
-putting `'` in front of a form to quote:
+`'` is used to abbreviate the use of `quote`
 
 ```scheme
-> '(1 2 3)
 '(1 2 3)
-> 'road
+;; '(1 2 3)
 'road
-> '((1 2 3) road ("a" "b" "c"))
+;; 'road
 '((1 2 3) road ("a" "b" "c"))
+;; '((1 2 3) road ("a" "b" "c"))
 ```
 
-In the documentation, `'` within an expression is printed in green along
-with the form after it, since the combination is an expression that is a
-constant. In DrRacket, only the `'` is colored green. DrRacket is more
-precisely correct, because the meaning of `quote` can vary depending on
-the context of an expression. In the documentation, however, we
-routinely assume that standard bindings are in scope, and so we paint
-quoted forms in green for extra clarity.
+---vert---
 
-A `'` expands to a `quote` form in quite a literal way. You can see this
-if you put a `'` in front of a form that has a `'`:
+a `'` expands to a `quote` form in quite a literal way
 
 ```scheme
-> (car ''road)
-'quote
-> (car '(quote road))
-'quote
+(car ''road)
+;; 'quote
+(car '(quote road))
+;; 'quote
 ```
+
+<!-- ---vert---
 
 The `'` abbreviation works in output as well as input. The REPL's
 printer recognizes the symbol `'quote` as the first element of a
@@ -1054,64 +1039,12 @@ two-element list when printing output, in which case it uses `'` to
 print the output:
 
 ```scheme
-> (quote (quote road))
-"road
-> '(quote road)
-"road
-> ''road
-"road
-```
+(quote (quote road))
+;; ''road
+'(quote road)
+;; ''road
+''road
+;; ''road
+``` -->
 
-### 4.3. Lists and Racket Syntax
-
-Now that you know the truth about pairs and lists, and now that you've
-seen `quote`, you're ready to understand the main way in which we have
-been simplifying Racket's true syntax.
-
-The syntax of Racket is not defined directly in terms of character
-streams. Instead, the syntax is determined by two layers:
-
-* a _reader_ layer, which turns a sequence of characters into lists,
-  symbols, and other constants; and
-
-* an _expander_ layer, which processes the lists, symbols, and other
-  constants to parse them as an expression.
-
-The rules for printing and reading go together. For example, a list is
-printed with parentheses, and reading a pair of parentheses produces a
-list. Similarly, a non-list pair is printed with the dot notation, and a
-dot on input effectively runs the dot-notation rules in reverse to
-obtain a pair.
-
-One consequence of the read layer for expressions is that you can use
-the dot notation in expressions that are not quoted forms:
-
-```scheme
-> (+ 1 . (2))
-3
-```
-
-This works because `(+ 1 . (2))` is just another way of writing `(+ 1
-2)`. It is practically never a good idea to write application
-expressions using this dot notation; it's just a consequence of the way
-Racket's syntax is defined.
-
-Normally, `.` is allowed by the reader only with a parenthesized
-sequence, and only before the last element of the sequence. However, a
-pair of `.`s can also appear around a single element in a parenthesized
-sequence, as long as the element is not first or last. Such a pair
-triggers a reader conversion that moves the element between `.`s to the
-front of the list. The conversion enables a kind of general infix
-notation:
-
-```scheme
-> (1 . < . 2)
-#t
-> '(1 . < . 2)
-'(< 1 2)
-```
-
-This two-dot convention is non-traditional, and it has essentially
-nothing to do with the dot notation for non-list pairs. Racket
-programmers use the infix convention sparingly—mostly for asymmetric
-binary operators such as `<` and `is-a?`.
+<!-- 4.3 -->
