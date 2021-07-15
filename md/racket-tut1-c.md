@@ -1,139 +1,119 @@
 # Built-In Datatypes
 
-The previous chapter introduced some of Racket's built-in datatypes:
-numbers, booleans, strings, lists, and procedures. This section provides
-a more complete coverage of the built-in datatypes for simple forms of
-data.
+(the following slides are based on [the Racket Guide](https://docs.racket-lang.org/guide/datatypes.html))
 
-    1 Booleans
+<!-- data.md -->
 
-    2 Numbers
+---
 
-    3 Characters
+## Booleans <!-- 1 -->
 
-    4 Strings (Unicode)
+the boolean constants are `#t` and `#f`
 
-    5 Bytes and Byte Strings
-
-    6 Symbols
-
-    7 Keywords
-
-    8 Pairs and Lists
-
-    9 Vectors
-
-    10 Hash Tables
-
-    11 Boxes
-
-    12 Void and Undefined
-
-## 1. Booleans
-
-Racket has two distinguished constants to represent boolean values: `#t`
-for true and `#f` for false. Uppercase `#T` and `#F` are parsed as the
-same values, but the lowercase forms are preferred.
-
-The `boolean?` procedure recognizes the two boolean constants. In the
-result of a test expression for `if`, `cond`, `and`, `or`, etc.,
-however, any value other than `#f` counts as true.
-
-Examples:
+`boolean?` recognizes the two boolean constants
 
 ```racket
-> (= 2 (+ 1 1))
-#t
-> (boolean? #t)
-#t
-> (boolean? #f)
-#t
-> (boolean? "no")
-#f
-> (if "no" 1 0)
-1
+(= 2 (+ 1 1))
+;; #t
+(boolean? #t)
+;; #t
+(boolean? #f)
+;; #t
+(boolean? "no")
+;; #f
 ```
 
-## 2. Numbers
+---vert---
 
-A Racket _number_ is either exact or inexact:
-
-* An _exact_ number is either
-
-  * an arbitrarily large or small integer, such as `5`,
-    `99999999999999999`, or `-17`;
-
-  * a rational that is exactly the ratio of two arbitrarily small or
-    large integers, such as `1/2`, `99999999999999999/2`, or `-3/4`; or
-
-  * a complex number with exact real and imaginary parts \(where the
-    imaginary part is not zero\), such as `1+2i` or `1/2+3/4i`.
-
-* An _inexact_ number is either
-
-  * an IEEE floating-point representation of a number, such as `2.0` or
-    `3.14e+87`, where the IEEE infinities and not-a-number are written
-    `+inf.0`, `-inf.0`, and `+nan.0` \(or `-nan.0`); or
-
-  * a complex number with real and imaginary parts that are IEEE
-    floating-point representations, such as `2.0+3.0i` or
-    `-inf.0+nan.0i`; as a special case, an inexact complex number can
-    have an exact zero real part with an inexact imaginary part.
-
-Inexact numbers print with a decimal point or exponent specifier, and
-exact numbers print as integers and fractions.  The same conventions
-apply for reading number constants, but `#e` or `#i` can prefix a number
-to force its parsing as an exact or inexact number. The prefixes `#b`,
-`#o`, and `#x` specify binary, octal, and hexadecimal interpretation of
-digits.
-
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> numbers.
-
-Examples:
+in the result of a test expression for `if`, `cond`, `and`, `or`, etc., any value other than `#f` counts as true.
 
 ```racket
-> 0.5
+(if "no" 1 0)
+;; 1
+```
+
+---
+
+## Numbers <!-- 2 -->
+
+a Racket __number__ is either exact or inexact:
+
+an __exact__ number is one of:
+
+* an arbitrarily large or small integer, such as `5`, `9999999`, or `-17`
+* a rational that is exactly the ratio of two integers, such as `1/2`, `9999999/2`, or `-3/4`
+* a complex number with exact real and imaginary parts, such as `1+2i` or `1/2+3/4i`
+
+---vert---
+
+an __inexact__ number is one of:
+
+* a float, such as `2.0`, `3.14e+87`, `+inf.0`, `-inf.0`, and `+nan.0` (or `-nan.0`)
+* a complex number with real and imaginary parts that are floats, such as `2.0+3.0i` or `-inf.0+nan.0i`
+
+---vert---
+
+* inexact numbers print with a decimal point or exponent specifier
+* exact numbers print as integers and fractions
+
+```racket
 0.5
-> #e0.5
-1/2
-> #x03BB
-955
+;; 0.5
+12/34
+;; 6/17
 ```
 
-Computations that involve an inexact number produce inexact results, so
-that inexactness acts as a kind of taint on numbers. Beware, however,
-that Racket offers no "inexact booleans," so computations that branch on
-the comparison of inexact numbers can nevertheless produce exact
-results. The procedures `exact->inexact` and `inexact->exact` convert
-between the two types of numbers.
+---vert---
 
-Examples:
+* `#e` or `#i` can prefix a number to force its parsing as an exact or inexact number
+* the prefixes `#b`, `#o`, and `#x` specify binary, octal, and hexadecimal interpretation
 
 ```racket
-> (/ 1 2)
-1/2
-> (/ 1 2.0)
-0.5
-> (if (= 3.0 2.999) 1 2)
-2
-> (inexact->exact 0.1)
-3602879701896397/36028797018963968
+#e0.5
+;; 1/2
+#x03BB
+;; 955
 ```
+
+---vert---
+
+Computations that involve an inexact number produce inexact results
+
+```racket
+(/ 1 2)
+;; 1/2
+(/ 1 2.0)
+;; 0.5
+(if (= 3.0 2.999) 1 2)
+;; 2
+```
+
+---vert---
+
+`exact->inexact` and `inexact->exact` convert between the two types of numbers
+
+```racket
+(exact->inexact 1/2)
+;; 0.5
+(inexact->exact 0.1)
+;; 3602879701896397/36028797018963968
+```
+
+---vert---
 
 Inexact results are also produced by procedures such as `sqrt`, `log`,
 and `sin` when an exact result would require representing real numbers
 that are not rational. Racket can represent only rational numbers and
 complex numbers with rational parts.
 
-Examples:
-
 ```racket
-> (sin 0)   ; rational...
-0
-> (sin 1/2) ; not rational...
-0.479425538604203
+(sin 0)   ; rational...
+;; 0
+(sin 1/2) ; not rational...
+;; 0.479425538604203
 ```
+
+---vert---
 
 In terms of performance, computations with small integers are typically
 the fastest, where "small" means that the number fits into one bit less
@@ -147,16 +127,16 @@ numbers.
   (if (= a b)
       0
       (+ (f a) (sigma f (+ a 1) b))))
+
+(time (round (sigma (lambda (x) (/ 1 x)) 1 2000)))
+;; cpu time: 415 real time: 415 gc time: 0
+;; 8
+(time (round (sigma (lambda (x) (/ 1.0 x)) 1 2000)))
+;; cpu time: 0 real time: 0 gc time: 0
+;; 8.0
 ```
 
-```racket
-> (time (round (sigma (lambda (x) (/ 1 x)) 1 2000)))
-cpu time: 415 real time: 415 gc time: 0
-8
-> (time (round (sigma (lambda (x) (/ 1.0 x)) 1 2000)))
-cpu time: 0 real time: 0 gc time: 0
-8.0
-```
+---vert---
 
 The number categories _integer_, _rational_, _real_ (always rational),
 and _complex_ are defined in the usual way, and are recognized by the
@@ -164,30 +144,30 @@ procedures `integer?`, `rational?`, `real?`, and `complex?`, in addition
 to the generic `number?`. A few mathematical procedures accept only real
 numbers, but most implement standard extensions to complex numbers.
 
-Examples:
-
 ```racket
-> (integer? 5)
-#t
-> (complex? 5)
-#t
-> (integer? 5.0)
-#t
-> (integer? 1+2i)
-#f
-> (complex? 1+2i)
-#t
-> (complex? 1.0+2.0i)
-#t
-> (abs -5)
-5
-> (abs -5+2i)
-abs: contract violation
-  expected: real?
-  given: -5+2i
-> (sin -5+2i)
-3.6076607742131563+1.0288031496599335i
+(integer? 5)
+;; #t
+(complex? 5)
+;; #t
+(integer? 5.0)
+;; #t
+(integer? 1+2i)
+;; #f
+(complex? 1+2i)
+;; #t
+(complex? 1.0+2.0i)
+;; #t
+(abs -5)
+;; 5
+(abs -5+2i)
+;; abs: contract violation
+;;  expected: real?
+;;  given: -5+2i
+(sin -5+2i)
+;; 3.6076607742131563+1.0288031496599335i
 ```
+
+---vert---
 
 The `=` procedure compares numbers for numerical equality. If it is
 given both inexact and exact numbers to compare, it essentially converts
@@ -195,14 +175,14 @@ the inexact numbers to exact before comparing. The `eqv?` (and therefore
 `equal?`) procedure, in contrast, compares numbers considering both
 exactness and numerical equality.
 
-Examples:
-
 ```racket
-> (= 1 1.0)
-#t
-> (eqv? 1 1.0)
-#f
+(= 1 1.0)
+;; #t
+(eqv? 1 1.0)
+;; #f
 ```
+
+---vert---
 
 Beware of comparisons involving inexact numbers, which by their nature
 can have surprising behavior. Even apparently simple inexact numbers may
@@ -210,21 +190,18 @@ not mean what you think they mean; for example, while a base-2 IEEE
 floating-point number can represent `1/2` exactly, it can only
 approximate `1/10`:
 
-Examples:
-
 ```racket
-> (= 1/2 0.5)
-#t
-> (= 1/10 0.1)
-#f
-> (inexact->exact 0.1)
-3602879701896397/36028797018963968
+(= 1/2 0.5)
+;; #t
+(= 1/10 0.1)
+;; #f
+(inexact->exact 0.1)
+;; 3602879701896397/36028797018963968
 ```
 
-> +\[missing\] in \[missing\] provides more on numbers and number
-> procedures.
+---
 
-## 3. Characters
+## Characters <!-- 3 -->
 
 A Racket _character_ corresponds to a Unicode _scalar value_. Roughly, a
 scalar value is an unsigned integer whose representation fits into 21
@@ -315,10 +292,9 @@ Examples:
 #f
 ```
 
-> +\[missing\] in \[missing\] provides more on characters and character
-> procedures.
+---
 
-## 4. Strings (Unicode)
+## Strings (Unicode) <!-- 4 -->
 
 A _string_ is a fixed-length array of characters. It prints using double
 quotes, where double quote and backslash characters within the string
@@ -328,14 +304,10 @@ using `\` followed by up to three octal digits, and hexadecimal escapes
 with `\u` \(up to four digits\).  Unprintable characters in a string are
 normally shown with `\u` when the string is printed.
 
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> strings.
 
 The `display` procedure directly writes the characters of a string to
 the current output port (see \[missing\]), in contrast to the
 string-constant syntax used to print a string result.
-
-Examples:
 
 ```racket
 > "Apple"
@@ -360,8 +332,6 @@ optional fill character. The `string-ref` procedure accesses a character
 from a string (with 0-based indexing); the `string-set!`  procedure
 changes a character in a mutable string.
 
-Examples:
-
 ```racket
 > (string-ref "Apple" 0)
 #\A
@@ -382,8 +352,6 @@ should be consistent across machines and users, but use
 `string-locale<?` or `string-locale-ci<?` if the sort is purely to order
 strings for an end user.
 
-Examples:
-
 ```racket
 > (string<? "apple" "Banana")
 #f
@@ -399,15 +367,12 @@ Examples:
 For working with plain ASCII, working with raw bytes, or
 encoding/decoding Unicode strings as bytes, use byte strings.
 
-> +\[missing\] in \[missing\] provides more on strings and string
-> procedures.
+---
 
-## 5. Bytes and Byte Strings
+## Bytes and Byte Strings <!-- 5 -->
 
 A _byte_ is an exact integer between `0` and `255`, inclusive. The
 `byte?` predicate recognizes numbers that represent bytes.
-
-Examples:
 
 ```racket
 > (byte? 0)
@@ -423,11 +388,6 @@ The printed form of a byte string supports such uses in particular,
 because a byte string prints like the ASCII decoding of the byte string,
 but prefixed with a `#`. Unprintable ASCII characters or non-ASCII bytes
 in the byte string are written with octal notation.
-
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> byte strings.
-
-Examples:
 
 ```racket
 > #"Apple"
@@ -453,8 +413,6 @@ output port, since output is ultimately defined in terms of bytes;
 encoding. Along the same lines, when this documentation shows output, it
 technically shows the UTF-8-decoded form of the output.
 
-Examples:
-
 ```racket
 > (display #"Apple")
 Apple
@@ -469,8 +427,6 @@ supports three kinds of encodings directly: UTF-8, Latin-1, and the
 current locale's encoding. General facilities for byte-to-byte
 conversions (especially to and from UTF-8) fill the gap to support
 arbitrary string encodings.
-
-Examples:
 
 ```racket
 > (bytes->string/utf-8 #"\316\273")
@@ -491,10 +447,9 @@ for the current locale
 "λ"
 ```
 
-> +\[missing\] in \[missing\] provides more on byte strings and
-> byte-string procedures.
+---
 
-## 6. Symbols
+## Symbols <!-- 6 -->
 
 A _symbol_ is an atomic value that prints like an identifier preceded
 with `'`.  An expression that starts with `'` and continues with an
@@ -519,8 +474,6 @@ enumerations.
 Symbols are case-sensitive. By using a `#ci` prefix or in other ways,
 the reader can be made to case-fold character sequences to arrive at a
 symbol, but the reader preserves case by default.
-
-Examples:
 
 ```racket
 > (eq? 'a 'a)
@@ -551,8 +504,6 @@ quoting them with `|` or `\`. These quoting mechanisms are used in the
 printed form of identifiers that contain special characters or that
 might otherwise look like numbers.
 
-Examples:
-
 ```racket
 > (string->symbol "one, two")
 '|one, two|
@@ -560,13 +511,8 @@ Examples:
 '|6|
 ```
 
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> symbols.
-
 The `write` function prints a symbol without a `'` prefix. The `display`
 form of a symbol is the same as the corresponding string.
-
-Examples:
 
 ```racket
 > (write 'Apple)
@@ -584,8 +530,6 @@ _uninterned_ symbols that are not equal \(according to `eq?`) to any
 previously interned or uninterned symbol. Uninterned symbols are useful
 as fresh tags that cannot be confused with any other value.
 
-Examples:
-
 ```racket
 > (define s (gensym))
 > s
@@ -596,17 +540,12 @@ Examples:
 #f
 ```
 
-> +\[missing\] in \[missing\] provides more on symbols.
+---
 
-## 7. Keywords
+## Keywords <!-- 7 -->
 
 A _keyword_ value is similar to a symbol (see Symbols), but its printed
 form is prefixed with `#:`.
-
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> keywords.
-
-Examples:
 
 ```racket
 > (string->keyword "apple")
@@ -625,8 +564,6 @@ to the result of a quote-keyword expression or of `string->keyword`. An
 unquoted keyword is not an expression, just as an unquoted identifier
 does not produce a symbol:
 
-Examples:
-
 ```racket
 > not-a-symbol-expression
 not-a-symbol-expression: undefined;
@@ -643,8 +580,6 @@ special markers in argument lists and in certain syntactic forms.  For
 run-time flags and enumerations, use symbols instead of keywords.  The
 example below illustrates the distinct roles of keywords and symbols.
 
-Examples:
-
 ```racket
 > (define dir (find-system-path 'temp-dir)) ; not '#:temp-dir
 > (with-output-to-file (build-path dir "stuff.txt")
@@ -655,7 +590,9 @@ Examples:
     #:exists 'replace)
 ```
 
-## 8. Pairs and Lists
+---
+
+## Pairs and Lists <!-- 8 -->
 
 A _pair_ joins two arbitrary values. The `cons` procedure constructs
 pairs, and the `car` and `cdr` procedures extract the first and second
@@ -665,8 +602,6 @@ pairs.
 Some pairs print by wrapping parentheses around the printed forms of the
 two pair elements, putting a `'` at the beginning and a `.` between the
 elements.
-
-Examples:
 
 ```racket
 > (cons 1 2)
@@ -689,8 +624,6 @@ the empty list.
 
 A list normally prints as a `'` followed by a pair of parentheses
 wrapped around the list elements.
-
-Examples:
 
 ```racket
 > null
@@ -721,8 +654,6 @@ with `srcloc` cannot be written using `quote`, and it prints using
 (list* 1 2 (srcloc "file.rkt" 1 0 1 8))
 ```
 
-> See also `list*`.
-
 As shown in the last example, `list*` is used to abbreviate a series of
 `cons`es that cannot be abbreviated using `list`.
 
@@ -730,8 +661,6 @@ The `write` and `display` functions print a pair or list without a
 leading `'`, `cons`, `list`, or `list*`. There is no difference between
 `write` and `display` for a pair or list, except as they apply to
 elements of the list:
-
-Examples:
 
 ```racket
 > (write (cons 1 2))
@@ -779,15 +708,11 @@ iterate through the list's elements:
 '(where "Florida")
 ```
 
-> +\[missing\] in \[missing\] provides more on pairs and lists.
-
 Pairs are immutable (contrary to Lisp tradition), and `pair?` and
 `list?` recognize immutable pairs and lists, only. The `mcons` procedure
 creates a _mutable pair_, which works with `set-mcar!` and `set-mcdr!`,
 as well as `mcar` and `mcdr`. A mutable pair prints using `mcons`, while
 `write` and `display` print mutable pairs with `{` and `}`:
-
-Examples:
 
 ```racket
 > (define p (mcons 1 2))
@@ -804,9 +729,9 @@ Examples:
 {0 . 2}
 ```
 
-> +\[missing\] in \[missing\] provides more on mutable pairs.
+---
 
-## 9. Vectors
+## Vectors <!-- 9 -->
 
 A _vector_ is a fixed-length array of arbitrary values. Unlike a list, a
 vector supports constant-time access and update of its elements.
@@ -819,11 +744,6 @@ For a vector as an expression, an optional length can be supplied. Also,
 a vector as an expression implicitly `quote`s the forms for its content,
 which means that identifiers and parenthesized forms in a vector
 constant represent symbols and lists.
-
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> vectors.
-
-Examples:
 
 ```racket
 > #("a" "b" "c")
@@ -847,18 +767,15 @@ with predefined procedures on lists. When allocating extra lists seems
 too expensive, consider using looping forms like `for/fold`, which
 recognize vectors as well as lists.
 
-Example:
-
 ```racket
 > (list->vector (map string-titlecase
                      (vector->list #("three" "blind" "mice"))))
 '#("Three" "Blind" "Mice")
 ```
 
-> +\[missing\] in \[missing\] provides more on vectors and vector
-> procedures.
+---
 
-## 10. Hash Tables
+## Hash Tables <!-- 10 -->
 
 A _hash table_ implements a mapping from keys to values, where both keys
 and values can be arbitrary Racket values, and access and update to the
@@ -887,8 +804,6 @@ provided as an argument after its key. Immutable hash tables can be
 extended with `hash-set`, which produces a new immutable hash table in
 constant time.
 
-Examples:
-
 ```racket
 > (define ht (hash "apple" 'red "banana" 'yellow))
 > (hash-ref ht "apple")
@@ -908,8 +823,6 @@ sequence must immediately follow `#hash`, `#hasheq`, or `#hasheqv`,
 where each element is a dotted key-value pair. The `#hash`, etc. forms
 implicitly `quote` their key and value sub-forms.
 
-Examples:
-
 ```racket
 > (define ht #hash(("apple" . red)
                    ("banana" . yellow)))
@@ -917,15 +830,10 @@ Examples:
 'red
 ```
 
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> hash table literals.
-
 Both mutable and immutable hash tables print like immutable hash tables,
 using a quoted `#hash`, `#hasheqv`, or `#hasheq` form if all keys and
 values can be expressed with `quote` or using `hash`, `hasheq`, or
 `hasheqv` otherwise:
-
-Examples:
 
 ```racket
 > #hash(("apple" . red)
@@ -937,8 +845,6 @@ Examples:
 
 A mutable hash table can optionally retain its keys _weakly_, so each
 mapping is retained only so long as the key is retained elsewhere.
-
-Examples:
 
 ```racket
 > (define ht (make-weak-hasheq))
@@ -954,11 +860,6 @@ dependency when a value refers back to its key, so that the mapping is
 retained permanently. To break the cycle, map the key to an _ephemeron_
 that pairs the value with its key (in addition to the implicit pairing
 of the hash table).
-
-> +\[missing\] in \[missing\] documents the fine points of using
-> ephemerons.
-
-Examples:
 
 ```racket
 > (define ht (make-weak-hasheq))
@@ -978,17 +879,14 @@ Examples:
 0
 ```
 
-> +\[missing\] in \[missing\] provides more on hash tables and hash-table
-> procedures.
+---
 
-## 11. Boxes
+## Boxes <!-- 11 -->
 
 A _box_ is like a single-element vector. It can print as a quoted `#&`
 followed by the printed form of the boxed value. A `#&` form can also be
 used as an expression, but since the resulting box is constant, it has
 practically no use.
-
-Examples:
 
 ```racket
 > (define b (box "apple"))
@@ -1001,9 +899,9 @@ Examples:
 '#&(banana boat)
 ```
 
-> +\[missing\] in \[missing\] provides more on boxes and box procedures.
+---
 
-## 12. Void and Undefined
+## Void and Undefined <!-- 12 -->
 
 Some procedures or expression forms have no need for a result value. For
 example, the `display` procedure is called only for the side-effect of
@@ -1014,8 +912,6 @@ simply `#<void>`, the REPL does not print anything.
 The `void` procedure takes any number of arguments and returns
 `#<void>`. (That is, the identifier `void` is bound to a procedure that
 returns `#<void>`, instead of being bound directly to `#<void>`.)
-
-Examples:
 
 ```racket
 > (void)
