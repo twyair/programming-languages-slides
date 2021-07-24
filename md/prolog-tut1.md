@@ -26,16 +26,16 @@ $<@
 
 an **atom** is
 
-* a string of letters, digits, and an underscore starting with a **lower-case letter**: `anna x_25 nil`
-* a string of special characters (`+ - * / < > = : . & _ ~`): `$<@ <----> .:.`
-* a string of characters enclosed in single quotes: `'Tom' '2A$'`
+* a string of letters, digits, and an underscore starting with a **lower-case letter**: `anna` `x_25` `nil`
+* a string of special characters (`+ - * / < > = : . & _ ~`): `$<@` `<---->` `.:.`
+* a string of characters enclosed in single quotes: `'Tom'` `'2A$'`
 
 ---vert---
 
 #### terms - numbers
 
-* integers: `123 -42`
-* real numbers: `3.14 -0.573 2.4e3`
+* integers: `123` `-42`
+* real numbers: `3.14` `-0.573` `2.4e3`
 
 ---vert---
 
@@ -487,7 +487,7 @@ why doesn't prolog answer with `X = rick` or simply with `true`?
 
 ---vert---
 
-`person(X)` succeeds (we saw that earlier) so its negation fails
+`person(X)` succeeds so its negation fails
 
 if `G` fails `\+ G` succeeds otherwise it fails
 
@@ -507,4 +507,106 @@ legal(theft).
 % false.
 ```
 
+---
 
+## exercises
+
+---vert---
+
+### family tree
+
+you have a database with the following predicate
+
+```prolog
+parent(X, Y).  % X is Y's parent
+
+% examples:
+parent(adam, cain).
+parent(eve, cain).
+parent(cain, enoch).
+```
+
+define a predicate `grandparent(X)` that holds when `X` is a grandparent
+
+---vert---
+
+```prolog
+grandparent(X) :- parent(X, Y), parent(Y, _).
+```
+
+---vert---
+
+define a predicate `nuclear(X, Y)` that holds when `X` and `Y` are in the same nuclear family
+
+a nuclear family consists of 2 parents and their common children
+
+---vert---
+
+```prolog
+nuclear(X, Y) :-  % siblings
+    parent(P1, X), parent(P2, X)
+    parent(P1, Y), parent(P2, Y),
+    \+(P1 = P2).  % alternatively: `P1 \= P2`
+
+nuclear(X, Y) :-
+    parent(X, C), parent(Y, C).
+```
+
+---vert---
+
+### binary trees
+
+we represent binary trees as terms:
+
+* `nil` is the empty tree
+* `node(N, Tl, Tr)` is a tree node where `N` is some number and `Tl` and `Tr` are binary trees
+
+define a predicate `tree_size(T, S)` such that `T` is a binary tree and `S` is its size
+
+---vert---
+
+```prolog
+tree_size(nil, 0).
+tree_size(node(_, Tl, Tr), S) :-
+    tree_size(Tl, Sl),
+    tree_size(Tr, Sr),
+    S is Sl + Sr + 1.
+```
+
+---vert---
+
+define a predicate `tree_max(T, M)` such that `T` is a binary tree and `M` is the max of the values of `T`'s nodes
+
+you may use the arithmetic function `max/2`
+
+---vert---
+
+```prolog
+tree_max(node(N, nil, nil), N).
+tree_max(node(N, nil, Tr), M) :-
+    tree_max(Tr, Mr), M is max(N, Mr).
+tree_max(node(N, Tl, nil), M) :-
+    tree_max(Tl, Ml), M is max(N, Ml).
+tree_max(node(N, Tl, Tr), M) :-
+    tree_max(Tl, Ml),
+    tree_max(Tr, Mr),
+    M is max(N, Ml, Mr).
+```
+
+---vert---
+
+define a predicate `perfect_tree(T, H)` such that `T` is a perfect binary tree and `H` is its height
+
+a node's value should be its height
+
+a perfect binary tree is a binary tree in which all interior nodes have two children and all leaves have the same depth
+
+---vert---
+
+```prolog
+perfect_tree(nil, 0).
+perfect_tree(node(H, Tl, Tl), H) :-
+    H > 0,
+    H1 is H - 1,
+    perfect_tree(Tl, H1).
+```
