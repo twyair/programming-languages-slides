@@ -8,196 +8,195 @@
 
 ## Simple Structure Types: `struct` <!-- 1 -->
 
-To a first approximation, the syntax of `struct` is
+---vert---
+
+the syntax of `struct` is
 
 ```scheme
 (struct struct-id (field-id ...))
+
+;; example
+(struct posn (x y))
 ```
 
-`(struct` `posn` `(x` `y))`
+`struct` binds `struct-id` and a number of identifiers that are built from `struct-id` and the `field-id`s
 
-The `struct` form binds `struct-id` and a number of identifiers that are
-built from `struct-id` and the `field-id`s:
+---vert---
 
-* `struct-id` : a _constructor_ function that takes as many arguments as
-  the number of `field-id`s, and returns an instance of the structure
-  type.
+`struct-id` : a __constructor__ function that takes as many arguments as the number of `field-id`s, and returns an instance of the structure type.
 
-  ```scheme
-  > (posn 1 2)
-  #<posn>
-  ```
+```scheme
+(posn 1 2)
+;; #<posn>
+```
 
-* `struct-id?` : a _predicate_ function that takes a single argument and
-  returns `#t` if it is an instance of the structure type, `#f`
-  otherwise.
+---vert---
 
-  ```scheme
-  > (posn? 3)
-  #f
-  > (posn? (posn 1 2))
-  #t
-  ```
+`struct-id?` : a __predicate__ function that takes a single argument and returns `#t` if it is an instance of the structure type, `#f` otherwise.
 
-* `struct-id-field-id` : for each `field-id`, an _accessor_ that
-  extracts the value of the corresponding field from an instance of the
-  structure type.
+```scheme
+(posn? 3)
+;; #f
+(posn? (posn 1 2))
+;; #t
+```
 
-  ```scheme
-  > (posn-x (posn 1 2))
-  1
-  > (posn-y (posn 1 2))
-  2
-  ```
+---vert---
 
-* `struct:struct-id` : a _structure type descriptor_, which is a value
-  that represents the structure type as a first-class value (with
-  `#:super`, as discussed later in More Structure Type Options).
+`struct-id-field-id` : for each `field-id`, an __accessor__ that extracts the value of the corresponding field from an instance of the structure type.
 
-A `struct` form places no constraints on the kinds of values that can
-appear for fields in an instance of the structure type. For example,
-`(posn "apple" #f)` produces an instance of `posn`, even though
-`"apple"` and `#f` are not valid coordinates for the obvious uses of
-`posn` instances. Enforcing constraints on field values, such as
-requiring them to be numbers, is normally the job of a contract, as
-discussed later in \[missing\].
+```scheme
+(posn-x (posn 1 2))
+;; 1
+(posn-y (posn 1 2))
+;; 2
+```
+
+---vert---
+
+`struct:struct-id` : a __structure type descriptor__, which is a value that represents the structure type as a first-class value
 
 ---
 
 ## Copying and Update <!-- 2 -->
 
-The `struct-copy` form clones a structure and optionally updates
-specified fields in the clone. This process is sometimes called a
-_functional update_, because the result is a structure with updated
-field values. but the original structure is not modified.
+---vert---
+
+`struct-copy` clones a structure and optionally updates specified fields in the clone.
 
 ```scheme
 (struct-copy struct-id struct-expr [field-id expr] ...)
 ```
 
-The `struct-id` that appears after `struct-copy` must be a structure
-type name bound by `struct` (i.e., the name that cannot be used directly
-as an expression). The `struct-expr` must produce an instance of the
-structure type. The result is a new instance of the structure type that
-is like the old one, except that the field indicated by each `field-id`
-gets the value of the corresponding `expr`.
+* `struct-id`  must be a structure type name
+* `struct-expr` must produce an instance of the structure type
+
+---vert---
 
 ```scheme
-> (define p1 (posn 1 2))
-> (define p2 (struct-copy posn p1 [x 3]))
-> (list (posn-x p2) (posn-y p2))
-'(3 2)
-> (list (posn-x p1) (posn-y p1))
-'(1 2)
+(define p1 (posn 1 2))
+(define p2 (struct-copy posn p1 [x 3]))
+(list (posn-x p2) (posn-y p2))
+;; '(3 2)
+(list (posn-x p1) (posn-y p1))
+;; '(1 2)
 ```
+
+---vert---
+
+This process is called a __functional update__, because the result is a structure with updated field values, but the original structure is not modified.
 
 ---
 
 ## Structure Subtypes <!-- 3 -->
 
-An extended form of `struct` can be used to define a _structure
-subtype_, which is a structure type that extends an existing structure
-type:
-
 ```scheme
 (struct struct-id super-id (field-id ...))
 ```
 
-The `super-id` must be a structure type name bound by `struct` (i.e.,
-the name that cannot be used directly as an expression).
-
+`super-id` must be a structure type name
 
 ```scheme
 (struct posn (x y))
 (struct 3d-posn posn (z))
 ```
 
-A structure subtype inherits the fields of its supertype, and the
-subtype constructor accepts the values for the subtype fields after
-values for the supertype fields. An instance of a structure subtype can
-be used with the predicate and accessors of the supertype.
+---vert---
 
+a structure subtype inherits the fields of its supertype
 
 ```scheme
-> (define p (3d-posn 1 2 3))
-> p
-#<3d-posn>
-> (posn? p)
-#t
-> (3d-posn-z p)
-3
-; a 3d-posn has an x field, but there is no 3d-posn-x selector:
-> (3d-posn-x p)
-3d-posn-x: undefined;
- cannot reference an identifier before its definition
-  in module: top-level
-; use the supertype's posn-x selector to access the x field:
-> (posn-x p)
-1
+(define p (3d-posn 1 2 3))
+p
+;; #<3d-posn>
+(3d-posn-z p)
+;; 3
+```
+
+---vert---
+
+an instance of a structure subtype can be used with the predicate and accessors of the supertype
+
+```scheme
+(posn? p)
+;; #t
+
+(posn-x p)
+;; 1
+```
+
+---vert---
+
+a `3d-posn` has an `x` field, but there is no `3d-posn-x`
+
+```scheme
+(3d-posn-x p)
+;; 3d-posn-x: undefined;
+;;  cannot reference an identifier before its definition
+;;   in module: top-level
+
+(posn-x p)
+;; 1
 ```
 
 ---
 
 ## Opaque versus Transparent Structure Types <!-- 4 -->
 
-With a structure type definition like
+---vert---
 
-`(struct` `posn` `(x` `y))`
-
-an instance of the structure type prints in a way that does not show any
-information about the fields' values. That is, structure types by
-default are _opaque_. If the accessors and mutators of a structure type
-are kept private to a module, then no other module can rely on the
-representation of the type's instances.
-
-To make a structure type _transparent_, use the `#:transparent` keyword
-after the field-name sequence:
+structure types are _opaque_ by default
 
 ```scheme
-(struct posn (x y)
-        #:transparent)
+(struct posn (x y))
 ```
 
+so an instance prints without the fields' values
+
 ```scheme
-> (posn 1 2)
 (posn 1 2)
+;; #<posn>
 ```
 
-An instance of a transparent structure type prints like a call to the
-constructor, so that it shows the structures field values. A transparent
-structure type also allows reflective operations, such as `struct?` and
-`struct-info`, to be used on its instances \(see \[missing\]).
+---vert---
 
-Structure types are opaque by default, because opaque structure
-instances provide more encapsulation guarantees. That is, a library can
-use an opaque structure to encapsulate data, and clients of the library
-cannot manipulate the data in the structure except as allowed by the
-library.
+use `#:transparent` to make a structure type _transparent_
+
+```scheme
+(struct posn (x y) #:transparent)
+```
+
+```scheme
+(posn 1 2)
+;; (posn 1 2)
+```
 
 ---
 
 ## Structure Comparisons <!-- 5 -->
 
-A generic `equal?` comparison automatically recurs on the fields of a
-transparent structure type, but `equal?` defaults to mere instance
-identity for opaque structure types:
-
-`(struct` `glass` `(width` `height)` `#:transparent)`
+`equal?` automatically recurs on the fields of a transparent structure type
 
 ```scheme
-> (equal? (glass 1 2) (glass 1 2))
-#t
+(struct glass (width height) #:transparent)
+(equal? (glass 1 2) (glass 1 2))
+;; #t
 ```
 
-`(struct` `lead` `(width` `height))`
+---vert---
+
+but `equal?` defaults to instance identity for opaque structure types
 
 ```scheme
-> (define slab (lead 1 2))
-> (equal? slab slab)
-#t
-> (equal? slab (lead 1 2))
-#f
+(struct lead (width height))
+(define slab (lead 1 2))
+(equal? slab slab)
+;; #t
+(equal? slab (lead 1 2))
+;; #f
 ```
+
+---vert---
 
 To support instances comparisons via `equal?` without making the
 structure type transparent, you can use the `#:methods` keyword,
@@ -222,9 +221,11 @@ structure type transparent, you can use the `#:methods` keyword,
 ```
 
 ```scheme
-> (equal? (lead 1 2) (lead 1 2))
-#t
+(equal? (lead 1 2) (lead 1 2))
+;; #t
 ```
+
+---vert---
 
 The first function in the list implements the `equal?` test on two
 `lead`s; the third argument to the function is used instead of `equal?`
@@ -241,6 +242,8 @@ codes for use with hash tables:
 hash-ref: no value found for key
   key: #<lead>
 ```
+
+---vert---
 
 The first function provided with `gen:equal+hash` is not required to
 recursively compare the fields of the structure. For example, a
@@ -262,7 +265,6 @@ This generativity is useful for enforcing abstractions and implementing
 programs such as interpreters, but beware of placing a `struct` form in
 positions that are evaluated multiple times.
 
-
 ```scheme
 (define (add-bigger-fish lst)
   (struct fish (size) #:transparent) ; new every time
@@ -271,13 +273,15 @@ positions that are evaluated multiple times.
    [else (cons (fish (* 2 (fish-size (car lst))))
                lst)]))
 
-> (add-bigger-fish null)
-(list (fish 1))
-> (add-bigger-fish (add-bigger-fish null))
-fish-size: contract violation
-  expected: fish?
-  given: (fish 1)
+(add-bigger-fish null)
+;; (list (fish 1))
+(add-bigger-fish (add-bigger-fish null))
+;; fish-size: contract violation
+;;   expected: fish?
+;;   given: (fish 1)
 ```
+
+---vert---
 
 ```scheme
 (struct fish (size) #:transparent)
@@ -289,8 +293,8 @@ fish-size: contract violation
 ```
 
 ```scheme
-> (add-bigger-fish (add-bigger-fish null))
-(list (fish 2) (fish 1))
+(add-bigger-fish (add-bigger-fish null))
+;; (list (fish 2) (fish 1))
 ```
 
 ---
@@ -521,6 +525,7 @@ of the given arguments is unacceptable, or it can convert an  argument.
 > (thing 1/2)
 thing: bad name: 1/2
 ```
+
 The guard is called even when subtype instances are created. In that
 case, only the fields accepted by the constructor are provided to  the
 guard (but the subtype's guard gets both the original fields and  fields
@@ -571,6 +576,7 @@ customization of how an instance of a structure type is `display`ed.
 ```scheme
 #:property prop-expr val-expr
 ```
+
 Associates a _property_ and value with the structure type.   For
 example, the `prop:procedure` property allows a   structure instance to
 be used as a function; the property value   determines how a call is
@@ -618,5 +624,3 @@ passed to procedures.
     (list r (r)))
 (list (raven "apple") 'nevermore)
 ```
-
-> +\[missing\] in \[missing\] provides more on structure types.
