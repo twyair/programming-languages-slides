@@ -70,14 +70,17 @@ go to <http://localhost:8000/>
 - [ ] write an OCaml tutorial about:
   - [X] functors
   - [X] lazy expressions
-  - [ ] imperative features
-  - [ ] references, mutable data structures
+  - [X] imperative features
+  - [X] references
+  - [ ] labels and optional arguments
+  - [ ] polymorphic variants
+  - [ ] mutable data structures (`Hashtbl`, `Array`, ...)
   - [ ] objects and classes (?)
   - [ ] standard library modules (?)
-- [ ] write about the so-called sequencing operator (`;`) of OCaml
+- [X] write about the so-called sequencing operator (`;`) of OCaml
 - [X] adapt the SML notebooks to OCaml
 - [ ] write the prolog tutorials
 - [X] autogenerate the files in slides/
 - [X] find a way to call `Reveal.layout()` whenever a slide changes
 - [ ] feature idea for `thebe`: make the kernel execute certain cells on load or when they first appear
-- [ ] in `ocaml-tut3-b.md` replace the `SortedList` example
+- [ ] in `ocaml-tut3-b.md` replace the `SortedList` example (?)
