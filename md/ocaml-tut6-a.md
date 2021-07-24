@@ -11,7 +11,7 @@ ocaml records are immutable by default but you can declare record fields as muta
 ```ocaml
 type point = { mutable x_coord: float; mutable y_coord: float }
 
-let point = { x_coord=0.; y_coord=0.};;
+let p = { x_coord=0.; y_coord=0.};;
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -20,8 +20,8 @@ let point = { x_coord=0.; y_coord=0.};;
 `<-` is used for setting a mutable field
 
 ```ocaml
-let () = point.x_coord <- 5.;;
-point;;
+let () = p.x_coord <- 5.;;
+p;;
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -111,5 +111,90 @@ all non-final expressions should be of type `unit` otherwise you'd get a warning
 
 ```ocaml
 123; 456;;
+```
+<!-- .element: data-thebe-executable -->
+
+---
+
+### loops
+
+---vert---
+
+#### while loops
+
+```ocaml
+while condition do
+    statement
+done
+```
+
+---vert---
+
+```ocaml
+let counter = ref 0 in
+
+while Random.int 1000 > 10 do
+    counter := !counter + 1
+done;
+
+!counter;;
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+#### for loops
+
+```ocaml
+for variable = start_v to end_v do
+    statement
+done
+  
+for variable = start_v downto end_v do
+    statement
+done
+```
+
+---vert---
+
+```ocaml
+let fib n = let a, b = ref 0, ref 1 in
+    for i = 2 to n do
+        let b' = !b in
+        b := !a + !b;
+        a := b'
+    done;
+    !b
+;;
+
+fib 7;;
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+loops are second-class citizens in OCaml
+
+---
+
+### looping over lists
+
+to loop over lists (and other builtin data structures) you may use `iter` and `iteri`
+
+```ocaml
+List.iter;;
+List.iteri;;
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+```ocaml
+let print_list l =
+    let f x = Printf.printf "%d" x in
+    List.iter f l
+;;
+
+print_list [1; 2; 3; 4];;
 ```
 <!-- .element: data-thebe-executable -->
