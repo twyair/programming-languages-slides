@@ -149,7 +149,7 @@ List.to_seq [1; 2; 3];;
 `List.of_seq` takes a sequence and returns a list
 
 ```ocaml
-List.of_seq (List.to_seq [1; 2; 3]);;
+[1; 2; 3] |> List.to_seq |> List.of_seq;;
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -162,11 +162,8 @@ List.of_seq (List.to_seq [1; 2; 3]);;
 `Seq.unfold` builds a sequence from a "step function" and an initial value
 
 ```ocaml
-List.of_seq (
-  Seq.unfold
-    (fun n -> if n < 0 then None else Some (n, n - 1))
-    5
-);;
+let step n = if n < 0 then None else Some (n, n - 1) in
+Seq.unfold step 5 |> List.of_seq;;
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -198,6 +195,12 @@ let rec append =
 ```
 <!-- .element: data-thebe-executable -->
 
+```ocaml
+append (List.to_seq [1; 2; 3]) (List.to_seq [4; 5; 7])
+  |> List.of_seq;;
+```
+<!-- .element: data-thebe-executable -->
+
 ---vert---
 
 ```ocaml
@@ -219,6 +222,12 @@ val interleaving : 'a Seq.t -> 'a Seq.t -> 'a Seq.t
 
 ```ocaml
 let rec interleaving =
+```
+<!-- .element: data-thebe-executable -->
+
+```ocaml
+interleaving (List.to_seq [1; 2; 3]) (List.to_seq [4; 5; 7])
+  |> List.of_seq;;
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -245,6 +254,13 @@ let rec map =
 ```
 <!-- .element: data-thebe-executable -->
 
+```ocaml
+List.to_seq [1; 2; 3]
+  |> map (( * ) 5)
+  |> List.of_seq;;
+```
+<!-- .element: data-thebe-executable -->
+
 ---vert---
 
 ```ocaml
@@ -264,6 +280,13 @@ val filter : ('a -> bool) -> 'a Seq.t -> 'a Seq.t
 
 ```ocaml
 let rec filter =
+```
+<!-- .element: data-thebe-executable -->
+
+```ocaml
+List.to_seq [1; 2; 3; 4; 5]
+  |> filter (fun x -> x mod 2 = 1)
+  |> List.of_seq;;
 ```
 <!-- .element: data-thebe-executable -->
 
