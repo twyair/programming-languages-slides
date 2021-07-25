@@ -525,7 +525,6 @@ of the given arguments is unacceptable, or it can convert an  argument.
 > (thing 1/2)
 thing: bad name: 1/2
 ```
-
 The guard is called even when subtype instances are created. In that
 case, only the fields accepted by the constructor are provided to  the
 guard (but the subtype's guard gets both the original fields and  fields
@@ -549,6 +548,7 @@ person: bad name: 10
 ```scheme
 #:methods interface-expr [body ...]
 ```
+
 Associates method definitions for the structure type that correspond to
 a _generic interface_.  For example, implementing the methods for
 `gen:dict` allows instances of a structure type to be used as
