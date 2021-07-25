@@ -22,7 +22,7 @@ loading, compiling, and even constructing new code at run time.
 The `eval` function takes a representation of an expression or
 definition \(as a "quoted" form or syntax object) and evaluates it:
 
-```racket
+```scheme
 > (eval '(+ 1 2))
 3
 ```
@@ -30,7 +30,7 @@ definition \(as a "quoted" form or syntax object) and evaluates it:
 The power of `eval` is that an expression can be constructed
 dynamically:
 
-```racket
+```scheme
 > (define (eval-formula formula)
     (eval `(let ([x 2]
                  [y 3])
@@ -45,7 +45,7 @@ Of course, if we just wanted to evaluate expressions with given values
 for `x` and `y`, we do not need `eval`. A more direct approach is to use
 first-class functions:
 
-```racket
+```scheme
 > (define (apply-formula formula-proc)
     (formula-proc 2 3))
 > (apply-formula (lambda (x y) (+ x y)))
@@ -70,7 +70,7 @@ The `eval` function cannot see local bindings in the context where it is
 called. For example, calling `eval` inside an unquoted `let` form to
 evaluate a formula does not make values visible for `x` and `y`:
 
-```racket
+```scheme
 > (define (broken-eval-formula formula)
     (let ([x 2]
           [y 3])
@@ -85,7 +85,7 @@ The `eval` function cannot see the `x` and `y` bindings precisely
 because it is a function, and Racket is a lexically scoped language.
 Imagine if `eval` were implemented as
 
-```racket
+```scheme
 (define (eval x)
   (eval-expanded (macro-expand x)))
 ```
@@ -126,7 +126,7 @@ When `eval` is used in a REPL, the current namespace is the one that the
 REPL uses for evaluating expressions. That's why the following
 interaction successfully accesses `x` via `eval`:
 
-```racket
+```scheme
 > (define x 3)
 > (eval 'x)
 3
@@ -135,7 +135,7 @@ interaction successfully accesses `x` via `eval`:
 In contrast, try the following simple module and running it directly in
 DrRacket or supplying the file as a command-line argument to `racket`:
 
-```racket
+```scheme
 #lang racket
 
 (eval '(cons 1 2))
@@ -150,7 +150,7 @@ In general, it's a bad idea to use `eval` with whatever namespace
 happens to be installed. Instead, create a namespace explicitly and
 install it for the call to eval:
 
-```racket
+```scheme
 #lang racket
 
 (define ns (make-base-namespace))
@@ -173,7 +173,7 @@ The `module->namespace` function takes a quoted module path and produces
 a namespace for evaluating expressions and definitions as if they
 appeared in the `module` body:
 
-```racket
+```scheme
 > (module m racket/base
     (define x 11))
 > (require 'm)
@@ -195,7 +195,7 @@ From within a `module`, use `define-namespace-anchor` to declare a
 reflection hook on the module, and use `namespace-anchor->namespace` to
 reel in the module's namespace:
 
-```racket
+```scheme
 #lang racket
 
 (define-namespace-anchor a)
@@ -243,7 +243,7 @@ Since the namespace is truly empty, it cannot at first be used to
 evaluate any top-level expression—not even `(require racket)`. In
 particular,
 
-```racket
+```scheme
 (parameterize ([current-namespace (make-empty-namespace)])
   (namespace-require 'racket))
 ```
@@ -272,7 +272,7 @@ implements a domain-specific language in which you want to execute
 commands from a user-specified file. A namespace created with
 `make-base-empty-namespace` is enough to get started:
 
-```racket
+```scheme
 (define (run-dsl file)
   (parameterize ([current-namespace (make-base-empty-namespace)])
     (namespace-require 'my-dsl)
@@ -305,7 +305,7 @@ afresh if they are demanded by evaluation. For example, `racket/base`
 does not include `racket/class`, and loading `racket/class` again will
 create a distinct class datatype:
 
-```racket
+```scheme
 > (require racket/class)
 > (class? object%)
 #t
@@ -322,7 +322,7 @@ argument to `namespace-attach-module` is a source namespace from which
 to draw a module instance; in some cases, the current namespace is known
 to include the module that needs to be shared:
 
-```racket
+```scheme
 > (require racket/class)
 > (class?
    (let ([ns (make-base-empty-namespace)])
@@ -339,7 +339,7 @@ Within a module, however, the combination of `define-namespace-anchor`
 and `namespace-anchor->empty-namespace` offers a more reliable method
 for obtaining a source namespace:
 
-```racket
+```scheme
 #lang racket/base
 
 (require racket/class)
@@ -378,7 +378,7 @@ The `load` function runs a REPL script by `read`ing S-expressions from a
 file, one by one, and passing them to `eval`. If a file `"place.rkts"`
 contains
 
-```racket
+```scheme
 (define city "Salt Lake City")
 (define state "Utah")
 (printf "~a, ~a\n" city state)
@@ -386,7 +386,7 @@ contains
 
 then it can be loaded in a REPL:
 
-```racket
+```scheme
 > (load "place.rkts")
 Salt Lake City, Utah
 > city
@@ -396,7 +396,7 @@ Salt Lake City, Utah
 Since `load` uses `eval`, however, a module like the following generally
 will not work—for the same reasons described in Namespaces:
 
-```racket
+```scheme
 #lang racket
 
 (define there "Utopia")
@@ -416,7 +416,7 @@ namespace to `load`, set the `current-namespace` parameter. The
 following example evaluates the expressions in `"here.rkts"` using the
 bindings of the `racket/base` module:
 
-```racket
+```scheme
 #lang racket
 
 (parameterize ([current-namespace (make-base-namespace)])
@@ -428,7 +428,7 @@ the enclosing module accessible for dynamic evaluation. In the following
 example, when `"here.rkts"` is `load`ed, it can refer to `there` as well
 as the bindings of `racket`:
 
-```racket
+```scheme
 #lang racket
 
 (define there "Utopia")
@@ -448,14 +448,14 @@ namespace that is initialized with `racket`). As a result, uses of
 `eval` and `load` in the module body see the same dynamic namespace as
 immediate body forms. For example, if `"here.rkts"` contains
 
-```racket
+```scheme
 (define here "Morporkia")
 (define (go!) (set! here there))
 ```
 
 then running
 
-```racket
+```scheme
 #lang racket/load
 
 (define there "Utopia")
@@ -471,7 +471,7 @@ prints "Utopia".
 Drawbacks of using `racket/load` include reduced error checking, tool
 support, and performance. For example, with the program
 
-```racket
+```scheme
 #lang racket/load
 
 (define good 5)

@@ -4,7 +4,7 @@ The `match` form supports pattern matching on arbitrary Racket values,
 as opposed to functions like `regexp-match` that compare regular
 expressions to byte and character sequences (see \[missing\]).
 
-```racket
+```scheme
 (match target-expr
   [pattern expr ...+] ...)
 ```
@@ -18,7 +18,7 @@ fragments that it matched.
 
 Most Racket literal expressions can be used as patterns:
 
-```racket
+```scheme
 > (match 2
     [1 'one]
     [2 'two]
@@ -38,7 +38,7 @@ Most Racket literal expressions can be used as patterns:
 Constructors like `cons`, `list`, and `vector` can be used to create
 patterns that match pairs, lists, and vectors:
 
-```racket
+```scheme
 > (match '(1 2)
     [(list 0 1) 'one]
     [(list 1 2) 'two])
@@ -56,7 +56,7 @@ patterns that match pairs, lists, and vectors:
 A constructor bound with `struct` also can be used as a pattern
 constructor:
 
-```racket
+```scheme
 > (struct shoe (size color))
 > (struct hat (size style))
 > (match (hat 23 'bowler)
@@ -69,7 +69,7 @@ Unquoted, non-constructor identifiers in a pattern are pattern variables
 that are bound in the result expressions, except `_`, which does not
 bind (and thus is usually used as a catch-all):
 
-```racket
+```scheme
 > (match '(1)
     [(list x) (+ x 1)]
     [(list x y) (+ x y)])
@@ -93,7 +93,7 @@ Note that the identifier `else` is **not** a reserved catch-all (like
 `_`). If `else` appears in a pattern then its binding from `racket/base`
 may be shadowed, and this can cause problems with `cond` and `case`.
 
-```racket
+```scheme
 > (match 1
     [else
      (case 2
@@ -119,7 +119,7 @@ vector. If a sub-pattern followed by an ellipsis includes a pattern
 variable, the variable matches multiple times, and it is bound in the
 result expression to a list of matches:
 
-```racket
+```scheme
 > (match '(1 1 1)
     [(list 1 ...) 'ones]
     [_ 'other])
@@ -139,7 +139,7 @@ result expression to a list of matches:
 Ellipses can be nested to match nested repetitions, and in that case,
 pattern variables can be bound to lists of lists of matches:
 
-```racket
+```scheme
 > (match '((! 1) (! 2 2) (! 3 3 3))
     [(list (list '! x ...) ...) x])
 '((1) (2 2) (3 3 3))
@@ -155,7 +155,7 @@ rewritten into the application expression, using quasiquote as a pattern
 in the first instance and quasiquote to build an expression in the
 second.
 
-```racket
+```scheme
 > (match `{with {x 1} {+ x 1}}
     [`{with {,id ,rhs} ,body}
      `{{lambda {,id} ,body} ,rhs}])
@@ -168,7 +168,7 @@ Forms like `match-let` and `match-lambda` support patterns in positions
 that otherwise must be identifiers. For example, `match-let` generalizes
 `let` to a destructing bind:
 
-```racket
+```scheme
 > (match-let ([(list x y z) '(1 2 3)])
     (list z y x))
 '(3 2 1)

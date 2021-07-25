@@ -60,7 +60,7 @@ pattern.
 
 The simplest way to create a macro is to use `define-syntax-rule`:
 
-```racket
+```scheme
 (define-syntax-rule pattern template)
 ```
 
@@ -72,7 +72,7 @@ stored in two variables. It can be implemented using
 > variables—but the point of macros is to let you add syntactic forms that
 > some other language designer might not approve.
 
-```racket
+```scheme
 (define-syntax-rule (swap x y)
   (let ([tmp x])
     (set! x y)
@@ -100,7 +100,7 @@ example, in
 the pattern variable `x` matches `first` and `y` matches `last`, so that
 the expansion is
 
-```racket
+```scheme
 (let ([tmp first])
   (set! first last)
   (set! last tmp))
@@ -111,7 +111,7 @@ the expansion is
 Suppose that we use the `swap` macro to swap variables named `tmp` and
 `other`:
 
-```racket
+```scheme
 (let ([tmp 5]
       [other 6])
   (swap tmp other)
@@ -121,7 +121,7 @@ Suppose that we use the `swap` macro to swap variables named `tmp` and
 The result of the above expression should be `(6 5)`. The naive
 expansion of this use of `swap`, however, is
 
-```racket
+```scheme
 (let ([tmp 5]
       [other 6])
   (let ([tmp tmp])
@@ -137,7 +137,7 @@ that is in the macro template.
 Racket doesn't produce the naive expansion for the above use of `swap`.
 Instead, it produces
 
-```racket
+```scheme
 (let ([tmp 5]
       [other 6])
   (let ([tmp_1 tmp])
@@ -148,7 +148,7 @@ Instead, it produces
 
 with the correct result in `(6 5)`. Similarly, in the example
 
-```racket
+```scheme
 (let ([set! 5]
       [other 6])
   (swap set! other)
@@ -157,7 +157,7 @@ with the correct result in `(6 5)`. Similarly, in the example
 
 the expansion is
 
-```racket
+```scheme
 (let ([set!_1 5]
       [other 6])
   (let ([tmp set!_1])
@@ -182,7 +182,7 @@ multiple patterns starting with the same identifier. To write such
 macros, the programmer must use the more general `define-syntax` form
 along with the `syntax-rules` transformer form:
 
-```racket
+```scheme
 (define-syntax id
   (syntax-rules (literal-id ...)
     [pattern template]
@@ -196,7 +196,7 @@ along with the `syntax-rules` transformer form:
 For example, suppose we would like a `rotate` macro that generalizes
 `swap` to work on either two or three identifiers, so that
 
-```racket
+```scheme
 (let ([red 1] [green 2] [blue 3])
   (rotate red green)      ; swaps
   (rotate red green blue) ; rotates left
@@ -205,7 +205,7 @@ For example, suppose we would like a `rotate` macro that generalizes
 
 produces `(1 3 2)`. We can implement `rotate` using `syntax-rules`:
 
-```racket
+```scheme
 (define-syntax rotate
   (syntax-rules ()
     [(rotate a b) (swap a b)]
@@ -229,7 +229,7 @@ star. In a Racket macro pattern, a star is written as `...`.
 To implement `rotate` with `...`, we need a base case to handle a single
 identifier, and an inductive case to handle more than one identifier:
 
-```racket
+```scheme
 (define-syntax rotate
   (syntax-rules ()
     [(rotate a) (void)]
@@ -250,7 +250,7 @@ efficient `rotate` would move the first value directly to the last
 variable. We can use `...` patterns to implement the more efficient
 variant using a helper macro:
 
-```racket
+```scheme
 (define-syntax rotate
   (syntax-rules ()
     [(rotate a c ...)
@@ -275,7 +275,7 @@ otherwise the macro expansion fails with an error.)
 Given our macro definitions, the `swap` or `rotate` identifiers must be
 used after an open parenthesis, otherwise a syntax error is reported:
 
-```racket
+```scheme
 > (+ swap 3)
 eval:2:0: swap: bad syntax
   in: swap
@@ -286,7 +286,7 @@ by itself without parentheses. For example, we can define `val` as an
 identifier macro that expands to `(get-val)`, so `(+ val 3)` would
 expand to `(+ (get-val) 3)`.
 
-```racket
+```scheme
 > (define-syntax val
     (lambda (stx)
       (syntax-case stx ()
@@ -312,7 +312,7 @@ Our `val` macro uses an `identifier?` condition to ensure that `val`
 _must not_ be used with parentheses. Instead, the macro raises a
 syntax error:
 
-```racket
+```scheme
 > (val)
 eval:8:0: val: bad syntax
   in: (val)
@@ -326,7 +326,7 @@ directly on `val`. To invoke the macro when `val` is used with `set!`,
 we create an assignment transformer with `make-set!-transformer`. We
 must also declare `set!` as a literal in the `syntax-case` literal list.
 
-```racket
+```scheme
 > (define-syntax val2
     (make-set!-transformer
      (lambda (stx)
@@ -352,7 +352,7 @@ like to redirect to accessor and mutator functions like `get-val` and
 
 Naturally, we can implement `define-get/put-id` as a macro:
 
-```racket
+```scheme
 > (define-syntax-rule (define-get/put-id id get put!)
     (define-syntax id
       (make-set!-transformer
@@ -379,7 +379,7 @@ function.
 For example, if `define-cbr` is like `define` except that it defines a
 call-by-reference function, then
 
-```racket
+```scheme
 (define-cbr (f a b)
   (swap a b))
 
@@ -395,7 +395,7 @@ supply accessor and mutators for the arguments, instead of supplying
 argument values directly. In particular, for the function `f` above,
 we'll generate
 
-```racket
+```scheme
 (define (do-f get-a get-b put-a! put-b!)
   (define-get/put-id a get-a put-a!)
   (define-get/put-id b get-b put-b!)
@@ -404,7 +404,7 @@ we'll generate
 
 and redirect a function call `(f x y)` to
 
-```racket
+```scheme
 (do-f (lambda () x)
       (lambda () y)
       (lambda (v) (set! x v))
@@ -415,7 +415,7 @@ Clearly, then `define-cbr` is a macro-generating macro, which binds `f`
 to a macro that expands to a call of `do-f`. That is, `(define-cbr (f a
 b) (swap a b))` needs to generate the definition
 
-```racket
+```scheme
 (define-syntax f
   (syntax-rules ()
     [(id actual ...)
@@ -431,7 +431,7 @@ At the same time, `define-cbr` needs to define `do-f` using the body of
 to a `define-for-cbr` helper module, which lets us write `define-cbr`
 easily enough:
 
-```racket
+```scheme
 (define-syntax-rule (define-cbr (id arg ...) body)
   (begin
     (define-syntax id
@@ -469,7 +469,7 @@ processed all the identifiers, then we have all the names we need.
 
 Here is the definition of `define-for-cbr`:
 
-```racket
+```scheme
 (define-syntax define-for-cbr
   (syntax-rules ()
     [(define-for-cbr do-f (id0 id ...)
@@ -485,7 +485,7 @@ Here is the definition of `define-for-cbr`:
 
 Step-by-step, expansion proceeds as follows:
 
-```racket
+```scheme
 (define-for-cbr do-f (a b)
   () (swap a b))
 => (define-for-cbr do-f (b)
@@ -508,7 +508,7 @@ pattern-based macros with automatic lexical scope.
 
 The last expression eventually expands to just
 
-```racket
+```scheme
 (define (do-f get_1 get_2 put_1 put_2)
   (let ([tmp (get_1)])
     (put_1 (get_2))
@@ -558,14 +558,14 @@ a packaging of `'(+ 1 2)` into a syntax object.
 
 To create a literal syntax object, use the `syntax` form:
 
-```racket
+```scheme
 > (syntax (+ 1 2))
 #<syntax:eval:1:0 (+ 1 2)>
 ```
 
 In the same way that `'` abbreviates `quote`, `#'` abbreviates `syntax`:
 
-```racket
+```scheme
 > #'(+ 1 2)
 #<syntax:eval:1:0 (+ 1 2)>
 ```
@@ -576,7 +576,7 @@ identifier syntax objects, including the `identifier?` operation to
 detect identifiers. Most notably, `free-identifier=?`  determines
 whether two identifiers refer to the same binding:
 
-```racket
+```scheme
 > (identifier? #'car)
 #t
 > (identifier? #'(+ 1 2))
@@ -593,7 +593,7 @@ whether two identifiers refer to the same binding:
 To see the lists, symbols, numbers, etc. within a syntax object, use
 `syntax->datum`:
 
-```racket
+```scheme
 > (syntax->datum #'(+ 1 2))
 '(+ 1 2)
 ```
@@ -602,7 +602,7 @@ The `syntax-e` function is similar to `syntax->datum`, but it unwraps a
 single layer of source-location and lexical-context information, leaving
 sub-forms that have their own information wrapped as syntax objects:
 
-```racket
+```scheme
 > (syntax-e #'(+ 1 2))
 '(#<syntax:eval:1:0 +> #<syntax:eval:1:0 1> #<syntax:eval:1:0 2>)
 ```
@@ -618,7 +618,7 @@ addition to a datum like `'(+ 1 2)`, `datum->syntax` needs an existing
 syntax object to donate its lexical context, and optionally another
 syntax object to donate its source location:
 
-```racket
+```scheme
 > (datum->syntax #'lex
                  '(+ 1 2)
                  #'srcloc)
@@ -641,7 +641,7 @@ form. For example, if you evaluate a `syntax-rules` form directly
 (instead of placing on the right-hand of a `define-syntax` form), the
 result is a procedure:
 
-```racket
+```scheme
 > (syntax-rules () [(nothing) something])
 #<procedure>
 ```
@@ -652,7 +652,7 @@ procedure is a syntax object that represents the source form, and the
 result of the procedure must be a syntax object that represents the
 replacement form:
 
-```racket
+```scheme
 > (define-syntax self-as-string
     (lambda (stx)
       (datum->syntax stx
@@ -670,7 +670,7 @@ a syntax error if its argument corresponds to a use of the identifier by
 itself, which is why `syntax-rules` does not implement an identifier
 macro.
 
-```racket
+```scheme
 > (self-as-string (+ 1 2))
 "(self-as-string (+ 1 2))"
 > self-as-string
@@ -681,7 +681,7 @@ The `define-syntax` form supports the same shortcut syntax for functions
 as `define`, so that the following `self-as-string` definition is
 equivalent to the one that uses `lambda` explicitly:
 
-```racket
+```scheme
 > (define-syntax (self-as-string stx)
     (datum->syntax stx
                    (format "~s" (syntax->datum stx))))
@@ -700,7 +700,7 @@ arbitrary Racket expression.
 The `syntax-case` form lets you mix pattern matching, template
 construction, and arbitrary expressions:
 
-```racket
+```scheme
 (syntax-case stx-expr (literal-id ...)
   [pattern expr]
   ...)
@@ -715,7 +715,7 @@ with `#'`—shifts into template-construction mode; if the `expr` of a
 clause starts with `#'`, then we have something like a `syntax-rules`
 form:
 
-```racket
+```scheme
 > (syntax->datum
    (syntax-case #'(+ 1 2) ()
     [(op n1 n2) #'(- n1 n2)]))
@@ -725,7 +725,7 @@ form:
 We could write the `swap` macro using `syntax-case` instead of
 `define-syntax-rule` or `syntax-rules`:
 
-```racket
+```scheme
 (define-syntax (swap stx)
   (syntax-case stx ()
     [(swap x y) #'(let ([tmp x])
@@ -740,7 +740,7 @@ of `set!`, because `2` is not an identifier. We can refine our
 `syntax-case` implementation of `swap` to explicitly check the
 sub-forms:
 
-```racket
+```scheme
 (define-syntax (swap stx)
   (syntax-case stx ()
     [(swap x y)
@@ -775,7 +775,7 @@ we can more simply solve a problem that we had in writing
 `define-for-cbr` (see Extended Example: Call-by-Reference Functions),
 where we needed to generate a set of names based on a sequence `id ...`:
 
-```racket
+```scheme
 (define-syntax (define-for-cbr stx)
   (syntax-case stx ()
     [(_ do-f (id ...) body)
@@ -791,7 +791,7 @@ to lists of generated identifiers. We cannot use `let` to bind `get` and
 of normal local variables. The `with-syntax` form lets us bind pattern
 variables:
 
-```racket
+```scheme
 (define-syntax (define-for-cbr stx)
   (syntax-case stx ()
     [(_ do-f (id ...) body)
@@ -808,7 +808,7 @@ this is a common task, Racket provides a helper function,
 `generate-temporaries`, that takes a sequence of identifiers and returns
 a sequence of generated identifiers:
 
-```racket
+```scheme
 (define-syntax (define-for-cbr stx)
   (syntax-case stx ()
     [(_ do-f (id ...) body)
@@ -835,7 +835,7 @@ good syntax error messages, `swap`, `rotate`, and `define-cbr` all
 should check that certain sub-forms in the source form are identifiers.
 We could use a `check-ids` function to perform this checking everywhere:
 
-```racket
+```scheme
 (define-syntax (swap stx)
   (syntax-case stx ()
     [(swap x y) (begin
@@ -855,7 +855,7 @@ We could use a `check-ids` function to perform this checking everywhere:
 The `check-ids` function can use the `syntax->list` function to convert
 a syntax-object wrapping a list into a list of syntax objects:
 
-```racket
+```scheme
 (define (check-ids stx forms)
   (for-each
    (lambda (form)
@@ -870,7 +870,7 @@ a syntax-object wrapping a list into a list of syntax objects:
 If you define `swap` and `check-ids` in this way, however, it doesn't
 work:
 
-```racket
+```scheme
 > (let ([a 1] [b 2]) (swap a b))
 check-ids: undefined;
  cannot reference an identifier before its definition
@@ -887,7 +887,7 @@ consistently, Racket separates the binding spaces for different phases.
 To define a `check-ids` function that can be referenced at compile time,
 use `begin-for-syntax`:
 
-```racket
+```scheme
 (begin-for-syntax
   (define (check-ids stx forms)
     (for-each
@@ -902,7 +902,7 @@ use `begin-for-syntax`:
 
 With this for-syntax definition, then `swap` works:
 
-```racket
+```scheme
 > (let ([a 1] [b 2]) (swap a b) (list a b))
 '(2 1)
 > (swap a 1)
@@ -916,7 +916,7 @@ functions in one module to be used by macros that reside on other
 modules. In that case, you can write the helper function using `define`:
 
 `"utils.rkt"`
-```racket
+```scheme
 #lang racket
 
 (provide check-ids)
@@ -936,7 +936,7 @@ Then, in the module that implements macros, import the helper function
 using `(require (for-syntax "utils.rkt"))` instead of `(require
 "utils.rkt")`:
 
-```racket
+```scheme
 #lang racket
 
 (require (for-syntax "utils.rkt"))
@@ -977,7 +977,7 @@ level, you would have to use `(require (for-syntax (for-syntax
 racket/base)))` or, equivalently, `(require (for-meta 2 racket/base))`.
 For example,
 
-```racket
+```scheme
 #lang racket/base
 (require  ;; This provides the bindings for the definition
           ;; of shell-game.
@@ -1030,7 +1030,7 @@ level from the opposite direction: `shell-game`'s phase 1 is
 -1. And that's why this example won't work—the `'helper` submodule has
 no bindings at phase -1.
 
-```racket
+```scheme
 #lang racket/base
 (require (for-syntax racket/base))
 
@@ -1061,7 +1061,7 @@ no bindings at phase -1.
 To repair this example, we add `(require (for-template racket/base))` to
 the `'helper` submodule.
 
-```racket
+```scheme
 #lang racket/base
 (require (for-syntax racket/base))
 
@@ -1121,7 +1121,7 @@ definitions, so
 adds a binding for `age` into phase level 0.  The identifier `age` can
 be defined at a higher phase level using `begin-for-syntax`:
 
-```racket
+```scheme
 (begin-for-syntax
   (define age 5))
 ```
@@ -1131,7 +1131,7 @@ level 1.  We can easily mix these two definitions in the same module or
 in a top-level namespace, and there is no clash between the two `age`s
 that are defined at different phase levels:
 
-```racket
+```scheme
 > (define age 3)
 > (begin-for-syntax
     (define age 9))
@@ -1156,7 +1156,7 @@ variable so we can use it in a template, and then we `eval`uate the
 template: We use `eval` here to demonstrate phases, but see \[missing\]
 for caveats about `eval`.
 
-```racket
+```scheme
 > (eval (with-syntax ([age #'age])
           #'(displayln age)))
 3
@@ -1165,7 +1165,7 @@ for caveats about `eval`.
 The result is `3` because `age` is used at phase 0 level. We can try
 again with the use of `age` inside `begin-for-syntax`:
 
-```racket
+```scheme
 > (eval (with-syntax ([age #'age])
           #'(begin-for-syntax
               (displayln age))))
@@ -1185,7 +1185,7 @@ module, not the context of its use.  The following example defines
 `button` at phase level 0 and binds it to `0`, while `see-button` binds
 the syntax object for `button` in module `a`:
 
-```racket
+```scheme
 > (module a racket
     (define button 0)
     (provide (for-syntax see-button))
@@ -1220,7 +1220,7 @@ A phase level is a module-relative concept.  When importing from another
 module via `require`, Racket lets us shift imported bindings to a phase
 level that is different from the original one:
 
-```racket
+```scheme
 (require "a.rkt")                ; import with no phase shift
 (require (for-syntax "a.rkt"))   ; shift phase by +1
 (require (for-template "a.rkt")) ; shift phase by -1
@@ -1232,7 +1232,7 @@ from that module will have their phase levels increased by one.  A
 binding that is `define`d at phase level 0 and imported with
 `for-syntax` becomes a phase-level 1 binding:
 
-```racket
+```scheme
 > (module c racket
     (define x 0) ; defined at phase level 0
     (provide x))
@@ -1245,7 +1245,7 @@ binding that is `define`d at phase level 0 and imported with
 Let's see what happens if we try to create a binding for the `#'button`
 syntax object at phase level 0:
 
-```racket
+```scheme
 > (define button 0)
 > (define see-button #'button)
 ```
@@ -1255,14 +1255,14 @@ context of `#'button` will know that there is a binding for `button` at
 phase 0.  In fact, it seems like things are working just fine if we try
 to `eval` `see-button`:
 
-```racket
+```scheme
 > (eval see-button)
 0
 ```
 
 Now, let's use `see-button` in a macro:
 
-```racket
+```scheme
 > (define-syntax (m stx)
     see-button)
 > (m)
@@ -1277,7 +1277,7 @@ another module by putting the button definitions in a module and
 importing it at phase level 1.  Then, we will get `see-button` at phase
 level 1:
 
-```racket
+```scheme
 > (module a racket
     (define button 0)
     (define see-button #'button)
@@ -1295,7 +1295,7 @@ eval:1:0: button: unbound identifier;
 Racket says that `button` is unbound now!  When `a` is imported at phase
 level 1, we have the following bindings:
 
-```racket
+```scheme
 button     at phase level 1
 see-button at phase level 1
 ```
@@ -1307,7 +1307,7 @@ there is no `button` at phase level 0 in `b`.  That is why `see-button`
 needs to be bound at phase level 1, as in the original `a`.  In the
 original `b`, then, we have the following bindings:
 
-```racket
+```scheme
 button     at phase level 0
 see-button at phase level 1
 ```
@@ -1321,7 +1321,7 @@ inherently wrong; it depends on how we intend to use `see-button`.  For
 example, we can arrange for `m` to sensibly use `see-button` because it
 puts it in a phase level 1 context using `begin-for-syntax`:
 
-```racket
+```scheme
 > (module a racket
     (define button 0)
     (define see-button #'button)
@@ -1339,7 +1339,7 @@ puts it in a phase level 1 context using `begin-for-syntax`:
 In this case, module `b` has both `button` and `see-button` bound at
 phase level 1.  The expansion of the macro is
 
-```racket
+```scheme
 (begin-for-syntax
   (displayln button))
 ```
@@ -1350,7 +1350,7 @@ Now, you might try to cheat the phase system by importing `a` at both
 phase level 0 and phase level 1.  Then you would have the following
 bindings
 
-```racket
+```scheme
 button     at phase level 0
 see-button at phase level 0
 button     at phase level 1
@@ -1360,7 +1360,7 @@ see-button at phase level 1
 You might expect now that `see-button` in a macro would work, but it
 doesn't:
 
-```racket
+```scheme
 > (module a racket
     (define button 0)
     (define see-button #'button)
@@ -1407,7 +1407,7 @@ both phase 0 and phase 1—using `(require 'a (for-syntax 'a))`—so we have
 a phase-1 binding for `see-button` and a phase-0 binding for `button`.
 Now macro `m` will work.
 
-```racket
+```scheme
 > (module a racket
     (define button 0)
     (define see-button (syntax-shift-phase-level #'button -1))
@@ -1428,7 +1428,7 @@ Its `#'button` binding has likewise been shifted, but to phase -1. Since
 permanently cured our mismatch problem—we've just shifted it to a less
 bothersome location.
 
-```racket
+```scheme
 > (module a racket
     (define button 0)
     (define see-button (syntax-shift-phase-level #'button -1))
@@ -1450,7 +1450,7 @@ button: undefined;
 Mismatches like the one above can also arise when a macro tries to match
 literal bindings—using `syntax-case` or `syntax-parse`.
 
-```racket
+```scheme
 > (module x racket
     (require (for-syntax syntax/parse)
              (for-template racket/base))
@@ -1493,7 +1493,7 @@ and doesn't match.
 To fix the example, we can provide `make` at phase level 1 relative to
 `x`, and then we import it at phase level 1 in `y`:
 
-```racket
+```scheme
 > (module x racket
     (require (for-syntax syntax/parse)
              (for-template racket/base))
@@ -1539,7 +1539,7 @@ For example, the following module exports a macro `go` that expands to a
 use of `unchecked-go`:
 
 `"m.rkt"`
-```racket
+```scheme
 #lang racket
 (provide go)
 
@@ -1579,7 +1579,7 @@ To prevent abuses of unexported identifiers, the `go` macro from the
 preceding example must explicitly protect its expansion by using
 `syntax-protect`:
 
-```racket
+```scheme
 (define-syntax (go stx)
   (syntax-case stx ()
     [(_ x)
@@ -1617,7 +1617,7 @@ copies dye packs from a transformer's input to its output. Building on
 the previous example,
 
 `"n.rkt"`
-```racket
+```scheme
 #lang racket
 (require "m.rkt")
 
@@ -1645,7 +1645,7 @@ destructuring of a macro result without tainting the result. For
 example, given the following `define-like-y` macro,
 
 `"q.rkt"`
-```racket
+```scheme
 #lang racket
 
 (provide define-like-y)
@@ -1659,7 +1659,7 @@ example, given the following `define-like-y` macro,
 
 someone may use the macro in an internal definition:
 
-```racket
+```scheme
 (let ()
   (define-like-y x)
   x)
@@ -1736,7 +1736,7 @@ is accessible as `(variable-reference->module-declaration-inspector
 
 For example, suppose that the `go` macro is implemented through a macro:
 
-```racket
+```scheme
 #lang racket
 (provide def-go)
 
@@ -1761,7 +1761,7 @@ level of the `def-go`-defining module, not the `go`-defining module.
 
 The solution is to define and use `go-syntax-protect`, instead:
 
-```racket
+```scheme
 #lang racket
 (provide def-go)
 
@@ -1816,7 +1816,7 @@ implementations.
 Declaring a module does not immediately evaluate expressions in the
 module's body. For example, evaluating
 
-```racket
+```scheme
 > (module number-n racket/base
     (provide n)
     (define n (random 10))
@@ -1829,7 +1829,7 @@ the module to be _instantiated_ \(i.e., it triggers an _instantiation_),
 which implies that the expressions in the body of the module are
 evaluated:
 
-```racket
+```scheme
 > (require 'number-n)
 picked 5
 > n
@@ -1840,7 +1840,7 @@ After a module is instantiated in a particular namespace, further
 `require`s of the module use the same instance, as opposed to
 instantiating the module again:
 
-```racket
+```scheme
 > (require 'number-n)
 > n
 5
@@ -1856,7 +1856,7 @@ of a module if it is not already instantiated, so `dynamic-require` with
 `#f` as a second argument is useful to just trigger the instantiation
 effects of a module:
 
-```racket
+```scheme
 > (module use-n-again racket/base
     (require 'number-n)
     (printf "also still ~a\n" n))
@@ -1868,7 +1868,7 @@ Instantiation of modules by `require` is transitive. That is, if
 `require` of a module instantiates it, then any module `require`d by
 that one is also instantiated (if it's not instantiated already):
 
-```racket
+```scheme
 > (module number-m racket/base
     (provide m)
     (define m (random 10))
@@ -1891,7 +1891,7 @@ compile the module. If a module imports another with `(require
 (for-syntax ....))`, then module that is imported `for-syntax` must be
 instantiated during expansion:
 
-```racket
+```scheme
 > (module number-p racket/base
     (provide p)
     (define p (random 10))
@@ -1911,7 +1911,7 @@ Unlike run-time instantiation in a namespace, when a module is used
 Continuing the previous example, if `number-p` is used a second time
 `for-syntax`, then a second random number is selected for a new `p`:
 
-```racket
+```scheme
 > (module use-p-again-at-compile-time racket/base
     (require (for-syntax racket/base
                          'number-p))
@@ -1931,7 +1931,7 @@ The expanded forms of `use-p-at-compile-time` and
 time, so those two different numbers are printed when the modules are
 instantiated:
 
-```racket
+```scheme
 > (dynamic-require ''use-p-at-compile-time #f)
 was 1 at compile time
 > (dynamic-require ''use-p-again-at-compile-time #f)
@@ -1943,7 +1943,7 @@ interactions in the top level conceptually extend a single expansion of
 the module. So, when using `(require (for-syntax ....))` twice in the
 top level, the second use does not trigger a new compile-time instance:
 
-```racket
+```scheme
 > (begin (require (for-syntax 'number-p)) 'done)
 picked 4
 'done
@@ -1955,7 +1955,7 @@ However, a run-time instance of a module is kept separate from all
 compile-time instances, including at the top level, so a
 non-`for-syntax` use of `number-p` will pick another random number:
 
-```racket
+```scheme
 > (require 'number-p)
 picked 5
 ```
@@ -1979,7 +1979,7 @@ chain.
 
 Here's an example to make that scenario concrete:
 
-```racket
+```scheme
 > (module number-q racket/base
     (provide q)
     (define q (random 10))
@@ -2052,7 +2052,7 @@ include both the right-hand sides of `define-syntax` forms and the body
 of `begin-for-syntax` forms. That's why a randomly selected number is
 printed immediately in the following example:
 
-```racket
+```scheme
 > (module compile-time-number racket/base
     (require (for-syntax racket/base))
     (begin-for-syntax
@@ -2064,7 +2064,7 @@ picked 0.25549265186825576
 Instantiating the module evaluates only the run-time expressions, which
 prints "running" but not a new random number:
 
-```racket
+```scheme
 > (dynamic-require ''compile-time-number #f)
 running
 ```
@@ -2107,7 +2107,7 @@ makes the module available. Evaluating any other expression implies
 expanding the expression, and that expansion triggers a visit of the
 available module—which picks another random number:
 
-```racket
+```scheme
 > (module another-compile-time-number racket/base
     (require (for-syntax racket/base))
     (begin-for-syntax
@@ -2141,7 +2141,7 @@ To help illustrate, the following examples use
 returns a number for the phase at which the enclosing module is
 instantiated:
 
-```racket
+```scheme
 > (module show-phase racket/base
     (printf "running at ~a\n"
             (variable-reference->module-base-phase (#%variable-reference))))
@@ -2159,7 +2159,7 @@ but no expressions within the module are ever expanded at phase 1, so
 there's no phase-2 printout. The following module includes a phase-1
 expression after the phase-2 `require`, so there's a printout:
 
-```racket
+```scheme
 > (module use-at-phase-2 racket/base
     (require (for-meta 2 'show-phase)
              (for-syntax racket/base))
@@ -2172,7 +2172,7 @@ If we `require` the module `use-at-phase-1` at the top level, then
 causes `use-at-phase-1` to be visited, which in turn instantiates
 `show-phase`:
 
-```racket
+```scheme
 > (require 'use-at-phase-1)
 > 'next
 running at 1
@@ -2183,7 +2183,7 @@ A `require` of `use-at-phase-2` is similar, except that `show-phase` is
 made available at phase 2, so it is not instantiated until some
 expression is expanded at phase 1:
 
-```racket
+```scheme
 > (require 'use-at-phase-2)
 > 'next
 'next

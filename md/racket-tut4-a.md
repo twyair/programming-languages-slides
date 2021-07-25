@@ -41,7 +41,7 @@ implements a toy factory:
 > By convention, signature names end with `^`.
 
 `"toy-factory-sig.rkt"`
-```racket
+```scheme
 #lang racket
 
 (define-signature toy-factory^
@@ -59,7 +59,7 @@ An implementation of the `toy-factory^` signature is written using
 > By convention, unit names end with `@`.
 
 `"simple-factory-unit.rkt"`
-```racket
+```scheme
 #lang racket
 
 (require "toy-factory-sig.rkt")
@@ -90,7 +90,7 @@ example with interesting features, that the store is willing to sell
 only toys in a particular color.)
 
 `"toy-store-sig.rkt"`
-```racket
+```scheme
 #lang racket
 
 (define-signature toy-store^
@@ -102,7 +102,7 @@ only toys in a particular color.)
 ```
 
 `"toy-store-unit.rkt"`
-```racket
+```scheme
 #lang racket
 
 (require "toy-store-sig.rkt"
@@ -142,7 +142,7 @@ implementation.
 The `simple-factory@` unit has no imports, so it can be invoked directly
 using `invoke-unit`:
 
-```racket
+```scheme
 > (require "simple-factory-unit.rkt")
 > (invoke-unit simple-factory@)
 Factory started.
@@ -154,7 +154,7 @@ however, so we cannot build any toys with this factory. The
 the values supplied by a unit (to be invoked) that implements the
 signature:
 
-```racket
+```scheme
 > (define-values/invoke-unit/infer simple-factory@)
 Factory started.
 > (build-toys 3)
@@ -171,7 +171,7 @@ Now that the identifiers in `toy-factory^` are defined, we can also
 invoke `toy-store@`, which imports `toy-factory^` to produce
 `toy-store^`:
 
-```racket
+```scheme
 > (require "toy-store-unit.rkt")
 > (define-values/invoke-unit/infer toy-store@)
 > (get-inventory)
@@ -194,7 +194,7 @@ Instead, the toys are always created using the store's color, which the
 factory gets by importing `toy-store^`:
 
 `"store-specific-factory-unit.rkt"`
-```racket
+```scheme
 #lang racket
 
 (require "toy-store-sig.rkt"
@@ -229,7 +229,7 @@ of units to form a combined unit. It can propagate imports and exports
 from the linked units, and it can satisfy each unit's imports using the
 exports of other linked units.
 
-```racket
+```scheme
 > (require "toy-factory-sig.rkt")
 > (require "toy-store-sig.rkt")
 > (require "store-specific-factory-unit.rkt")
@@ -247,7 +247,7 @@ signatures that each imports and exports.
 
 This unit has no imports, so we can always invoke it:
 
-```racket
+```scheme
 > (define-values/invoke-unit/infer toy-store+factory@)
 > (stock! 2)
 > (get-inventory)
@@ -265,7 +265,7 @@ identifier with an implicit `lambda`.
 Expanding the shorthand, the definition of `toy-store@` could almost be
 written as
 
-```racket
+```scheme
 (define toy-store@
   (unit
    (import toy-factory^)
@@ -289,7 +289,7 @@ values. For example, we could wrap a `unit` that creates a toy store in
 a `lambda` to supply the store's color:
 
 `"toy-store-maker.rkt"`
-```racket
+```scheme
 #lang racket
 
 (require "toy-store-sig.rkt"
@@ -326,7 +326,7 @@ a `lambda` to supply the store's color:
 To invoke a unit created by `toy-store@-maker`, we must use
 `define-values/invoke-unit`, instead of the `/infer` variant:
 
-```racket
+```scheme
 > (require "simple-factory-unit.rkt")
 > (define-values/invoke-unit/infer simple-factory@)
 Factory started.
@@ -350,7 +350,7 @@ signature are defined after invoking the unit.
 To link a unit from `toy-store@-maker`, we can use the `compound-unit`
 form:
 
-```racket
+```scheme
 > (require "store-specific-factory-unit.rkt")
 > (define toy-store+factory@
     (compound-unit
@@ -390,7 +390,7 @@ boilerplate module, signature, and unit declaration text.
 
 For example, `"toy-factory-sig.rkt"` can be written as
 
-```racket
+```scheme
 #lang racket/signature
 
 build-toys  ; (integer? -> (listof toy?))
@@ -405,7 +405,7 @@ inferred from the filename `"toy-factory-sig.rkt"` by replacing the
 
 Similarly, `"simple-factory-unit.rkt"` module can be written
 
-```racket
+```scheme
 #lang racket/unit
 
 (require "toy-factory-sig.rkt")
@@ -443,7 +443,7 @@ of the `toy-factory^` signature adds the contracts previously written in
 comments:
 
 `"contracted-toy-factory-sig.rkt"`
-```racket
+```scheme
 #lang racket
 
 (define-signature contracted-toy-factory^
@@ -460,7 +460,7 @@ Now we take the previous implementation of `simple-factory@` and
 implement this version of `toy-factory^` instead:
 
 `"contracted-simple-factory-unit.rkt"`
-```racket
+```scheme
 #lang racket
 
 (require "contracted-toy-factory-sig.rkt")
@@ -487,7 +487,7 @@ As before, we can invoke our new unit and bind the exports so that we
 can use them.  This time, however, misusing the exports causes the
 appropriate contract errors.
 
-```racket
+```scheme
 > (require "contracted-simple-factory-unit.rkt")
 > (define-values/invoke-unit/infer contracted-simple-factory@)
 Factory started.
@@ -529,7 +529,7 @@ the regular `toy-factory^`, but whose exports have been protected with
 an appropriate unit contract.
 
 `"wrapped-simple-factory-unit.rkt"`
-```racket
+```scheme
 #lang racket
 
 (require "toy-factory-sig.rkt")
@@ -556,7 +556,7 @@ an appropriate unit contract.
 (provide wrapped-simple-factory@)
 ```
 
-```racket
+```scheme
 > (require "wrapped-simple-factory-unit.rkt")
 > (define-values/invoke-unit/infer wrapped-simple-factory@)
 Factory started.

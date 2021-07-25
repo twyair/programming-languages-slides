@@ -12,7 +12,7 @@ the boolean constants are `#t` and `#f`
 
 `boolean?` recognizes the two boolean constants
 
-```racket
+```scheme
 (= 2 (+ 1 1))
 ;; #t
 (boolean? #t)
@@ -27,7 +27,7 @@ the boolean constants are `#t` and `#f`
 
 in the result of a test expression for `if`, `cond`, `and`, `or`, etc., any value other than `#f` counts as true.
 
-```racket
+```scheme
 (if "no" 1 0)
 ;; 1
 ```
@@ -56,7 +56,7 @@ an __inexact__ number is one of:
 * inexact numbers print with a decimal point or exponent specifier
 * exact numbers print as integers and fractions
 
-```racket
+```scheme
 0.5
 ;; 0.5
 12/34
@@ -68,7 +68,7 @@ an __inexact__ number is one of:
 * `#e` or `#i` can prefix a number to force its parsing as an exact or inexact number
 * the prefixes `#b`, `#o`, and `#x` specify binary, octal, and hexadecimal interpretation
 
-```racket
+```scheme
 #e0.5
 ;; 1/2
 #x03BB
@@ -79,7 +79,7 @@ an __inexact__ number is one of:
 
 Computations that involve an inexact number produce inexact results
 
-```racket
+```scheme
 (/ 1 2)
 ;; 1/2
 (/ 1 2.0)
@@ -92,7 +92,7 @@ Computations that involve an inexact number produce inexact results
 
 `exact->inexact` and `inexact->exact` convert between the two types of numbers
 
-```racket
+```scheme
 (exact->inexact 1/2)
 ;; 0.5
 (inexact->exact 0.1)
@@ -106,7 +106,7 @@ and `sin` when an exact result would require representing real numbers
 that are not rational. Racket can represent only rational numbers and
 complex numbers with rational parts.
 
-```racket
+```scheme
 (sin 0)   ; rational...
 ;; 0
 (sin 1/2) ; not rational...
@@ -122,7 +122,7 @@ Computation with very large exact integers or with non-integer exact
 numbers can be much more expensive than computation with inexact
 numbers.
 
-```racket
+```scheme
 (define (sigma f a b)
   (if (= a b)
       0
@@ -144,7 +144,7 @@ procedures `integer?`, `rational?`, `real?`, and `complex?`, in addition
 to the generic `number?`. A few mathematical procedures accept only real
 numbers, but most implement standard extensions to complex numbers.
 
-```racket
+```scheme
 (integer? 5)
 ;; #t
 (complex? 5)
@@ -175,7 +175,7 @@ the inexact numbers to exact before comparing. The `eqv?` (and therefore
 `equal?`) procedure, in contrast, compares numbers considering both
 exactness and numerical equality.
 
-```racket
+```scheme
 (= 1 1.0)
 ;; #t
 (eqv? 1 1.0)
@@ -190,7 +190,7 @@ not mean what you think they mean; for example, while a base-2 IEEE
 floating-point number can represent `1/2` exactly, it can only
 approximate `1/10`:
 
-```racket
+```scheme
 (= 1/2 0.5)
 ;; #t
 (= 1/10 0.1)
@@ -228,7 +228,7 @@ as `#\space` and `#\newline`, respectively.
 
 Examples:
 
-```racket
+```scheme
 > (integer->char 65)
 #\A
 > (char->integer #\A)
@@ -249,7 +249,7 @@ syntax used to print a character result.
 
 Examples:
 
-```racket
+```scheme
 > #\A
 #\A
 > (display #\A)
@@ -263,7 +263,7 @@ upcasing "ß" or downcasing "Σ").
 
 Examples:
 
-```racket
+```scheme
 > (char-alphabetic? #\A)
 #t
 > (char-numeric? #\0)
@@ -283,7 +283,7 @@ more specifically declare that the values being compared are characters.
 
 Examples:
 
-```racket
+```scheme
 > (char=? #\a #\A)
 #f
 > (char-ci=? #\a #\A)
@@ -309,7 +309,7 @@ The `display` procedure directly writes the characters of a string to
 the current output port (see \[missing\]), in contrast to the
 string-constant syntax used to print a string result.
 
-```racket
+```scheme
 > "Apple"
 "Apple"
 > "\u03BB"
@@ -332,7 +332,7 @@ optional fill character. The `string-ref` procedure accesses a character
 from a string (with 0-based indexing); the `string-set!`  procedure
 changes a character in a mutable string.
 
-```racket
+```scheme
 > (string-ref "Apple" 0)
 #\A
 > (define s (make-string 5 #\.))
@@ -352,7 +352,7 @@ should be consistent across machines and users, but use
 `string-locale<?` or `string-locale-ci<?` if the sort is purely to order
 strings for an end user.
 
-```racket
+```scheme
 > (string<? "apple" "Banana")
 #f
 > (string-ci<? "apple" "Banana")
@@ -374,7 +374,7 @@ encoding/decoding Unicode strings as bytes, use byte strings.
 A _byte_ is an exact integer between `0` and `255`, inclusive. The
 `byte?` predicate recognizes numbers that represent bytes.
 
-```racket
+```scheme
 > (byte? 0)
 #t
 > (byte? 256)
@@ -389,7 +389,7 @@ because a byte string prints like the ASCII decoding of the byte string,
 but prefixed with a `#`. Unprintable ASCII characters or non-ASCII bytes
 in the byte string are written with octal notation.
 
-```racket
+```scheme
 > #"Apple"
 #"Apple"
 > (bytes-ref #"Apple" 0)
@@ -413,7 +413,7 @@ output port, since output is ultimately defined in terms of bytes;
 encoding. Along the same lines, when this documentation shows output, it
 technically shows the UTF-8-decoded form of the output.
 
-```racket
+```scheme
 > (display #"Apple")
 Apple
 > (display "\316\273")  ; same as "Î»"
@@ -428,7 +428,7 @@ current locale's encoding. General facilities for byte-to-byte
 conversions (especially to and from UTF-8) fill the gap to support
 arbitrary string encodings.
 
-```racket
+```scheme
 > (bytes->string/utf-8 #"\316\273")
 "λ"
 > (bytes->string/latin-1 #"\316\273")
@@ -457,7 +457,7 @@ identifier produces a symbol value.
 
 Examples:
 
-```racket
+```scheme
 > 'a
 'a
 > (symbol? 'a)
@@ -475,7 +475,7 @@ Symbols are case-sensitive. By using a `#ci` prefix or in other ways,
 the reader can be made to case-fold character sequences to arrive at a
 symbol, but the reader preserves case by default.
 
-```racket
+```scheme
 > (eq? 'a 'a)
 #t
 > (eq? 'a (string->symbol "a"))
@@ -504,7 +504,7 @@ quoting them with `|` or `\`. These quoting mechanisms are used in the
 printed form of identifiers that contain special characters or that
 might otherwise look like numbers.
 
-```racket
+```scheme
 > (string->symbol "one, two")
 '|one, two|
 > (string->symbol "6")
@@ -514,7 +514,7 @@ might otherwise look like numbers.
 The `write` function prints a symbol without a `'` prefix. The `display`
 form of a symbol is the same as the corresponding string.
 
-```racket
+```scheme
 > (write 'Apple)
 Apple
 > (display 'Apple)
@@ -530,7 +530,7 @@ _uninterned_ symbols that are not equal \(according to `eq?`) to any
 previously interned or uninterned symbol. Uninterned symbols are useful
 as fresh tags that cannot be confused with any other value.
 
-```racket
+```scheme
 > (define s (gensym))
 > s
 'g42
@@ -547,7 +547,7 @@ as fresh tags that cannot be confused with any other value.
 A _keyword_ value is similar to a symbol (see Symbols), but its printed
 form is prefixed with `#:`.
 
-```racket
+```scheme
 > (string->keyword "apple")
 '#:apple
 > '#:apple
@@ -564,7 +564,7 @@ to the result of a quote-keyword expression or of `string->keyword`. An
 unquoted keyword is not an expression, just as an unquoted identifier
 does not produce a symbol:
 
-```racket
+```scheme
 > not-a-symbol-expression
 not-a-symbol-expression: undefined;
  cannot reference an identifier before its definition
@@ -580,7 +580,7 @@ special markers in argument lists and in certain syntactic forms.  For
 run-time flags and enumerations, use symbols instead of keywords.  The
 example below illustrates the distinct roles of keywords and symbols.
 
-```racket
+```scheme
 > (define dir (find-system-path 'temp-dir)) ; not '#:temp-dir
 > (with-output-to-file (build-path dir "stuff.txt")
     (lambda () (printf "example\n"))
@@ -603,7 +603,7 @@ Some pairs print by wrapping parentheses around the printed forms of the
 two pair elements, putting a `'` at the beginning and a `.` between the
 elements.
 
-```racket
+```scheme
 > (cons 1 2)
 '(1 . 2)
 > (cons (cons 1 2) 3)
@@ -625,7 +625,7 @@ the empty list.
 A list normally prints as a `'` followed by a pair of parentheses
 wrapped around the list elements.
 
-```racket
+```scheme
 > null
 '()
 > (cons 0 (cons 1 (cons 2 null)))
@@ -643,7 +643,7 @@ cannot be written as a `quote`d value. For example, a value constructed
 with `srcloc` cannot be written using `quote`, and it prints using
 `srcloc`:
 
-```racket
+```scheme
 > (srcloc "file.rkt" 1 0 1 (+ 4 4))
 (srcloc "file.rkt" 1 0 1 8)
 > (list 'here (srcloc "file.rkt" 1 0 1 8) 'there)
@@ -662,7 +662,7 @@ leading `'`, `cons`, `list`, or `list*`. There is no difference between
 `write` and `display` for a pair or list, except as they apply to
 elements of the list:
 
-```racket
+```scheme
 > (write (cons 1 2))
 (1 . 2)
 > (display (cons 1 2))
@@ -680,7 +680,7 @@ elements of the list:
 Among the most important predefined procedures on lists are those that
 iterate through the list's elements:
 
-```racket
+```scheme
 > (map (lambda (i) (/ 1 i))
        '(1 2 3))
 '(1 1/2 1/3)
@@ -714,7 +714,7 @@ creates a _mutable pair_, which works with `set-mcar!` and `set-mcdr!`,
 as well as `mcar` and `mcdr`. A mutable pair prints using `mcons`, while
 `write` and `display` print mutable pairs with `{` and `}`:
 
-```racket
+```scheme
 > (define p (mcons 1 2))
 > p
 (mcons 1 2)
@@ -745,7 +745,7 @@ a vector as an expression implicitly `quote`s the forms for its content,
 which means that identifiers and parenthesized forms in a vector
 constant represent symbols and lists.
 
-```racket
+```scheme
 > #("a" "b" "c")
 '#("a" "b" "c")
 > #(name (that tune))
@@ -767,7 +767,7 @@ with predefined procedures on lists. When allocating extra lists seems
 too expensive, consider using looping forms like `for/fold`, which
 recognize vectors as well as lists.
 
-```racket
+```scheme
 > (list->vector (map string-titlecase
                      (vector->list #("three" "blind" "mice"))))
 '#("Three" "Blind" "Mice")
@@ -785,7 +785,7 @@ created with `make-hash`, `make-hasheqv`, or `make-hasheq`.
 
 Examples:
 
-```racket
+```scheme
 > (define ht (make-hash))
 > (hash-set! ht "apple" '(red round))
 > (hash-set! ht "banana" '(yellow long))
@@ -804,7 +804,7 @@ provided as an argument after its key. Immutable hash tables can be
 extended with `hash-set`, which produces a new immutable hash table in
 constant time.
 
-```racket
+```scheme
 > (define ht (hash "apple" 'red "banana" 'yellow))
 > (hash-ref ht "apple")
 'red
@@ -823,7 +823,7 @@ sequence must immediately follow `#hash`, `#hasheq`, or `#hasheqv`,
 where each element is a dotted key-value pair. The `#hash`, etc. forms
 implicitly `quote` their key and value sub-forms.
 
-```racket
+```scheme
 > (define ht #hash(("apple" . red)
                    ("banana" . yellow)))
 > (hash-ref ht "apple")
@@ -835,7 +835,7 @@ using a quoted `#hash`, `#hasheqv`, or `#hasheq` form if all keys and
 values can be expressed with `quote` or using `hash`, `hasheq`, or
 `hasheqv` otherwise:
 
-```racket
+```scheme
 > #hash(("apple" . red)
         ("banana" . yellow))
 '#hash(("apple" . red) ("banana" . yellow))
@@ -846,7 +846,7 @@ values can be expressed with `quote` or using `hash`, `hasheq`, or
 A mutable hash table can optionally retain its keys _weakly_, so each
 mapping is retained only so long as the key is retained elsewhere.
 
-```racket
+```scheme
 > (define ht (make-weak-hasheq))
 > (hash-set! ht (gensym) "can you see me?")
 > (collect-garbage)
@@ -861,7 +861,7 @@ retained permanently. To break the cycle, map the key to an _ephemeron_
 that pairs the value with its key (in addition to the implicit pairing
 of the hash table).
 
-```racket
+```scheme
 > (define ht (make-weak-hasheq))
 > (let ([g (gensym)])
     (hash-set! ht g (list g)))
@@ -870,7 +870,7 @@ of the hash table).
 1
 ```
 
-```racket
+```scheme
 > (define ht (make-weak-hasheq))
 > (let ([g (gensym)])
     (hash-set! ht g (make-ephemeron g (list g))))
@@ -888,7 +888,7 @@ followed by the printed form of the boxed value. A `#&` form can also be
 used as an expression, but since the resulting box is constant, it has
 practically no use.
 
-```racket
+```scheme
 > (define b (box "apple"))
 > b
 '#&"apple"
@@ -913,7 +913,7 @@ The `void` procedure takes any number of arguments and returns
 `#<void>`. (That is, the identifier `void` is bound to a procedure that
 returns `#<void>`, instead of being bound directly to `#<void>`.)
 
-```racket
+```scheme
 > (void)
 > (void 1 2 3)
 > (list (void))
@@ -929,13 +929,13 @@ raise an exception, instead.
 > The `undefined` result can still be produced in some cases by the
 > `shared` form.
 
-```racket
+```scheme
 (define (fails)
   (define x x)
   x)
 ```
 
-```racket
+```scheme
 > (fails)
 x: undefined;
  cannot use before initialization
