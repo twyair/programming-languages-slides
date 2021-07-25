@@ -18,6 +18,10 @@ div.thebelab-input {
     font-size: 20px;
 }
 
+div.thebelab-cell{
+    margin: var(--r-block-margin) auto;
+}
+
 ul.CodeMirror-hints {
     position: absolute;
     z-index: 10;
