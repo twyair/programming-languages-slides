@@ -69,7 +69,6 @@ go to <http://localhost:8000/>
 
 - [ ] write an OCaml tutorial about:
   - [X] functors
-  - [X] lazy expressions
   - [X] imperative features
   - [X] references
   - [ ] labels and optional arguments

@@ -1,93 +1,200 @@
-# OCaml
+# Ocaml
 
-## lazy expressions
-
----
-
-### basic usage
-
-`lazy` defers the computation of an expression until its value is needed
-
-```ocaml
-lazy expr;;
-```
-
----vert---
-
-before a lazy expression is evaluated its value is printed as `<lazy>`
-
-```ocaml
-let lazy_expr = lazy (print_endline "lazy_expr is evaluated"; 1 + 1);;
-(*val lazy_expr : int lazy_t = <lazy>*);;
-```
-<!-- .element: data-thebe-executable -->
-
----vert---
-
-### forcing evaluation
-
-```ocaml
-Lazy.force lazy_expr;;
-```
-<!-- .element: data-thebe-executable -->
-
-note that `lazy_expr is evaluated` is printed
-
----vert---
-
-after its evaluation - its value changes
-
-```ocaml
-lazy_expr;;
-```
-<!-- .element: data-thebe-executable -->
-
-it's no longer `<lazy>` but `lazy` applied to a concrete value
-
----vert---
-
-forcing it again won't reevaluate the expression
-
-```ocaml
-Lazy.force lazy_expr;;
-```
-<!-- .element: data-thebe-executable -->
-
-note that nothing is printed
+## imperative programming
 
 ---
 
-### pattern matching
+### mutable fields
 
-use `lazy x` to match against lazy expressions
+ocaml records are immutable by default but you can declare record fields as mutable
 
 ```ocaml
-let le = lazy (1 + 1);;
+type point = { mutable x_coord: float; mutable y_coord: float }
 
-let lazy n = le;;
+let p = { x_coord=0.; y_coord=0.};;
 ```
 <!-- .element: data-thebe-executable -->
 
 ---vert---
 
-matching against `lazy x` forces evaluation
+`<-` is used for setting a mutable field
 
 ```ocaml
-let lazy n = le;;
+let () = p.x_coord <- 5.;;
+p;;
+```
+<!-- .element: data-thebe-executable -->
 
-(*is equivalent to*)
+---
 
-let n = Lazy.force le;;
+### ref cells
+
+the builtin `ref` type represents a single mutable cell
+
+```ocaml
+type 'a ref = { mutable contents: 'a };;
+```
+
+---vert---
+
+use `ref` to create a single mutable cell
+
+```ocaml
+let x = ref 4;;
+```
+<!-- .element: data-thebe-executable -->
+
+implementation:
+
+```ocaml
+let ref x = { contents = x };;
+```
+
+---vert---
+
+use `:=` to replace the cell's contents
+
+```ocaml
+x := 15;;
+x;;
+```
+<!-- .element: data-thebe-executable -->
+
+implementation:
+
+```ocaml
+let ( := ) r v = r.contents <- v;;
+```
+
+---vert---
+
+use `!` to get the the cell's contents
+
+```ocaml
+!x;;
+```
+<!-- .element: data-thebe-executable -->
+
+implementation:
+
+```ocaml
+let ( ! ) r = r.contents;;
+```
+
+---
+
+### sequencing with `;`
+
+`;` is used to sequence expressions with side-effects
+
+```ocaml
+let swap x y =
+    x := !x lxor !y ;
+    y := !y lxor !x ;
+    x := !y lxor !x;;
 ```
 <!-- .element: data-thebe-executable -->
 
 ---vert---
 
-evaluation is forced even when using a wildcard
+an expression created by `;` evaluates to the value of the last expression
 
 ```ocaml
-match Random.bool (), le with
-  | true, _ -> "le is not evaluated"
-  | false, lazy _ -> "le is evaluated"
+let x = ref 42;;
+x := !x * !x; !x
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+all non-final expressions should be of type `unit` otherwise you'd get a warning
+
+```ocaml
+123; 456;;
+```
+<!-- .element: data-thebe-executable -->
+
+---
+
+### loops
+
+---vert---
+
+#### while loops
+
+```ocaml
+while condition do
+    statement
+done
+```
+
+---vert---
+
+```ocaml
+let counter = ref 0 in
+
+while Random.int 1000 > 10 do
+    counter := !counter + 1
+done;
+
+!counter;;
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+#### for loops
+
+```ocaml
+for variable = start_v to end_v do
+    statement
+done
+  
+for variable = start_v downto end_v do
+    statement
+done
+```
+
+---vert---
+
+```ocaml
+let fib n = let a, b = ref 0, ref 1 in
+    for i = 2 to n do
+        let b' = !b in
+        b := !a + !b;
+        a := b'
+    done;
+    !b
+;;
+
+fib 7;;
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+loops are second-class citizens in OCaml
+
+---
+
+### looping over lists
+
+to loop over lists (and other builtin data structures) you may use `iter` and `iteri`
+
+```ocaml
+List.iter;;
+List.iteri;;
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+```ocaml
+let print_list l =
+    let f x = Printf.printf "%d" x in
+    List.iter f l
+;;
+
+print_list [1; 2; 3; 4];;
 ```
 <!-- .element: data-thebe-executable -->
