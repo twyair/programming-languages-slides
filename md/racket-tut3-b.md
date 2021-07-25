@@ -1,5 +1,11 @@
 # Iterations and Comprehensions
 
+(the following slides are based on [the Racket Guide](https://docs.racket-lang.org/guide/for.html))
+
+<!-- for.md -->
+
+---
+
 The `for` family of syntactic forms support iteration over _sequences_.
 Lists, vectors, strings, byte strings, input ports, and hash tables can
 all be used as sequences, and constructors like `in-range` offer even
@@ -9,7 +15,7 @@ Variants of `for` accumulate iteration results in different ways, but
 they all have the same syntactic shape. Simplifying for now, the syntax
 of `for` is
 
-```racket
+```scheme
 (for ([id sequence-expr] ...)
   body ...+)
 ```
@@ -18,18 +24,13 @@ A `for` loop iterates through the sequence produced by the
 `sequence-expr`. For each element of the sequence, `for` binds the
 element to `id`, and then it evaluates the `body`s for side effects.
 
-Examples:
-
-```racket
-> (for ([i '(1 2 3)])
-    (display i))
-123
-> (for ([i "abc"])
-    (printf "~a..." i))
-a...b...c...
-> (for ([i 4])
-    (display i))
-0123
+```scheme
+(for ([i '(1 2 3)]) (display i))
+;; 123
+(for ([i "abc"]) (printf "~a..." i))
+;; a...b...c...
+(for ([i 4]) (display i))
+;; 0123
 ```
 
 The `for/list` variant of `for` is more Racket-like. It accumulates
@@ -37,18 +38,13 @@ The `for/list` variant of `for` is more Racket-like. It accumulates
 effects. In more technical terms, `for/list` implements a _list
 comprehension_.
 
-Examples:
-
-```racket
-> (for/list ([i '(1 2 3)])
-    (* i i))
-'(1 4 9)
-> (for/list ([i "abc"])
-    i)
-'(#\a #\b #\c)
-> (for/list ([i 4])
-    i)
-'(0 1 2 3)
+```scheme
+(for/list ([i '(1 2 3)]) (* i i))
+;; '(1 4 9)
+(for/list ([i "abc"]) i)
+;; '(#\a #\b #\c)
+(for/list ([i 4]) i)
+;; '(0 1 2 3)
 ```
 
 The full syntax of `for` accommodates multiple sequences to iterate in
@@ -60,7 +56,9 @@ prune iterations can be included along with bindings.
 Before details on the variations of `for`, though, it's best to see the
 kinds of sequence generators that make interesting examples.
 
-## 1. Sequence Constructors
+---
+
+## Sequence Constructors <!-- 1 -->
 
 The `in-range` function generates a sequence of numbers, given an
 optional starting number (which defaults to `0`), a number before which
@@ -68,27 +66,25 @@ the sequence ends, and an optional step (which defaults to `1`). Using a
 non-negative integer `k` directly as a sequence is a shorthand for
 `(in-range k)`.
 
-Examples:
-
-```racket
-> (for ([i 3])
+```scheme
+(for ([i 3])
     (display i))
-012
-> (for ([i (in-range 3)])
+;; 012
+(for ([i (in-range 3)])
     (display i))
-012
-> (for ([i (in-range 1 4)])
+;; 012
+(for ([i (in-range 1 4)])
     (display i))
-123
-> (for ([i (in-range 1 4 2)])
+;; 123
+(for ([i (in-range 1 4 2)])
     (display i))
-13
-> (for ([i (in-range 4 1 -1)])
+;; 13
+(for ([i (in-range 4 1 -1)])
     (display i))
-432
-> (for ([i (in-range 1 4 1/2)])
+;; 432
+(for ([i (in-range 1 4 1/2)])
     (printf " ~a " i))
- 1  3/2  2  5/2  3  7/2
+;;  1  3/2  2  5/2  3  7/2
 ```
 
 The `in-naturals` function is similar, except that the starting number
@@ -97,15 +93,13 @@ is always `1`, and there is no upper limit. A `for` loop using just
 `in-naturals` will never terminate unless a body expression raises an
 exception or otherwise escapes.
 
-Example:
-
-```racket
-> (for ([i (in-naturals)])
-    (if (= i 10)
-        (error "too much!")
-        (display i)))
-0123456789
-too much!
+```scheme
+(for ([i (in-naturals)])
+  (if (= i 10)
+      (error "too much!")
+      (display i)))
+;; 0123456789
+;; too much!
 ```
 
 The `stop-before` and `stop-after` functions construct a new sequence
@@ -113,13 +107,11 @@ given a sequence and a predicate. The new sequence is like the given
 sequence, but truncated either immediately before or immediately after
 the first element for which the predicate returns true.
 
-Example:
-
-```racket
-> (for ([i (stop-before "abc def"
-                        char-whitespace?)])
-    (display i))
-abc
+```scheme
+(for ([i (stop-before "abc def"
+                      char-whitespace?)])
+  (display i))
+;; abc
 ```
 
 Sequence constructors like `in-list`, `in-vector` and `in-string` simply
@@ -129,9 +121,7 @@ wrong kind of value, and since they otherwise avoid a run-time dispatch
 to determine the sequence type, they enable more efficient code
 generation; see Iteration Performance for more information.
 
-Examples:
-
-```racket
+```scheme
 > (for ([i (in-string "abc")])
     (display i))
 abc
@@ -142,13 +132,13 @@ in-string: contract violation
   given: '(1 2 3)
 ```
 
-> +\[missing\] in \[missing\] provides more on sequences.
+---
 
-## 2. `for` and `for*`
+## `for` and `for*` <!-- 2 -->
 
 A more complete syntax of `for` is
 
-```racket
+```scheme
 (for (clause ...)
   body ...+)
 
@@ -160,7 +150,7 @@ clause = [id sequence-expr]
 When multiple `[id sequence-expr]` clauses are provided in a `for` form,
 the corresponding sequences are traversed in parallel:
 
-```racket
+```scheme
 > (for ([i (in-range 1 4)]
         [chapter '("Intro" "Details" "Conclusion")])
     (printf "Chapter ~a. ~a\n" i chapter))
@@ -173,7 +163,7 @@ With parallel sequences, the `for` expression stops iterating when any
 sequence ends. This behavior allows `in-naturals`, which creates an
 infinite sequence of numbers, to be used for indexing:
 
-```racket
+```scheme
 > (for ([i (in-naturals 1)]
         [chapter '("Intro" "Details" "Conclusion")])
     (printf "Chapter ~a. ~a\n" i chapter))
@@ -185,7 +175,7 @@ Chapter 3. Conclusion
 The `for*` form, which has the same syntax as `for`, nests multiple
 sequences instead of running them in parallel:
 
-```racket
+```scheme
 > (for* ([book '("Guide" "Reference")]
          [chapter '("Intro" "Details" "Conclusion")])
     (printf "~a ~a\n" book chapter))
@@ -204,7 +194,7 @@ The `#:when boolean-expr` form of a `clause` is another shorthand. It
 allows the `body`s to evaluate only when the `boolean-expr` produces a
 true value:
 
-```racket
+```scheme
 > (for* ([book '("Guide" "Reference")]
          [chapter '("Intro" "Details" "Conclusion")]
          #:when (not (equal? chapter "Details")))
@@ -221,7 +211,7 @@ the test is nested in the iteration of the preceding bindings; thus,
 bindings separated by `#:when` are mutually nested, instead of in
 parallel, even with `for`.
 
-```racket
+```scheme
 > (for ([book '("Guide" "Reference" "Notes")]
         #:when (not (equal? book "Notes"))
         [i (in-naturals 1)]
@@ -239,12 +229,14 @@ Reference Chapter 3. Conclusion
 An `#:unless` clause is analogous to a `#:when` clause, but the `body`s
 evaluate only when the `boolean-expr` produces a false value.
 
-## 3. `for/list` and `for*/list`
+---
+
+## `for/list` and `for*/list` <!-- 3 -->
 
 The `for/list` form, which has the same syntax as `for`, evaluates the
 `body`s to obtain values that go into a newly constructed list:
 
-```racket
+```scheme
 > (for/list ([i (in-naturals 1)]
              [chapter '("Intro" "Details" "Conclusion")])
     (string-append (number->string i) ". " chapter))
@@ -254,7 +246,7 @@ The `for/list` form, which has the same syntax as `for`, evaluates the
 A `#:when` clause in a `for-list` form prunes the result list along with
 evaluations of the `body`s:
 
-```racket
+```scheme
 > (for/list ([i (in-naturals 1)]
              [chapter '("Intro" "Details" "Conclusion")]
              #:when (odd? i))
@@ -269,7 +261,7 @@ contain `#<void>`s instead of omitting list elements.
 
 The `for*/list` form is like `for*`, nesting multiple iterations:
 
-```racket
+```scheme
 > (for*/list ([book '("Guide" "Ref.")]
               [chapter '("Intro" "Details")])
     (string-append book " " chapter))
@@ -281,13 +273,15 @@ forms. Nested `for/list`s would produce a list of lists, instead of one
 flattened list. Much like `#:when`, then, the nesting of `for*/list` is
 more useful than the nesting of `for*`.
 
-## 4. `for/vector` and `for*/vector`
+---
+
+## `for/vector` and `for*/vector` <!-- 4 -->
 
 The `for/vector` form can be used with the same syntax as the `for/list`
 form, but the evaluated `body`s go into a newly-constructed vector
 instead of a list:
 
-```racket
+```scheme
 > (for/vector ([i (in-naturals 1)]
                [chapter '("Intro" "Details" "Conclusion")])
     (string-append (number->string i) ". " chapter))
@@ -302,7 +296,7 @@ vector to be constructed to be supplied in advance.  The resulting
 iteration can be performed more efficiently than plain `for/vector` or
 `for*/vector`:
 
-```racket
+```scheme
 > (let ([chapters '("Intro" "Details" "Conclusion")])
     (for/vector #:length (length chapters) ([i (in-naturals 1)]
                                             [chapter chapters])
@@ -316,12 +310,14 @@ provided length exceeds the requested number of iterations, then the
 remaining slots in the vector are initialized to the default argument of
 `make-vector`.
 
-## 5. `for/and` and `for/or`
+---
+
+## `for/and` and `for/or` <!-- 5 -->
 
 The `for/and` form combines iteration results with `and`, stopping as
 soon as it encounters `#f`:
 
-```racket
+```scheme
 > (for/and ([chapter '("Intro" "Details" "Conclusion")])
     (equal? chapter "Intro"))
 #f
@@ -330,7 +326,7 @@ soon as it encounters `#f`:
 The `for/or` form combines iteration results with `or`, stopping as soon
 as it encounters a true value:
 
-```racket
+```scheme
 > (for/or ([chapter '("Intro" "Details" "Conclusion")])
     (equal? chapter "Intro"))
 #t
@@ -339,13 +335,15 @@ as it encounters a true value:
 As usual, the `for*/and` and `for*/or` forms provide the same facility
 with nested iterations.
 
-## 6. `for/first` and `for/last`
+---
+
+## `for/first` and `for/last` <!-- 6 -->
 
 The `for/first` form returns the result of the first time that the
 `body`s are evaluated, skipping further iterations. This form is most
 useful with a `#:when` clause.
 
-```racket
+```scheme
 > (for/first ([chapter '("Intro" "Details" "Conclusion" "Index")]
               #:when (not (equal? chapter "Intro")))
     chapter)
@@ -357,7 +355,7 @@ If the `body`s are evaluated zero times, then the result is `#f`.
 The `for/last` form runs all iterations, returning the value of the last
 iteration (or `#f` if no iterations are run):
 
-```racket
+```scheme
 > (for/last ([chapter '("Intro" "Details" "Conclusion" "Index")]
               #:when (not (equal? chapter "Index")))
     chapter)
@@ -367,7 +365,7 @@ iteration (or `#f` if no iterations are run):
 As usual, the `for*/first` and `for*/last` forms provide the same
 facility with nested iterations:
 
-```racket
+```scheme
 > (for*/first ([book '("Guide" "Reference")]
                [chapter '("Intro" "Details" "Conclusion" "Index")]
                #:when (not (equal? chapter "Intro")))
@@ -380,13 +378,15 @@ facility with nested iterations:
 '("Reference" "Conclusion")
 ```
 
-## 7. `for/fold` and `for*/fold`
+---
+
+## `for/fold` and `for*/fold` <!-- 7 -->
 
 The `for/fold` form is a very general way to combine iteration results.
 Its syntax is slightly different than the syntax of `for`, because
 accumulation variables must be declared at the beginning:
 
-```racket
+```scheme
 (for/fold ([accum-id init-expr] ...)
           (clause ...)
   body ...+)
@@ -400,7 +400,7 @@ out with the value of `init-expr`. In the `clause`s and `body`s,
 
 Examples:
 
-```racket
+```scheme
 > (for/fold ([len 0])
             ([chapter '("Intro" "Conclusion")])
     (+ len (string-length chapter)))
@@ -423,7 +423,7 @@ expression itself produces multiple values for the results.
 
 Example:
 
-```racket
+```scheme
 > (for/fold ([prev #f]
              [counter 1])
             ([chapter '("Intro" "Details" "Details" "Conclusion")]
@@ -438,7 +438,9 @@ Example:
 4
 ```
 
-## 8. Multiple-Valued Sequences
+---
+
+## Multiple-Valued Sequences <!-- 8 -->
 
 In the same way that a function or expression can produce multiple
 values, individual iterations of a sequence can produce multiple
@@ -453,7 +455,7 @@ iteration identifiers:
 > identifiers, `for` simply allows a parenthesized list of identifiers
 > instead of a single identifier in any clause.
 
-```racket
+```scheme
 > (for ([(k v) #hash(("apple" . 1) ("banana" . 3))])
     (printf "~a count: ~a\n" k v))
 apple count: 1
@@ -464,18 +466,20 @@ This extension to multiple-value bindings works for all `for` variants.
 For example, `for*/list` nests iterations, builds a list, and also works
 with multiple-valued sequences:
 
-```racket
+```scheme
 > (for*/list ([(k v) #hash(("apple" . 1) ("banana" . 3))]
               [(i) (in-range v)])
     k)
 '("apple" "banana" "banana" "banana")
 ```
 
-## 9. Breaking an Iteration
+---
+
+## Breaking an Iteration <!-- 9 -->
 
 An even more complete syntax of `for` is
 
-```racket
+```scheme
 (for (clause ...)
   body-or-break ... body)
 
@@ -501,7 +505,7 @@ also prevents later `body`s from evaluation in the current iteration.
 For example, while using `#:unless` between clauses effectively skips
 later sequences as well as the body,
 
-```racket
+```scheme
 > (for ([book '("Guide" "Story" "Reference")]
         #:unless (equal? book "Story")
         [chapter '("Intro" "Details" "Conclusion")])
@@ -516,7 +520,7 @@ Reference Conclusion
 
 using `#:break` causes the entire `for` iteration to terminate:
 
-```racket
+```scheme
 > (for ([book '("Guide" "Story" "Reference")]
         #:break (equal? book "Story")
         [chapter '("Intro" "Details" "Conclusion")])
@@ -541,7 +545,7 @@ terminate the iteration. Instead, it allows at most one more element to
 be drawn for each sequence and at most one more evaluation of the
 `body`s.
 
-```racket
+```scheme
 > (for* ([book '("Guide" "Story" "Reference")]
          [chapter '("Intro" "Details" "Conclusion")])
     #:final (and (equal? book "Story")
@@ -563,7 +567,9 @@ Guide Conclusion
 Story Intro
 ```
 
-## 10. Iteration Performance
+---
+
+## Iteration Performance <!-- 10 -->
 
 Ideally, a `for` iteration should run as fast as a loop that you write
 by hand as a recursive-function invocation. A hand-written loop,
@@ -577,35 +583,35 @@ enough information is apparent about the sequences to iterate.
 Specifically, the clause should have one of the following `fast-clause`
 forms:
 
-  `fast-clause`` `=` ``[id` `fast-seq]`
-` `            ` `|` ``[(id)` `fast-seq]`
-` `            ` `|` ``[(id` `id)` `fast-indexed-seq]`
-` `            ` `|` ``[(id` `...)` `fast-parallel-seq]`
+```scheme
+fast-clause = [id fast-seq]
+            | [(id) fast-seq]
+            | [(id id) fast-indexed-seq]
+            | [(id ...) fast-parallel-seq]
 
-  `fast-seq`` `=` ``(in-range` `expr)`
-` `         ` `|` ``(in-range` `expr` `expr)`
-` `         ` `|` ``(in-range` `expr` `expr` `expr)`
-` `         ` `|` ``(in-naturals)`
-` `         ` `|` ``(in-naturals` `expr)`
-` `         ` `|` ``(in-list` `expr)`
-` `         ` `|` ``(in-vector` `expr)`
-` `         ` `|` ``(in-string` `expr)`
-` `         ` `|` ``(in-bytes` `expr)`
-` `         ` `|` ``(in-value` `expr)`
-` `         ` `|` ``(stop-before` `fast-seq` `predicate-expr)`
-` `         ` `|` ``(stop-after` `fast-seq` `predicate-expr)`
+fast-seq = (in-range expr)
+         | (in-range expr expr)
+         | (in-range expr expr expr)
+         | (in-naturals)
+         | (in-naturals expr)
+         | (in-list expr)
+         | (in-vector expr)
+         | (in-string expr)
+         | (in-bytes expr)
+         | (in-value expr)
+         | (stop-before fast-seq predicate-expr)
+         | (stop-after fast-seq predicate-expr)
 
-  `fast-indexed-seq`` `=` ``(in-indexed` `fast-seq)`
-` `                 ` `|` ``(stop-before` `fast-indexed-seq` `predicate-expr)`
-` `                 ` `|` ``(stop-after` `fast-indexed-seq` `predicate-expr)`
+fast-indexed-seq = (in-indexed fast-seq)
+                 | (stop-before fast-indexed-seq predicate-expr)
+                 | (stop-after fast-indexed-seq predicate-expr)
 
-  `fast-parallel-seq`` `=` ``(in-parallel` `fast-seq` `...)`
-` `                  ` `|` ``(stop-before` `fast-parallel-seq` `predicate-expr)`
-` `                  ` `|` ``(stop-after` `fast-parallel-seq` `predicate-expr)`
+fast-parallel-seq = (in-parallel fast-seq ...)
+                  | (stop-before fast-parallel-seq predicate-expr)
+                  | (stop-after fast-parallel-seq predicate-expr)
+```
 
-Examples:
-
-```racket
+```scheme
 > (time (for ([i (in-range 100000)])
           (for ([elem (in-list '(a b c d e f g h))]) ; fast
             (void))))
@@ -626,6 +632,3 @@ patterns that provide good performance is extensible, just like the set
 of sequence values. The documentation for a sequence constructor should
 indicate the performance benefits of using it directly in a `for`
 `clause`.
-
-> +\[missing\] in \[missing\] provides more on iterations and
-> comprehensions.
