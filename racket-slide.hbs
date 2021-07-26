@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="../reveal.js/dist/reveal.css">
 		<link rel="stylesheet" href="../reveal.js/dist/theme/white.css" id="theme">
 		<link rel="stylesheet" href="../reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
-		<link rel="stylesheet" href="../prolog-slide.css">
+		<link rel="stylesheet" href="../ocaml-slide.css">
 	</head>
 	<body>
 		<div class="reveal">
@@ -24,20 +24,7 @@
 		<script src="../reveal.js/plugin/markdown/markdown.js"></script>
 		<script src="../reveal.js/plugin/highlight/highlight.js"></script>
 		<script src="../reveal.js/plugin/math/math.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
-
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ],
-				keyboard: {
-					39: 'next',
-					37: 'prev'
-				}
-			});
-		</script>
+		<script src="../thebe/lib/index.js"></script>
+		<script src="../racket-slide.js"></script>
 	</body>
 </html>

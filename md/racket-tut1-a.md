@@ -46,8 +46,8 @@ a number by itself is an expression
 
 ```scheme
 5
-; 5
 ```
+<!-- .element: data-thebe-executable-racket -->
 
 ---vert---
 
@@ -55,8 +55,8 @@ a string is also an expression that evaluates to itself
 
 ```scheme
 "Hello, world!"
-; "Hello, world!"
 ```
+<!-- .element: data-thebe-executable-racket -->
 
 ---vert---
 
@@ -66,8 +66,8 @@ the following calls the builtin function `substring`
 
 ```scheme
 (substring "the boy out of the country" 4 7)
-; "boy"
 ```
+<!-- .element: data-thebe-executable-racket -->
 
 ---
 
@@ -80,11 +80,8 @@ You can define your own functions:
   (substring str 4 7))
 
 (extract "the boy out of the country")
-; "boy"
-
-(extract "the country out of the boy")
-; "cou"
 ```
+<!-- .element: data-thebe-executable-racket -->
 
 ---vert---
 
@@ -104,7 +101,7 @@ when using command-line `racket` you'd save the program in a file `"extract.rkt"
 ```scheme
 (enter! "extract.rkt")
 (extract "the gal out of the city")
-; "gal"
+;; "gal"
 ```
 
 ---
