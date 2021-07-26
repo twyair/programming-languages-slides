@@ -1,8 +1,12 @@
 # Pattern Matching
 
-The `match` form supports pattern matching on arbitrary Racket values,
-as opposed to functions like `regexp-match` that compare regular
-expressions to byte and character sequences (see \[missing\]).
+(the following slides are based on [the Racket Guide](https://docs.racket-lang.org/guide/match.html))
+
+<!-- match.md -->
+
+---
+
+`match` supports pattern matching on arbitrary Racket values
 
 ```scheme
 (match target-expr
@@ -16,54 +20,62 @@ If `pattern` includes _pattern variables_, they are treated like
 wildcards, and each variable is bound in the `expr` to the input
 fragments that it matched.
 
+---vert---
+
 Most Racket literal expressions can be used as patterns:
 
 ```scheme
-> (match 2
+(match 2
     [1 'one]
     [2 'two]
     [3 'three])
-'two
-> (match #f
+;; 'two
+(match #f
     [#t 'yes]
     [#f 'no])
-'no
-> (match "apple"
-    ['apple 'symbol]
-    ["apple" 'string]
-    [#f 'boolean])
-'string
+;; 'no
+(match "apple"
+  ['apple 'symbol]
+  ["apple" 'string]
+  [#f 'boolean])
+;; 'string
 ```
+
+---vert---
 
 Constructors like `cons`, `list`, and `vector` can be used to create
 patterns that match pairs, lists, and vectors:
 
 ```scheme
-> (match '(1 2)
-    [(list 0 1) 'one]
-    [(list 1 2) 'two])
-'two
-> (match '(1 . 2)
-    [(list 1 2) 'list]
-    [(cons 1 2) 'pair])
-'pair
-> (match #(1 2)
-    [(list 1 2) 'list]
-    [(vector 1 2) 'vector])
-'vector
+(match '(1 2)
+  [(list 0 1) 'one]
+  [(list 1 2) 'two])
+;; 'two
+(match '(1 . 2)
+  [(list 1 2) 'list]
+  [(cons 1 2) 'pair])
+;; 'pair
+(match #(1 2)
+  [(list 1 2) 'list]
+  [(vector 1 2) 'vector])
+;; 'vector
 ```
+
+---vert---
 
 A constructor bound with `struct` also can be used as a pattern
 constructor:
 
 ```scheme
-> (struct shoe (size color))
-> (struct hat (size style))
-> (match (hat 23 'bowler)
-   [(shoe 10 'white) "bottom"]
-   [(hat 23 'bowler) "top"])
-"top"
+(struct shoe (size color))
+(struct hat (size style))
+(match (hat 23 'bowler)
+  [(shoe 10 'white) "bottom"]
+  [(hat 23 'bowler) "top"])
+;; "top"
 ```
+
+---vert---
 
 Unquoted, non-constructor identifiers in a pattern are pattern variables
 that are bound in the result expressions, except `_`, which does not
@@ -89,6 +101,8 @@ bind (and thus is usually used as a catch-all):
 'something-else
 ```
 
+---vert---
+
 Note that the identifier `else` is **not** a reserved catch-all (like
 `_`). If `else` appears in a pattern then its binding from `racket/base`
 may be shadowed, and this can cause problems with `cond` and `case`.
@@ -111,6 +125,8 @@ racket/base
        [#f 'not-evaluated]
        [else 'also-not-evaluated])])
 ```
+
+---vert---
 
 An ellipsis, written `...`, acts like a Kleene star within a list or
 vector pattern: the preceding sub-pattern can be used to match any
@@ -136,6 +152,8 @@ result expression to a list of matches:
 45
 ```
 
+---vert---
+
 Ellipses can be nested to match nested repetitions, and in that case,
 pattern variables can be bound to lists of lists of matches:
 
@@ -145,7 +163,9 @@ pattern variables can be bound to lists of lists of matches:
 '((1) (2 2) (3 3 3))
 ```
 
-The `quasiquote` form  (see \[missing\] for more about it) can also be
+---vert---
+
+The `quasiquote` form can also be
 used to build patterns. While unquoted portions of a normal quasiquoted
 form mean regular racket evaluation, here unquoted portions mean go back
 to regular pattern matching.
@@ -162,7 +182,7 @@ second.
 '((lambda (x) (+ x 1)) 1)
 ```
 
-For information on many more pattern forms, see `racket/match`.
+---vert---
 
 Forms like `match-let` and `match-lambda` support patterns in positions
 that otherwise must be identifiers. For example, `match-let` generalizes
@@ -173,7 +193,3 @@ that otherwise must be identifiers. For example, `match-let` generalizes
     (list z y x))
 '(3 2 1)
 ```
-
-For information on these additional forms, see `racket/match`.
-
-> +\[missing\] in \[missing\] provides more on pattern matching.
