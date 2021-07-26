@@ -579,6 +579,30 @@ equality is polymorphic
 
 ---
 
+### looping over lists
+
+to loop over lists (and other builtin data structures) you may use `iter` and `iteri`
+
+```ocaml
+List.iter;;
+List.iteri;;
+```
+<!-- .element: data-thebe-executable -->
+
+---vert---
+
+```ocaml
+let print_list l =
+    let f x = Printf.printf "%d" x in
+    List.iter f l
+;;
+
+print_list [1; 2; 3; 4];;
+```
+<!-- .element: data-thebe-executable -->
+
+---
+
 ### exam questions
 
 ---vert---
