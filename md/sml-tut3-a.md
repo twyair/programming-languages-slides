@@ -29,7 +29,7 @@ area 2.0;
 * a name can be reused for another purpose
 
     ```sml
-    val pi = "pi";​
+    val pi = "pi";
     (*val pi = "pi" : string*)
     ```
 
@@ -79,7 +79,7 @@ area 2.0;
     val f = fn (n) => if n=0 then 1 else n * ??;
 
     val rec f = fn (n) =>
-        if n=0 then 1​
+        if n=0 then 1
         else n * f(n-1);
     ```
 
@@ -92,7 +92,7 @@ area 2.0;
 * patterns can be used to simplify function definition
 
     ```sml
-    fun factorial 0 = 1​
+    fun factorial 0 = 1
       | factorial n = n * factorial(n-1);
     ```
 
@@ -112,8 +112,8 @@ area 2.0;
 ---vert---
 
 ```sml
-fun foo (x,1) = x​
-  | foo (1,_) = 0​
+fun foo (x,1) = x
+  | foo (1,_) = 0
   | foo _ = ~1;
 (*val foo = fn : int * int -> int*)
 foo(3,1);
@@ -135,11 +135,11 @@ case E of P1 => E1 | ... | Pn => En
 ```
 
 ```sml
-case p-q of​
-    0 => "zero"​
-  | 1 => "one"​
-  | 2 => "two"​
-  | n => if n<10 then "lots" ​else "lots &lots";
+case p-q of
+    0 => "zero"
+  | 1 => "one"
+  | 2 => "two"
+  | n => if n<10 then "lots" else "lots &lots";
 ```
 
 * if `P1` is the first to match then the result is `E1`
@@ -156,14 +156,14 @@ case p-q of​
 * the new name is only an alias
 
 ```sml
-type vec = real*real;​
-(*type vec = real * real​*)
+type vec = real*real;
+(*type vec = real * real*)
 
-infix ++;​
-fun (x1,y1) ++ (x2,y2) : vec = (x1+x2,y1+y2);​
-(*val ++ = fn: (real * real) * (real * real) -> vec​*)
+infix ++;
+fun (x1,y1) ++ (x2,y2) : vec = (x1+x2,y1+y2);
+(*val ++ = fn: (real * real) * (real * real) -> vec*)
 
-(3.6,0.9) ++ (0.1,0.2) ++ (20.0,30.0);​
+(3.6,0.9) ++ (0.1,0.2) ++ (20.0,30.0);
 (*val it = (23.7,31.1) : vec*)
 ```
 
@@ -176,15 +176,15 @@ let D in E end
 ```
 
 ```sml
-fun fraction (n,d) =​
+fun fraction (n,d) =
   (n div gcd(n,d), d div gcd(n,d));
 (*val fraction = fn: int*int -> int*int*)
 
 fun fraction(n,d)=
-  let ​
-    val com = gcd(n,d)​
-  in​
-    (n div com, d div com)​
+  let 
+    val com = gcd(n,d)
+  in
+    (n div com, d div com)
   end;
 (*val fraction = fn: int*int -> int*int*)
 ```
@@ -198,7 +198,7 @@ fun fraction(n,d)=
 `let` can be simulated using anonymous functions
 
 ```sml
-fun fraction (n,d) =​ (fn c => (n div c, d div c))(gcd(n,d));
+fun fraction (n,d) = (fn c => (n div c, d div c))(gcd(n,d));
 ```
 
 ---vert---
@@ -206,19 +206,19 @@ fun fraction (n,d) =​ (fn c => (n div c, d div c))(gcd(n,d));
 ### nested scopes
 
 ```sml
-fun sqroot a =​
-  let  ​
-    val acc=1.0e~10​
-    fun findroot x =​
-      let ​
-        val nextx = (a/x + x)/2.0​
-      in ​
-        if abs (x - nextx) < acc*x​
+fun sqroot a =
+  let  
+    val acc=1.0e~10
+    fun findroot x =
+      let 
+        val nextx = (a/x + x)/2.0
+      in 
+        if abs (x - nextx) < acc*x
         then nextx
-        else findroot nextx​
-      end​
-  in ​
-    findroot 1.0 ​
+        else findroot nextx
+      end
+  in 
+    findroot 1.0 
   end;
 (*val sqroot = fn: real -> real*)
 ```

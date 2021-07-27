@@ -34,14 +34,14 @@
 infix d;
 fun (x d y) = Math.sqrt(x*x + y*y);
 
-d;​
-(*stdIn:40.1 Error: expression or pattern begins with infix identifier "d"*)​
+d;
+(*stdIn:40.1 Error: expression or pattern begins with infix identifier "d"*)
 
-op d;​
-(*val it = fn : real * real -> real​*)
+op d;
+(*val it = fn : real * real -> real*)
 
-op d(1.0,3.0);​
-(*val it = 3.16227766017 : real​*)
+op d(1.0,3.0);
+(*val it = 3.16227766017 : real*)
 ```
 
 ---
@@ -151,14 +151,14 @@ fun mul5 y = op* (5, y);
 now generalize the operator and operand
 
 ```sml
-fun something5 (f:int*int->int) y = f (5, y);​
-(*val something5 = fn: (int*int->int) -> int -> int​*)
+fun something5 (f:int*int->int) y = f (5, y);
+(*val something5 = fn: (int*int->int) -> int -> int*)
 
-val add5 = something5 op+;​
-(*val add5 = fn: int -> int​*)
+val add5 = something5 op+;
+(*val add5 = fn: int -> int*)
 
-fun intsec x (f:int*int->int) y = f(x,y);​
-(*val intsec =​ fn : int -> (int * int -> int) -> int -> int*)
+fun intsec x (f:int*int->int) y = f(x,y);
+(*val intsec = fn : int -> (int * int -> int) -> int -> int*)
 ```
 
 ---
@@ -174,10 +174,10 @@ fun times n m =
 times 4 5;
 (*val it = 20 : int*)
 
-val times_4 = times 4;​
-(*val times_4 = fn : int -> int​*)
+val times_4 = times 4;
+(*val times_4 = fn : int -> int*)
 
-times_4 8;​
+times_4 8;
 (*val it = 32 : int*)
 ```
 
@@ -188,18 +188,18 @@ times_4 8;​
 ```sml
 infix o;
 fun (f o g) x = f (g x);
-(*val o = fn : ('a -> 'b) * ('c -> 'a) -> 'c  -> 'b*)
+(*val o = fn : ('a -> 'b) * ('c -> 'a) -> 'c -> 'b*)
 
 Math.sqrt o Math.sqrt;
-(*val it = fn : real -> real​*)
+(*val it = fn : real -> real*)
 
-it (16.0);​
-(*val it = 2.0 : real​*)
+it (16.0);
+(*val it = 2.0 : real*)
 
-(fn x => x - ord #"0") o ord;​
-(*val it = fn : char -> int​*)
+(fn x => x - ord #"0") o ord;
+(*val it = fn : char -> int*)
 
-it #"1";​
+it #"1";
 (*val it = 1 : int*)
 ```
 

@@ -111,7 +111,7 @@ fun replace_head (_::t) x = x :: t
 ```sml
 fun null [] = true
   | null (_::_) = false;
-(*val null = fn : ‘a  list -> bool*)
+(*val null = fn : 'a list -> bool*)
 ```
 
 ---vert---
@@ -119,19 +119,19 @@ fun null [] = true
 `hd` - evaluates to the head of a non-empty list
 
 ```sml
-fun hd (x::_) = x;​
-(*Warning: Patterns not exhaustive​
-val hd = fn : ‘a  list -> ‘a*)
+fun hd (x::_) = x;
+(*Warning: Patterns not exhaustive
+val hd = fn : 'a  list -> 'a*)
 ```
 
 ---vert---
 
-`tl` - evaluates to the tail of a non-empty list​
+`tl` - evaluates to the tail of a non-empty list
 
 ```sml
-fun tl (_::xs) = xs;​
-(**Warning: Patterns not exhaustive​
-val tl = fn : ‘a  list -> ‘a  list*)
+fun tl (_::xs) = xs;
+(**Warning: Patterns not exhaustive
+val tl = fn : 'a  list -> 'a  list*)
 ```
 
 ---vert---
@@ -171,16 +171,16 @@ val op-- = range;
 ### the computation of `take`
 
 ```sml
-fun take (0, _)     = []​
+fun take (0, _)     = []
   | take (i, x::xs) = x :: take (i-1, xs);
 
-take (3, [9,8,7,6,5,4])​
-9 :: take (2, [8,7,6,5,4])​
-9 :: (8 :: take (1, [7,6,5,4]))​
-9 :: (8 :: (7 :: take (0, [6,5,4])))​
-9 :: (8 :: (7 :: []))​
-9 :: (8 :: [7])​
-9 :: [8,7]​
+take (3, [9,8,7,6,5,4])
+9 :: take (2, [8,7,6,5,4])
+9 :: (8 :: take (1, [7,6,5,4]))
+9 :: (8 :: (7 :: take (0, [6,5,4])))
+9 :: (8 :: (7 :: []))
+9 :: (8 :: [7])
+9 :: [8,7]
 [9,8,7]
 ```
 
@@ -189,13 +189,13 @@ take (3, [9,8,7,6,5,4])​
 ### the computation of `drop`
 
 ```sml
-fun drop (0, xs)    = xs​
+fun drop (0, xs)    = xs
   | drop (i, _::xs) = drop (i-1, xs);
 
-drop (3, [9,8,7,6,5,4])​
-drop (2,   [8,7,6,5,4])​
+drop (3, [9,8,7,6,5,4])
+drop (2,   [8,7,6,5,4])
 drop (1,     [7,6,5,4])
-drop (0,       [6,5,4])​
+drop (0,       [6,5,4])
 [6,5,4]
 ```
 
@@ -208,14 +208,14 @@ drop (0,       [6,5,4])​
 normal recursion
 
 ```sml
-fun take(0, _)     = []​
+fun take(0, _)     = []
   | take(i, x::xs) = x::take(i-1, xs);
 ```
 
 tail recursion
 
 ```sml
-fun drop (0, xs)    = xs​
+fun drop (0, xs)    = xs
   | drop (i, _::xs) = drop (i-1, xs);
 ```
 
@@ -224,18 +224,18 @@ fun drop (0, xs)    = xs​
 ### normal to tail recursive
 
 ```sml
-fun length []      = 0​
+fun length []      = 0
   | length (_::xs) = 1 + length xs;
 ```
 
 use an **accumulator** to make it iterative
 
 ```sml
-local​
-  fun ilen (n, [])    = n​
-    | ilen (n, _::xs) = ilen (n+1, xs)​
-in​
-  fun length xs = ilen (0, xs)​
+local
+  fun ilen (n, [])    = n
+    | ilen (n, _::xs) = ilen (n+1, xs)
+in
+  fun length xs = ilen (0, xs)
 end;
 ```
 
@@ -264,7 +264,7 @@ fun []      @ ys = ys
 they are short-circuiting boolean operators
 
 ```sml
-B1 andalso B2 = if B1 then B2  else false​;
+B1 andalso B2 = if B1 then B2  else false;
 
 B1 orelse  B2 = if B1 then true else B2;
 ```
@@ -272,12 +272,12 @@ B1 orelse  B2 = if B1 then true else B2;
 ---vert---
 
 ```sml
-fun even n = (n mod 2 = 0); ​
-(*val even = fn : int -> bool​*)​
+fun even n = (n mod 2 = 0); 
+(*val even = fn : int -> bool*)
 
 fun powoftwo n =
-  (n=1) orelse​
-  (even n andalso powoftwo (n div 2));​
+  (n=1) orelse
+  (even n andalso powoftwo (n div 2));
 (*val powoftwo = fn : int -> bool*)
 ```
 
@@ -288,14 +288,14 @@ is `powoftwo` tail-recursive?
 ### builtin function `map`
 
 ```sml
-fun map f []      = []​
-  | map f (x::xs) = (f x) :: (map f xs);​
+fun map f []      = []
+  | map f (x::xs) = (f x) :: (map f xs);
 (*val map = fn:('a -> 'b)-> 'a list -> 'b list*)
 
-val sqlist = map (fn x => x*x);​
-(*val sqlist = fn : int list -> int list​*)
+val sqlist = map (fn x => x*x);
+(*val sqlist = fn : int list -> int list*)
 
-sqlist [1,2,3];​
+sqlist [1,2,3];
 (*val it = [1,4,9] : int list*)
 ```
 
@@ -306,8 +306,8 @@ transposing a matrix using `map`
 ![transp gif](./../imgs/matrix_transpose.gif)
 
 ```sml
-fun transp ([]::_) = []​
-  | transp rows =​
+fun transp ([]::_) = []
+  | transp rows =
       (map hd rows) :: transp (map tl rows);
 ```
 
@@ -316,10 +316,10 @@ fun transp ([]::_) = []​
 ### builtin function `filter`
 
 ```sml
-fun filter pred []      = []​
-  | filter pred (x::xs) =​
-       if pred x then (x:: filter pred xs)​
-                 else      filter pred xs;​
+fun filter pred []      = []
+  | filter pred (x::xs) =
+       if pred x then (x:: filter pred xs)
+                 else      filter pred xs;
 (*val filter = fn : ('a -> bool) -> 'a list-> 'a list*)
 
 filter (fn x => x mod 2 = 0) [1,2,3,4,5];
@@ -369,8 +369,8 @@ derive a;
 ### builtin function `foldl`
 
 ```sml
-fun foldl f init []      = init​
-  | foldl f init (x::xs) = foldl f (f (x, init)) xs;​​
+fun foldl f init []      = init
+  | foldl f init (x::xs) = foldl f (f (x, init)) xs;
 (*val foldl = fn : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b*)
 ```
 
@@ -381,8 +381,8 @@ calculates `$[x_1, x_2, … ,x_n] \rightarrow f(x_n, … ,f(x_2, f(x_1,init)))$`
 ### builtin function `foldr`
 
 ```sml
-fun foldr f init []      = init​
-  | foldr f init (x::xs) = f (x, foldr f init xs);​
+fun foldr f init []      = init
+  | foldr f init (x::xs) = f (x, foldr f init xs);
 (*val foldr = fn : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b*)
 ```
 
@@ -395,14 +395,14 @@ calculates `$[x_1, x_2, … ,x_n] \rightarrow f(x1, … ,f(xn-1, f(xn,init)))$`
 let's redefine some functions...
 
 ```sml
-fun sum l = foldl op+ 0 l;​
-(*val sum = fn : int list -> int​*)
-​
-fun reverse l = foldl op:: [] l;​
-(*val sum = fn : ’a list -> ’a list​*)
+fun sum l = foldl op+ 0 l;
+(*val sum = fn : int list -> int*)
 
-fun xs @ ys = foldr op:: ys xs;​
-(*val @ = fn : ’a list * ’a list -> ’a list*)
+fun reverse l = foldl op:: [] l;
+(*val sum = fn : 'a list -> 'a list*)
+
+fun xs @ ys = foldr op:: ys xs;
+(*val @ = fn : 'a list * 'a list -> 'a list*)
 ```
 
 ---
@@ -414,7 +414,7 @@ fun xs @ ys = foldr op:: ys xs;​
 ### builtin function `exists`
 
 ```sml
-fun exists p []      = false​
+fun exists p []      = false
   | exists p (x::xs) = (p x) orelse exists p xs;
 (*val exists = fn:('a -> bool)-> 'a list -> bool*)
 ```
@@ -433,8 +433,8 @@ bound as `List.exists`
 ### builtin function `all`
 
 ```sml
-fun all p []      = true​
-  | all p (x::xs) = (p x) andalso all p xs;​
+fun all p []      = true
+  | all p (x::xs) = (p x) andalso all p xs;
 (*val forall = fn:('a -> bool) -> 'a list -> bool*)
 ```
 
@@ -450,8 +450,8 @@ bound as `List.all`
 ---vert---
 
 ```sml
-fun disjoint (xs, ys) =​
-  all (fn x => all (fn y => x<>y) ys) xs;​
+fun disjoint (xs, ys) =
+  all (fn x => all (fn y => x<>y) ys) xs;
 (*val disjoint = fn : ''a list * ''a list -> bool*)
 ```
 
@@ -461,10 +461,10 @@ fun disjoint (xs, ys) =​
 
 equality is polymorphic in a restricted sense
 
-* defined for values constructed of integers, strings, booleans, chars, tuples, lists and datatypes​
-* not defined for values containing​
-  * functions: equality is undecidable (halting problem)​
-  * reals, because e.g. nan != nan​
+* defined for values constructed of integers, strings, booleans, chars, tuples, lists and datatypes
+* not defined for values containing
+  * functions: equality is undecidable (halting problem)
+  * reals, because e.g. nan != nan
   * elements of abstract types
 
 ---vert---

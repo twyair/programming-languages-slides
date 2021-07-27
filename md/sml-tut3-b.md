@@ -63,12 +63,12 @@ value bishop;
 Newton's second law
 
 ```sml
-fun a m f = f/m;​
-(*val a = fn : real -> real -> real​*)
+fun a m f = f/m;
+(*val a = fn : real -> real -> real*)
 
-val (body, engine) = (0.0122, 50.0);​
+val (body, engine) = (0.0122, 50.0);
 
-a engine body; (* oops *)​
+a engine body; (* oops *)
 (*val it = 4098.36065574 : real*)
 ```
 
@@ -77,12 +77,12 @@ a engine body; (* oops *)​
 type aliasing doesn't help
 
 ```sml
-type mass = real and force = real​ and acceleration = real;​
+type mass = real and force = real and acceleration = real;
 
-fun a (m:mass) (f:force) : acceleration = f/m;​
-(*val a = fn : mass -> force -> acceleration​*)
+fun a (m:mass) (f:force) : acceleration = f/m;
+(*val a = fn : mass -> force -> acceleration*)
 
-a engine body; (* still oops *)​
+a engine body; (* still oops *)
 (*val it = 4098.36065574 : acceleration*)
 ```
 
@@ -92,7 +92,7 @@ simulate branding using `datatype`
 
 ```sml
 datatype mass = Kg of real;
-datatype force = Newton of real;​
+datatype force = Newton of real;
 datatype acceleration = m_s'2 of real;
 
 fun a (Kg m) (Newton f) = m_s'2 (f / m);
@@ -116,7 +116,7 @@ constructors are functions
 
 ```sml
 datatype mass = Kg of real;
-datatype force = Newton of real;​
+datatype force = Newton of real;
 datatype acceleration = m_s'2 of real;
 
 Kg;
@@ -137,9 +137,9 @@ datatype shape =
   | Circle of real
   | Rectangle of real*real;
 
-fun area (point | Line _) = 0.0​
-  | area (Circle r) = Math.pi*r*r​
-  | area (Rectangle (w, h)) = w * h;​
+fun area (point | Line _) = 0.0
+  | area (Circle r) = Math.pi*r*r
+  | area (Rectangle (w, h)) = w * h;
 (*val area = fn : shape -> real*)
 ```
 
@@ -220,13 +220,13 @@ datatype ('a, 'b) union = type1 of 'a
   | type2 of 'b;
 
 val five = type1 5;
-(*val five = type1 5 : (int,'a) union​*)
+(*val five = type1 5 : (int,'a) union*)
 
 val hello = type2 "hello";
 (*val hello = type2 "hello" : ('a,string) union*)
 
 val five_or_hello = if true then five else hello;
-(*val five_or_hello = type1 5 : (int,string) union​*)
+(*val five_or_hello = type1 5 : (int,string) union*)
 
 val int_char_list = [type1 5, type2 #"a"];
 (*val five_or_hello = [type1 5, type2 #"a"] : (int,char) union list*)
@@ -250,7 +250,7 @@ val tree4 = Br (4, tree2, tree5);
 
 fun size Nil = 0
   | size (Br (v,t1,t2)) = 1 + size t1 + size t2;
-(*val size = fn : ‘a tree -> int*)
+(*val size = fn : 'a tree -> int*)
 ```
 
 ---
