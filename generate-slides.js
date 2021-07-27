@@ -33,5 +33,5 @@ function generate_slides(template_name, prefix) {
     });
 }
 
-generate_slides('ocaml-slide-template.hbs', 'ocaml-');
+generate_slides('sml-slide-template.hbs', 'sml-');
 generate_slides('prolog-slide-template.hbs', 'prolog-');

@@ -4,8 +4,8 @@ function thebe_init() {
         requestKernel: true,
         outputSelector: '[data-output]',
         kernelOptions: {
-            name: "ocaml-jupyter-4.12.0",
-            kernelName: "ocaml-jupyter-4.12.0",
+            name: "smlnj",
+            kernelName: "smlnj",
             path: ".",
             serverSettings: {
                 "baseUrl": "http://localhost:16789",
