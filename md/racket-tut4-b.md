@@ -1,58 +1,52 @@
-# 15. Reflection and Dynamic Evaluation
+# Reflection and Dynamic Evaluation
 
-Racket is a _dynamic_ language. It offers numerous facilities for
-loading, compiling, and even constructing new code at run time.
+(the following slides are based on [the Racket Guide](https://docs.racket-lang.org/guide/reflection.html))
 
-    15.1 `eval`
-      15.1.1 Local Scopes
-      15.1.2 Namespaces
-      15.1.3 Namespaces and Modules
-    15.2 Manipulating Namespaces
-      15.2.1 Creating and Installing Namespaces
-      15.2.2 Sharing Data and Code Across Namespaces
-    15.3 Scripting Evaluation and Using `load`
-    15.4 Code Inspectors for Trusted and Untrusted Code
+<!-- reflection.md -->
 
-## 15.1. `eval`
+---
+
+## `eval` <!-- 1 -->
+
+The `eval` function takes a representation of an expression or definition (as a "quoted" form or syntax object) and evaluates it:
+
+```scheme
+(eval '(+ 1 2))
+;; 3
+```
 
 > This example will not work within a module or in DrRacket's definitions
 > window, but it will work in the interactions window, for reasons that
 > are explained by the end of Namespaces.
 
-The `eval` function takes a representation of an expression or
-definition \(as a "quoted" form or syntax object) and evaluates it:
-
-```scheme
-> (eval '(+ 1 2))
-3
-```
+---vert---
 
 The power of `eval` is that an expression can be constructed
 dynamically:
 
 ```scheme
-> (define (eval-formula formula)
+(define (eval-formula formula)
     (eval `(let ([x 2]
                  [y 3])
              ,formula)))
-> (eval-formula '(+ x y))
-5
-> (eval-formula '(+ (* x y) y))
-9
+(eval-formula '(+ (* x y) y))
+;; 9
 ```
+
+---vert---
 
 Of course, if we just wanted to evaluate expressions with given values
 for `x` and `y`, we do not need `eval`. A more direct approach is to use
 first-class functions:
 
 ```scheme
-> (define (apply-formula formula-proc)
-    (formula-proc 2 3))
-> (apply-formula (lambda (x y) (+ x y)))
-5
-> (apply-formula (lambda (x y) (+ (* x y) y)))
-9
+(define (apply-formula formula-proc)
+  (formula-proc 2 3))
+(apply-formula (lambda (x y) (+ (* x y) y)))
+;; 9
 ```
+
+---vert---
 
 However, if expressions like `(+ x y)` and `(+ (* x y) y)` are read from
 a file supplied by a user, for example, then `eval` might be
@@ -64,7 +58,9 @@ example, a program might load a module on demand using
 `dynamic-require`, which is essentially a wrapper around `eval` to
 dynamically load the module code.
 
-### 15.1.1. Local Scopes
+---vert---
+
+### Local Scopes <!-- 1.1 -->
 
 The `eval` function cannot see local bindings in the context where it is
 called. For example, calling `eval` inside an unquoted `let` form to
@@ -81,6 +77,8 @@ x: undefined;
   in module: top-level
 ```
 
+---vert---
+
 The `eval` function cannot see the `x` and `y` bindings precisely
 because it is a function, and Racket is a lexically scoped language.
 Imagine if `eval` were implemented as
@@ -96,6 +94,8 @@ in `broken-eval-formula`. Lexical scope prevents such confusing and
 fragile behavior, and consequently prevents `eval` from seeing local
 bindings in the context where it is called.
 
+---vert---
+
 You might imagine that even though `eval` cannot see the local bindings
 in `broken-eval-formula`, there must actually be a data structure
 mapping `x` to `2` and `y` to `3`, and you would like a way to get that
@@ -106,7 +106,9 @@ Even when variables cannot be eliminated by constant-folding, normally
 the names of the variables can be eliminated, and the data structures
 that hold local values do not resemble a mapping from names to values.
 
-### 15.1.2. Namespaces
+---
+
+### Namespaces <!-- 1.2 -->
 
 Since `eval` cannot see the bindings from the context where it is
 called, another mechanism is needed to determine dynamically available
@@ -122,15 +124,19 @@ Some functions, such as `eval`, accept an optional namespace argument.
 More often, the namespace used by a dynamic operation is the _current
 namespace_ as determined by the `current-namespace` parameter.
 
+---vert---
+
 When `eval` is used in a REPL, the current namespace is the one that the
 REPL uses for evaluating expressions. That's why the following
 interaction successfully accesses `x` via `eval`:
 
 ```scheme
-> (define x 3)
-> (eval 'x)
-3
+(define x 3)
+(eval 'x)
+;; 3
 ```
+
+---vert---
 
 In contrast, try the following simple module and running it directly in
 DrRacket or supplying the file as a command-line argument to `racket`:
@@ -145,6 +151,8 @@ This fails because the initial current namespace is empty. When you run
 `racket` in interactive mode (see Interactive Mode), the initial
 namespace is initialized with the exports of the `racket` module, but
 when you run a module directly, the initial namespace starts empty.
+
+---vert---
 
 In general, it's a bad idea to use `eval` with whatever namespace
 happens to be installed. Instead, create a namespace explicitly and
@@ -162,7 +170,9 @@ initialized with the exports of `racket/base`. The later section
 Manipulating Namespaces provides more information on creating and
 configuring namespaces.
 
-### 15.1.3. Namespaces and Modules
+---
+
+### Namespaces and Modules <!-- 1.3 -->
 
 As with `let` bindings, lexical scope means that `eval` cannot
 automatically see the definitions of a `module` in which it is called.
@@ -186,6 +196,8 @@ appeared in the `module` body:
 > to an interactively declared module, and so `''m` is the quoted form of
 > the path.
 
+---vert---
+
 The `module->namespace` function is mostly useful from outside a module,
 where the module's full name is known. Inside a `module` form, however,
 the full name of a module may not be known, because it may depend on
@@ -207,7 +219,11 @@ reel in the module's namespace:
 (eval '(cons x y) ns) ; produces (1 . 2)
 ```
 
-## 15.2. Manipulating Namespaces
+---
+
+## Manipulating Namespaces <!-- 2 -->
+
+---vert---
 
 A namespace encapsulates two pieces of information:
 
@@ -220,6 +236,8 @@ A namespace encapsulates two pieces of information:
   distinction between declaration and instance is discussed in Module
   Instantiations and Visits.)
 
+---vert---
+
 The first mapping is used for evaluating expressions in a top-level
 context, as in `(eval '(lambda (x) (+ x 1)))`. The second mapping is
 used, for example, by `dynamic-require` to locate a module. The call
@@ -227,6 +245,8 @@ used, for example, by `dynamic-require` to locate a module. The call
 identifier mapping determines the binding of `require`; if it turns out
 to mean `require`, then the module mapping is used to locate the
 `racket/base` module.
+
+---vert---
 
 From the perspective of the core Racket run-time system, all evaluation
 is reflective. Execution starts with an initial namespace that contains
@@ -236,7 +256,9 @@ Top-level `require` and `define` forms adjusts the identifier mapping,
 and module declarations (typically loaded on demand for a `require`
 form) adjust the module mapping.
 
-### 15.2.1. Creating and Installing Namespaces
+---
+
+### Creating and Installing Namespaces <!-- 2.1 -->
 
 The function `make-empty-namespace` creates a new, empty namespace.
 Since the namespace is truly empty, it cannot at first be used to
@@ -251,6 +273,8 @@ particular,
 fails, because the namespace does not include the primitive modules on
 which `racket` is built.
 
+---vert---
+
 To make a namespace useful, some modules must be _attached_ from an
 existing namespace. Attaching a module adjusts the mapping of module
 names to instances by transitively copying entries (the module and all
@@ -258,6 +282,8 @@ its imports) from an existing namespace's mapping. Normally, instead of
 just attaching the primitive modules—whose names and organization are
 subject to change—a higher-level module is attached, such as `racket` or
 `racket/base`.
+
+---vert---
 
 The `make-base-empty-namespace` function provides a namespace that is
 empty, except that `racket/base` is attached. The resulting namespace is
@@ -279,12 +305,16 @@ commands from a user-specified file. A namespace created with
     (load file)))
 ```
 
+---vert---
+
 Note that the `parameterize` of `current-namespace` does not affect the
 meaning of identifiers like `namespace-require` within the
 `parameterize` body. Those identifiers obtain their meaning from the
 enclosing context (probably a module). Only expressions that are dynamic
 with respect to this code, such as the content of `load`ed files, are
 affected by the `parameterize`.
+
+---vert---
 
 Another subtle point in the above example is the use of
 `(namespace-require 'my-dsl)` instead of `(eval '(require my-dsl))`. The
@@ -298,7 +328,9 @@ above is better, not only because it is more compact, but also because
 it avoids introducing bindings that are not part of the domain-specific
 languages.
 
-### 15.2.2. Sharing Data and Code Across Namespaces
+---
+
+### Sharing Data and Code Across Namespaces <!-- 2.2 -->
 
 Modules not attached to a new namespace will be loaded and instantiated
 afresh if they are demanded by evaluation. For example, `racket/base`
@@ -315,6 +347,8 @@ create a distinct class datatype:
      (eval 'object%)))
 #f
 ```
+
+---vert---
 
 For cases when dynamically loaded code needs to share more code and data
 with its context, use the `namespace-attach-module` function. The first
@@ -334,6 +368,8 @@ to include the module that needs to be shared:
        (eval 'object%))))
 #t
 ```
+
+---vert---
 
 Within a module, however, the combination of `define-namespace-anchor`
 and `namespace-anchor->empty-namespace` offers a more reliable method
@@ -355,6 +391,8 @@ for obtaining a source namespace:
       (dynamic-require file 'plug-in%))))
 ```
 
+---vert---
+
 The anchor bound by `namespace-attach-module` connects the run time of a
 module with the namespace in which a module is loaded \(which might
 differ from the current namespace\).  In the above example, since the
@@ -363,7 +401,9 @@ enclosing module requires `racket/class`, the namespace produced by
 `racket/class`. Moreover, that instance is the same as the one imported
 into the module, so the class datatype is shared.
 
-## 15.3. Scripting Evaluation and Using `load`
+---
+
+## Scripting Evaluation and Using `load` <!-- 3 -->
 
 Historically, Lisp implementations did not offer module systems.
 Instead, large programs were built by essentially scripting the REPL to
@@ -375,8 +415,11 @@ still sometimes a useful capability.
 > macro-defined language extensions \[Flatt02\].
 
 The `load` function runs a REPL script by `read`ing S-expressions from a
-file, one by one, and passing them to `eval`. If a file `"place.rkts"`
-contains
+file, one by one, and passing them to `eval`.
+
+---vert---
+
+If a file `"place.rkts"` contains
 
 ```scheme
 (define city "Salt Lake City")
@@ -392,6 +435,8 @@ Salt Lake City, Utah
 > city
 "Salt Lake City"
 ```
+
+---vert---
 
 Since `load` uses `eval`, however, a module like the following generally
 will not work—for the same reasons described in Namespaces:
@@ -411,6 +456,8 @@ visible for use within the module; after all, the `load` happens
 dynamically, while references to identifiers within the module are
 resolved lexically, and therefore statically.
 
+---vert---
+
 Unlike `eval`, `load` does not accept a namespace argument. To supply a
 namespace to `load`, set the `current-namespace` parameter. The
 following example evaluates the expressions in `"here.rkts"` using the
@@ -422,6 +469,8 @@ bindings of the `racket/base` module:
 (parameterize ([current-namespace (make-base-namespace)])
   (load "here.rkts"))
 ```
+
+---vert---
 
 You can even use `namespace-anchor->namespace` to make the bindings of
 the enclosing module accessible for dynamic evaluation. In the following
@@ -438,8 +487,12 @@ as the bindings of `racket`:
   (load "here.rkts"))
 ```
 
+---vert---
+
 Still, if `"here.rkts"` defines any identifiers, the definitions cannot
 be directly (i.e., statically) referenced by in the enclosing module.
+
+---vert---
 
 The `racket/load` module language is different from `racket` or
 `racket/base`. A module using `racket/load` treats all of its content as
@@ -468,6 +521,8 @@ then running
 
 prints "Utopia".
 
+---vert---
+
 Drawbacks of using `racket/load` include reduced error checking, tool
 support, and performance. For example, with the program
 
@@ -483,53 +538,3 @@ bad
 DrRacket's Check Syntax tool cannot tell that the second `good` is a
 reference to the first, and the unbound reference to `bad` is reported
 only at run time instead of rejected syntactically.
-
-## 15.4. Code Inspectors for Trusted and Untrusted Code
-
-_Code inspectors_ provide the mechanism for determining which modules
-are trusted to use functions like `module->namespace` or unsafe modules
-like `ffi/unsafe`. When a module is declared, the value of
-`current-code-inspector` is associated to the module declaration. When a
-module is instantiated (i.e., when the body of the declaration is
-actually executed), a sub-inspector is created to guard the module's
-exports. Access to the module's protected exports requires a code
-inspector that is stronger (i.e., higher in the inspector hierarchy)
-than the module's instantiation inspector; note that a module's
-declaration inspector is always stronger than its instantiation
-inspector, so modules are declared with the same code inspector can
-access each other's exports.
-
-To distinguish between trusted an untrusted code, load trusted code
-first, then set `current-code-inspector` to the result of
-`(make-inspector (current-code-inspector))` to install a weaker
-inspector, and finally load untrusted code with the weaker inspector in
-place. The weaker inspector should stay in place when any untrusted code
-is run. If necessary, trusted code can restore the original inspector
-temporarily during the dynamic extent of trusted code (as long as it
-does not call back into untrusted code).
-
-Syntax-object constants within a module, such as literal identifiers in
-a template, retain the inspector of their source module. In this way, a
-macro from a trusted module can be used within an untrusted module, and
-protected identifiers in the macro expansion still work, even through
-they ultimately appear in an untrusted module. Typically, such
-identifiers should be armed, so that they cannot be extracted from the
-macro expansion and abused by untrusted code.
-
-When `datum->syntax` is used to transfer the context of a syntax object
-to another, then it may taint the resulting syntax object. Even if the
-source syntax object is not armed, however, the resulting syntax object
-may have limited access to bindings; `datum->syntax` will not transfer
-an inspector from the source syntax object unless `datum->syntax` is
-called during the expansion of a macro whose module's declaration-time
-code inspector is strong enough. More generally, `datum->syntax` chooses
-the strongest inspector that is the same as or weaker than the inspector
-of the currently expanding macro's module and the source syntax object's
-inspector.
-
-Compiled code from a `".zo"` file is inherently untrustworthy,
-unfortunately, since it can be synthesized by means other than
-`compile`. When compiled code is written to a `".zo"` file,
-syntax-object constants within the compiled code lose their inspectors.
-All syntax-object constants within compiled code acquire the enclosing
-module's declaration-time inspector when the code is loaded.
