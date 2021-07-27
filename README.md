@@ -48,6 +48,7 @@ npm run build
 ## build
 
 ```bash
+mkdir slides
 npm run generate-slides
 ```
 
