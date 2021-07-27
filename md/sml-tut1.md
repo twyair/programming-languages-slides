@@ -40,18 +40,15 @@ val it = 10 : int
 
     ```sml
     2 + 2;
-    (*val it = 4 : int*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 * doing simple arithmetic
 
     ```sml
     3.2 - 2.3;
-    (*val it = 0.9 : real*)
-
-    Math.sqrt 2.0;
-    (*val it = 1.414213562 : real*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 ---
 
@@ -63,8 +60,8 @@ naming constants
 
 ```sml
 val seconds = 60;
-(*val seconds = 60 : int*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---vert---
 
@@ -72,14 +69,12 @@ using names in expressions
 
 ```sml
 val minutes = 60;
-(*val minutes = 60 : int*)
 
 val hours = 24;
-(*val hours = 24 : int*)
 
 seconds * minutes * hours;
-(*val it = 86400 : int*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---vert---
 
@@ -87,14 +82,12 @@ the identifier `it`
 
 ```sml
 seconds * minutes * hours;
-(*val it = 86400 : int*)
 
 it div 24;
-(*val it = 3600 : int*)
 
 val secs_in_hour = it;
-(*val secs_in_hour = 3600 : int*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
@@ -137,14 +130,14 @@ h''3_H
 
 ```sml
 val +-+-+ = 1415;
-(*val +-+-+ = 1415 : int*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
 ### ML keywords
 
-`abstype` | `and` | `andalso` | `as` | `case` | `datatype` | `do` | `else​` | `end |` `eqtype` | `exception` | `fn` | `fun` | `functor` | `handle` | `if​` | `in |` `include` | `infix` | `infixr` | `let` | `local` | `nonfix` | `of` | `op​` | `open |` `orelse` | `raise` | `rec` | `sharing` | `sig` | `signature​` | `struct |` `structure` | `then` | `type` | `val` | `while` | `with​` | `withtype`
+`abstype` | `and` | `andalso` | `as` | `case` | `datatype` | `do` | `else` | `end |` `eqtype` | `exception` | `fn` | `fun` | `functor` | `handle` | `if` | `in |` `include` | `infix` | `infixr` | `let` | `local` | `nonfix` | `of` | `op` | `open |` `orelse` | `raise` | `rec` | `sharing` | `sig` | `signature` | `struct |` `structure` | `then` | `type` | `val` | `while` | `with` | `withtype`
 
 ---
 
@@ -170,7 +163,7 @@ val +-+-+ = 1415;
 * conventional precedence (parenthesis can be dropped without change of meaning)
 
     ```sml
-    (((m * n) * l) - (m div j)) + j​
+    (((m * n) * l) - (m div j)) + j
     ```
 
 ---
@@ -205,8 +198,8 @@ constants are written in double quotes
 
 ```sml
 "ML is the best";
-(*val it = "ML is the best" : string*)
 ```
+<!-- .element: data-thebe-executable -->
 
 special characters `\n`, `\t`, `\"`, `\\`
 
@@ -216,8 +209,8 @@ concatenation
 
 ```sml
 "Standard" ^ " ML";
-(*val it = "Standard ML" : string*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---vert---
 
@@ -225,11 +218,10 @@ comparison
 
 ```sml
 "abc" < "cba";
-(*val it = true : bool*)
 
 "zzz" > "aaa";
-(*val it = true : bool*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---vert---
 
@@ -237,8 +229,8 @@ comparison
 
 ```sml
 size(it);
-(*val it = 11 : int*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
@@ -250,35 +242,32 @@ chars are distinguished from strings of length 1 by `#`
 
 ```sml
 "0";
-(*val it = "0" : string*)
 
 #"0";
-(*val it = #"0" : char*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---vert---
 
 conversion between strings and chars
 
 ```sml
-str(#"0");
-(*val it = "0" : string*)
+(str #"0");
 
 String.sub("hello", 0);
-(*val it = #"h" : char*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---vert---
 
 conversion between chars and ASCII
 
 ```sml
-ord(#"0");
-(*val it = 48 : int*)
+(ord #"0");
 
-chr(it);
-(*val it = #"0": char*)
+(chr it);
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
@@ -288,11 +277,10 @@ the two values are
 
 ```sml
 true;
-(*val it = true : bool*)
 
 false;
-(*val it = false : bool*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
@@ -307,15 +295,13 @@ false;
 * the components can be of any type, including tuples
 
 ```sml
-val a = (1.5, 6.8);​
-(*val a = (1.5, 6.8) : real * real​*)
+val a = (1.5, 6.8);
 
-(1, 1.5);​
-(*val it = (1, 1.5) : int * real​*)
+(1, 1.5);
 
-("str",1,true,(#"0",0.1));​
-(*val it = ("str",1,true,(#"0",0.1)) : string * int * bool * (char * real)*)
+("str",1,true,(#"0",0.1));
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
@@ -325,8 +311,8 @@ val a = (1.5, 6.8);​
 
     ```sml
     val me = { name="Ofir", age=30 };
-    (*val me = {age=30,name="Ofir"} : {age:int, name:string}*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 * type lists each field as `label : type`
 * enclosed in braces `{...}`
@@ -337,15 +323,15 @@ val a = (1.5, 6.8);​
 
     ```sml
     #name(me);
-    (*val it = "Ofir" : string*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 * tuples **can be seen as** records with numbers as implicit field labels
 
     ```sml
     #2 ("one", "two", "three");
-    (*val it = "two" : string*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 * note that the numbering starts with 1
 
@@ -360,12 +346,14 @@ val a = (1.5, 6.8);​
     ["a", "list"];
     [];
     ```
+    <!-- .element: data-thebe-executable -->
 
 * elements may appear more than once
 
     ```sml
     [3,4,3];
     ```
+    <!-- .element: data-thebe-executable -->
 
 * elements may have any type but all elements must have the same type
 
@@ -373,6 +361,7 @@ val a = (1.5, 6.8);​
     [(1, "one"), (2, "two")] : (int*string) list
     [[3.1], [], [5.7, ~0.6]] : (real list) list
     ```
+    <!-- .element: data-thebe-executable -->
 
 ---
 
@@ -380,8 +369,8 @@ val a = (1.5, 6.8);​
 
 ```sml
 fun sq(x: int) = x*x;
-(*val sq = fn : int -> int*)
 ```
+<!-- .element: data-thebe-executable -->
 
 * keyword `fun` starts the function declaration
 * `sq` is the function name
@@ -400,23 +389,23 @@ fun sq(x: int) = x*x;
 * simple function call
 
     ```sml
-    sq (3);
-    (*val it = 9 : int*)
+    (sq 3);
     ```
+    <!-- .element: data-thebe-executable -->
 
 * when a function is called the parameter is evaluated and then passed to the function
 
     ```sml
-    sq (sq (3));
-    (*val it = 81 : int*)
+    sq (sq 3);
     ```
+    <!-- .element: data-thebe-executable -->
 
 * the parentheses are optional
 
     ```sml
     sq 3;
-    (*val it = 9 : int*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 ---vert---
 
@@ -424,8 +413,8 @@ fun sq(x: int) = x*x;
 
     ```sml
     fun sq x:int = x*x;
-    (*val sq = fn: int -> int*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 ---
 
@@ -437,17 +426,14 @@ fun sq(x: int) = x*x;
 
 ```sml
 val a = (3, 4);
-(*val a = (3, 4) : real*real*)
 
 fun lengthvec (x:real, y:real) = sqrt(x*x + y*y)
-(*val lengthvec = fn: real*real -> real*)
 
 lengthvec a;
-(*val it = 5.0 : real*)
 
 lengthvec (5.0, 12.0);
-(*val it = 13.0 : real*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
@@ -457,11 +443,10 @@ lengthvec (5.0, 12.0);
 
     ```sml
     fn x:int => x*x;
-    (*val it = fn : int -> int*)
 
     it 3;
-    (*val it = 9 : int*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 * the following declarations are identical
 
@@ -469,6 +454,7 @@ lengthvec (5.0, 12.0);
     fun sq x:int = x*x;
     val sq = fn x:int => x*x;
     ```
+    <!-- .element: data-thebe-executable -->
 
 ---
 
@@ -479,24 +465,23 @@ lengthvec (5.0, 12.0);
     ```sml
     fun inttwice(f: (int->int)) =
         fn x => f (f x);
-    (*val inttwice = fn : (int -> int) -> int -> int*)
     ```
+    <!-- .element: data-thebe-executable -->
 
-* the arrow is right associative so the last line is equivalent to:
+* the arrow is right associative so the type of `inttwice` is equivalent to:
 
     ```sml
-    (*val inttwice = fn : (int -> int) -> (int -> int)*)
+    val inttwice = fn : (int -> int) -> (int -> int)
     ```
 
 * example
 
     ```sml
     inttwice (fn x => x*x);
-    (*val it = fn : int -> int*)
 
     it 3;
-    (*val it = 81 : int*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 ---
 
@@ -510,11 +495,12 @@ lengthvec (5.0, 12.0);
         if n=0 then p else facti (n-1, n*p);
     (*val facti = fn : int * int -> int*)
     ```
+    <!-- .element: data-thebe-executable -->
 
-  * <span class="fragment" data-fragment-index="1">constants `0` and `1` have type `int`.</span>
-  * <span class="fragment" data-fragment-index="2">therefore `n=0` and `n-1` involve integers so `n` has type `int`</span>
-  * <span class="fragment" data-fragment-index="3">`n*p` must be integer multiplication, so `p` has type `int`</span>
-  * <span class="fragment" data-fragment-index="4">`facti` returns type `int`</span>
+  * constants `0` and `1` have type `int`.</span>
+  * therefore `n=0` and `n-1` involve integers so `n` has type `int`</span>
+  * `n*p` must be integer multiplication, so `p` has type `int`</span>
+  * `facti` returns type `int`</span>
 
 ---
 
@@ -549,14 +535,12 @@ and in ML most types are deduced automatically 😎
 
 ```sml
 fun pairself x = (x, x);
-(*val pairself = fn : 'a -> 'a * 'a*)
 
 pairself 4.0;
-(*val it = (4.0,4.0) : real * real*)
 
 fun pair (x,y) = (y,x);
-(*val pair = fn: ('a * 'b) -> ('b * 'a)*)
 ```
+<!-- .element: data-thebe-executable -->
 
 ---
 
@@ -571,16 +555,15 @@ fun pair (x,y) = (y,x);
 
     ```sml
     twice ident;
-    (*stdIn:… Warning: type vars not generalized because...)
-    (*val it = fn : ?.X1 -> ?.X1*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 * you usually may ignore it. or use a workaround:
 
     ```sml
     fn x => (twice ident) (x);
-    (*val it = fn : 'a -> 'a*)
     ```
+    <!-- .element: data-thebe-executable -->
 
 ---
 
@@ -599,29 +582,23 @@ fun pair (x,y) = (y,x);
 * an imperative Pascal program:
 
     ```pascal
-    function gcd(m,n: integer): integer;​
-    var prevm: integer;​
-    begin​
-        while m<>0 do begin​
+    function gcd(m,n: integer): integer;
+    var prevm: integer;
+    begin
+        while m<>0 do begin
             prevm := m;
             m := n mod m;
-            n := prevm​
-        end;​
-        gcd := n​
+            n := prevm
+        end;
+        gcd := n
     end;
     ```
 
 * a functional program in Standard ML:
 
     ```sml
-    fun gcd(m,n) =​
+    fun gcd(m,n) =
         if m=0 then n else gcd(n mod m, m);
     ```
 
 * which one is more efficient? 🧐
-
----
-
-### help me improve! 😊
-
-[tiny.cc/tirgul](http://tiny.cc/tirgul)
