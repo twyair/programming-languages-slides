@@ -1,6 +1,10 @@
 # Units (Components)
 
-_Units_ organize a program into separately compilable and reusable
+(the following slides are based on [the Racket Guide](https://docs.racket-lang.org/guide/units.html))
+
+<!-- units.md -->
+
+<!-- _Units_ organize a program into separately compilable and reusable
 _components_. A unit resembles a procedure in that both are first-class
 values that are used for abstraction. While procedures abstract over
 values in expressions, units abstract over names in collections of
@@ -12,25 +16,13 @@ be partially linked with the exported variables of another unit _prior
 to invocation_. Linking merges multiple units together into a single
 compound unit. The compound unit itself imports variables that will be
 propagated to unresolved imported variables in the linked units, and
-re-exports some variables from the linked units for further linking.
+re-exports some variables from the linked units for further linking. -->
 
-    1 Signatures and Units
+---
 
-    2 Invoking Units
+## Signatures and Units <!-- 1 -->
 
-    3 Linking Units
-
-    4 First-Class Units
-
-    5 Whole-`module` Signatures and Units
-
-    6 Contracts for Units
-      6.1 Adding Contracts to Signatures
-      6.2 Adding Contracts to Units
-
-    7 `unit` versus `module`
-
-## 1. Signatures and Units
+---vert---
 
 The interface of a unit is described in terms of _signatures_. Each
 signature is defined (normally within a `module`) using
@@ -40,8 +32,8 @@ implements a toy factory:
 
 > By convention, signature names end with `^`.
 
-`"toy-factory-sig.rkt"`
 ```scheme
+; toy-factory-sig.rkt
 #lang racket
 
 (define-signature toy-factory^
@@ -53,13 +45,15 @@ implements a toy factory:
 (provide toy-factory^)
 ```
 
+---vert---
+
 An implementation of the `toy-factory^` signature is written using
 `define-unit` with an `export` clause that names `toy-factory^`:
 
 > By convention, unit names end with `@`.
 
-`"simple-factory-unit.rkt"`
 ```scheme
+; simple-factory-unit.rkt
 #lang racket
 
 (require "toy-factory-sig.rkt")
@@ -82,6 +76,8 @@ An implementation of the `toy-factory^` signature is written using
 (provide simple-factory@)
 ```
 
+---vert---
+
 The `toy-factory^` signature also could be referenced by a unit that
 needs a toy factory to implement something else. In that case,
 `toy-factory^` would be named in an `import` clause. For example, a toy
@@ -89,8 +85,8 @@ store would get toys from a toy factory. (Suppose, for the sake of an
 example with interesting features, that the store is willing to sell
 only toys in a particular color.)
 
-`"toy-store-sig.rkt"`
 ```scheme
+; toy-store-sig.rk
 #lang racket
 
 (define-signature toy-store^
@@ -101,8 +97,10 @@ only toys in a particular color.)
 (provide toy-store^)
 ```
 
-`"toy-store-unit.rkt"`
+---vert---
+
 ```scheme
+; toy-store-unit.rkt
 #lang racket
 
 (require "toy-store-sig.rkt"
@@ -132,12 +130,18 @@ only toys in a particular color.)
 (provide toy-store@)
 ```
 
+---vert---
+
 Note that `"toy-store-unit.rkt"` imports `"toy-factory-sig.rkt"`, but
 not `"simple-factory-unit.rkt"`.  Consequently, the `toy-store@` unit
 relies only on the specification of a toy factory, not on a specific
 implementation.
 
-## 2. Invoking Units
+---
+
+## Invoking Units <!-- 2 -->
+
+---vert---
 
 The `simple-factory@` unit has no imports, so it can be invoked directly
 using `invoke-unit`:
@@ -147,6 +151,8 @@ using `invoke-unit`:
 > (invoke-unit simple-factory@)
 Factory started.
 ```
+
+---vert---
 
 The `invoke-unit` form does not make the body definitions available,
 however, so we cannot build any toys with this factory. The
@@ -167,6 +173,8 @@ identifier in `toy-factory^` is defined by the
 name indicates that the identifiers bound by the declaration are
 inferred from `simple-factory@`.
 
+---vert---
+
 Now that the identifiers in `toy-factory^` are defined, we can also
 invoke `toy-store@`, which imports `toy-factory^` to produce
 `toy-store^`:
@@ -186,15 +194,19 @@ that `toy-store@` imports `toy-factory^`, and so it supplies the
 top-level bindings that match the names in `toy-factory^` as imports to
 `toy-store@`.
 
-## 3. Linking Units
+---
+
+## Linking Units <!-- 3 -->
+
+---vert---
 
 We can make our toy economy more efficient by having toy factories that
 cooperate with stores, creating toys that do not have to be repainted.
 Instead, the toys are always created using the store's color, which the
 factory gets by importing `toy-store^`:
 
-`"store-specific-factory-unit.rkt"`
 ```scheme
+; store-specific-factory-unit.rkt
 #lang racket
 
 (require "toy-store-sig.rkt"
@@ -218,10 +230,14 @@ factory gets by importing `toy-store^`:
 (provide store-specific-factory@)
 ```
 
+---vert---
+
 To invoke `store-specific-factory@`, we need `toy-store^` bindings to
 supply to the unit. But to get `toy-store^` bindings by invoking
 `toy-store@`, we will need a toy factory! The unit implementations are
 mutually dependent, and we cannot invoke either before the other.
+
+---vert---
 
 The solution is to _link_ the units together, and then we can invoke the
 combined units. The `define-compound-unit/infer` form links any number
@@ -230,15 +246,17 @@ from the linked units, and it can satisfy each unit's imports using the
 exports of other linked units.
 
 ```scheme
-> (require "toy-factory-sig.rkt")
-> (require "toy-store-sig.rkt")
-> (require "store-specific-factory-unit.rkt")
-> (define-compound-unit/infer toy-store+factory@
-    (import)
-    (export toy-factory^ toy-store^)
-    (link store-specific-factory@
-          toy-store@))
+(require "toy-factory-sig.rkt")
+(require "toy-store-sig.rkt")
+(require "store-specific-factory-unit.rkt")
+(define-compound-unit/infer toy-store+factory@
+  (import)
+  (export toy-factory^ toy-store^)
+  (link store-specific-factory@
+        toy-store@))
 ```
+
+---vert---
 
 The overall result above is a unit `toy-store+factory@` that exports
 both `toy-factory^` and `toy-store^`. The connection between
@@ -248,15 +266,17 @@ signatures that each imports and exports.
 This unit has no imports, so we can always invoke it:
 
 ```scheme
-> (define-values/invoke-unit/infer toy-store+factory@)
-> (stock! 2)
-> (get-inventory)
-(list (toy) (toy))
-> (map toy-color (get-inventory))
-'(green green)
+(define-values/invoke-unit/infer toy-store+factory@)
+(stock! 2)
+(get-inventory)
+;; (list (toy) (toy))
+(map toy-color (get-inventory))
+;; '(green green)
 ```
 
-## 4. First-Class Units
+---
+
+## First-Class Units <!-- 4 -->
 
 The `define-unit` form combines `define` with a `unit` form, similar to
 the way that `(define (f x) ....)`  combines `define` followed by an
@@ -277,19 +297,23 @@ written as
    ....))
 ```
 
+---vert---
+
 A difference between this expansion and `define-unit` is that the
 imports and exports of `toy-store@` cannot be inferred. That is, besides
 combining `define` and `unit`, `define-unit` attaches static information
 to the defined identifier so that its signature information is available
 statically to `define-values/invoke-unit/infer` and other forms.
 
+---vert---
+
 Despite the drawback of losing static signature information, `unit` can
 be useful in combination with other forms that work with first-class
 values. For example, we could wrap a `unit` that creates a toy store in
 a `lambda` to supply the store's color:
 
-`"toy-store-maker.rkt"`
 ```scheme
+; toy-store-maker.rkt
 #lang racket
 
 (require "toy-store-sig.rkt"
@@ -322,6 +346,8 @@ a `lambda` to supply the store's color:
 
 (provide toy-store@-maker)
 ```
+
+---vert---
 
 To invoke a unit created by `toy-store@-maker`, we must use
 `define-values/invoke-unit`, instead of the `/infer` variant:
@@ -381,7 +407,7 @@ arbitrary expression; it statically associates signature information to
 the identifier, and it dynamically checks the signatures against the
 first-class unit produced by the expression.
 
-## 5. Whole-`module` Signatures and Units
+## Whole-`module` Signatures and Units <!-- 5 -->
 
 In programs that use units, modules like `"toy-factory-sig.rkt"` and
 `"simple-factory-unit.rkt"` are common. The `racket/signature` and
@@ -429,13 +455,13 @@ The unit `simple-factory@` is automatically provided from the module,
 inferred from the filename `"simple-factory-unit.rkt"` by replacing the
 `"-unit.rkt"` suffix with `@`.
 
-## 6. Contracts for Units
+## Contracts for Units <!-- 6 -->
 
-There are a couple of ways of protecting units with contracts.  One way
+<!-- There are a couple of ways of protecting units with contracts.  One way
 is useful when writing new signatures, and the other handles the case
-when a unit must conform to an already existing signature.
+when a unit must conform to an already existing signature. -->
 
-### 6.1. Adding Contracts to Signatures
+### Adding Contracts to Signatures <!-- 6.1 -->
 
 When contracts are added to a signature, then all units which implement
 that signature are protected by those contracts.  The following version
@@ -443,6 +469,7 @@ of the `toy-factory^` signature adds the contracts previously written in
 comments:
 
 `"contracted-toy-factory-sig.rkt"`
+
 ```scheme
 #lang racket
 
@@ -460,6 +487,7 @@ Now we take the previous implementation of `simple-factory@` and
 implement this version of `toy-factory^` instead:
 
 `"contracted-simple-factory-unit.rkt"`
+
 ```scheme
 #lang racket
 
@@ -517,7 +545,7 @@ repaint: contract violation
   at: eval:34.0
 ```
 
-### 6.2. Adding Contracts to Units
+### Adding Contracts to Units <!-- 6.2 -->
 
 However, sometimes we may have a unit that must conform to an already
 existing signature that is not contracted.  In this case, we can create
@@ -529,6 +557,7 @@ the regular `toy-factory^`, but whose exports have been protected with
 an appropriate unit contract.
 
 `"wrapped-simple-factory-unit.rkt"`
+
 ```scheme
 #lang racket
 
@@ -602,7 +631,7 @@ wrapped-simple-factory@: contract violation
   at: <collects>/racket/unit.rkt
 ```
 
-## 7. `unit` versus `module`
+## `unit` versus `module` <!-- 7 -->
 
 As a form for modularity, `unit` complements `module`:
 
