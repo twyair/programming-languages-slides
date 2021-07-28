@@ -15,17 +15,14 @@ entities of different kinds are distinguished by the capitalization of their nam
 
 ### example - circle area
 
-`$$area = \pi \cdot r^2$$`
+$$area = \pi \cdot r^2$$
 
 ```ocaml
 let pi = 3.14159;;
-(*val pi: float = 3.14159*)
 
 let area r = pi *. r *. r;;
-(*val area : float -> float = <fun>*)
 
 area 2.0;;
-(*- : float = 12.56636*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -40,7 +37,6 @@ area 2.0;;
 
     ```ocaml
     let pi = "pi";;
-    (*val pi : string = "pi"*)
     ```
     <!-- .element: data-thebe-executable -->
 
@@ -50,7 +46,6 @@ area 2.0;;
 
     ```ocaml
     pi;;
-    (*- : string = "pi"*)
     ```
     <!-- .element: data-thebe-executable -->
 
@@ -58,7 +53,6 @@ area 2.0;;
 
     ```ocaml
     area 1.0;;
-    (*- : float = 3.14159*)
     ```
     <!-- .element: data-thebe-executable -->
 
@@ -170,13 +164,10 @@ match Random.int 10 with
 
 ```ocaml
 type vec = float * float;;
-(*type vec = float * float*)
 
 let (++) (x1, y1) (x2, y2) : vec = (x1 +. x2, y1 +. y2);;
-(*val ( ++ ) : float * float -> float * float -> vec = <fun>*)
 
 (3.6, 0.9) ++ (0.1, 0.2) ++ (20.0, 30.0);;
-(*- : vec = (23.7, 31.1)*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -189,14 +180,14 @@ let D in E
 ```
 
 ```ocaml
+let rec gcd m n = if m = 0 then n else gcd (n mod m) m;;
+
 let fraction n d =
     (n / (gcd n d), d / (gcd n d));;
-(*val fraction : int -> int -> int * int = <fun>*)
 
 let fraction n d =
     let com = gcd n d in
     (n / com, d / com);;
-(*val fraction : int -> int -> int * int = <fun>*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -223,7 +214,6 @@ let sq_root a =
     then next_x
     else find_root next_x in
   find_root 1.0;;
-(*val sq_root : float -> float = <fun>*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -242,8 +232,6 @@ let ID1 = E1 and ... and IDn = En
 let x = 3;;
 let y = 5;;
 let x = y and y = x;;
-(*val x : int = 5
-  val y : int = 3*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -280,11 +268,7 @@ H: if z>0 then (z:=z-x; goto F) else stop
 let rec f x y z = g (x + 1) y z
 and g x y z = if y < z then f x y z else h x (x + y) z
 and h x y z = if z > 0 then f x y (z - x) else (x, y, z);;
-(*val f : int -> int -> int -> int * int * int = <fun>
-  val g : int -> int -> int -> int * int * int = <fun>
-  val h : int -> int -> int -> int * int * int = <fun>*)
 
 f 0 0 0;;
-(*- : int * int * int = (1, 1, 0)*)
 ```
 <!-- .element: data-thebe-executable -->
