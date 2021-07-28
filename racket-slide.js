@@ -28,6 +28,9 @@ function thebe_init() {
                 node.querySelector("div.jp-OutputArea-output").appendChild(pre);
             }
             Reveal.layout();
+        },
+        on_execute: (cm) => {
+            cm.display.input.blur();
         }
     });
 }
