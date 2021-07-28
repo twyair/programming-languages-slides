@@ -1030,21 +1030,3 @@ a `'` expands to a `quote` form in quite a literal way
 (car '(quote road))
 ;; 'quote
 ```
-
-<!-- ---vert---
-
-The `'` abbreviation works in output as well as input. The REPL's
-printer recognizes the symbol `'quote` as the first element of a
-two-element list when printing output, in which case it uses `'` to
-print the output:
-
-```scheme
-(quote (quote road))
-;; ''road
-'(quote road)
-;; ''road
-''road
-;; ''road
-``` -->
-
-<!-- 4.3 -->

@@ -85,4 +85,4 @@ go to <http://localhost:8000/>
 - [ ] feature idea for `thebe`: make the kernel execute certain cells on load or when they first appear
 - [ ] in `ocaml-tut3-b.md` replace the `SortedList` example (?)
 - [X] integrate [iracket](https://github.com/rmculpepper/iracket)
-- [ ] decide which of the racket tutorials to remove (4-a? 1-d?)
+- [X] decide which of the racket tutorials to remove (4-a? 1-d?)
