@@ -11,7 +11,7 @@
 * double-semicolon terminated
 
 ```text
-    OCaml version 4.08.1
+    OCaml version 4.12.0
 # 5 + 3;;
 - : int = 8
 ```
@@ -180,8 +180,8 @@ foo (1, 2);; (*compilation error!*)
 you might need to add parentheses at times
 
 ```ocaml
-foo -1 -2 (*compilation error! parsed as `((foo - 1) - 2)`*)
 foo (-1) (-2) (*OK*)
+foo -1 -2 (*compilation error! parsed as `((foo - 1) - 2)`*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -303,10 +303,8 @@ conversion between strings and chars
 
 ```ocaml
 String.make 1 'c';;
-(*- : string = "c"*)
 
 String.get "hello" 0;;
-(*- : char = 'h'*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -316,10 +314,8 @@ conversion between chars and ASCII
 
 ```ocaml
 Char.code 'a';;
-(*- : int = 97*)
 
 Char.chr 97;;
-(*- : char = 'a'*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -331,10 +327,8 @@ the two values are
 
 ```ocaml
 true;;
-(*- : bool = true*)
 
 false;;
-(*- : bool = false*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -348,7 +342,6 @@ has only one value
 
 ```ocaml
 ();;
-(*- : unit = ()*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -370,7 +363,6 @@ the tuple type is written using `*`
 
 ```ocaml
 (1, 2, 3);;
-(*- : int * int * int = (1, 2, 3)*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -406,7 +398,6 @@ selecting a field using `.`
 
 ```ocaml
 me.name;;
-(*- : string = "Ofir"*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -416,7 +407,6 @@ a record is identified by its fields
 
 ```ocaml
 let me = {name="Ofir"; age=30};;
-(*val me : person = {name = "Ofir"; age = 30}*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -478,7 +468,6 @@ elements may have any type but all elements must have the same type
 
 ```ocaml
 1 + 2 = 3;;
-(*- : bool = true*)
 ```
 
 ---
@@ -597,10 +586,8 @@ let factorial n =
 
     ```ocaml
     fun (x:int) -> x * x;;
-    (*- : int -> int = <fun>*)
 
     (fun (x:int) -> x * x) 3;;
-    (*v- : int = 9*)
     ```
     <!-- .element: data-thebe-executable -->
 
@@ -620,7 +607,6 @@ let factorial n =
 
     ```ocaml
     let inttwice (f: (int->int)) = fun x -> f (f x);;
-    (*val inttwice : (int -> int) -> int -> int = <fun>*)
     ```
     <!-- .element: data-thebe-executable -->
 
@@ -634,10 +620,8 @@ let factorial n =
 
     ```ocaml
     let f = inttwice (fun x -> x*x);;
-    (*val f : int -> int = <fun>*)
 
     f 3;;
-    (*- : int = 81*)
     ```
     <!-- .element: data-thebe-executable -->
 
@@ -761,13 +745,10 @@ and in OCaml most types are deduced automatically 😎
 
 ```ocaml
 let pairself x = (x, x);;
-(*val pairself : 'a -> 'a * 'a = <fun>*)
 
 pairself 4.0;;
-(*- : float * float = (4., 4.)*)
 
 let pair (x,y) = (y,x);;
-(*val pair : 'a * 'b -> 'b * 'a = <fun>*)
 ```
 <!-- .element: data-thebe-executable -->
 
