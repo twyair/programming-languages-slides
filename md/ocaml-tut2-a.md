@@ -239,7 +239,7 @@ let x = y and y = x;;
 
 ### mutually recursive functions
 
-`$$\frac{\pi}{4}=\sum_{k=0}^\infty \frac{1}{4k+1} - \frac{1}{4k+3} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}$$`
+$$\frac{\pi}{4}=\sum_{k=0}^\infty \frac{1}{4k+1} - \frac{1}{4k+3} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \frac{1}{9}$$
 
 ```ocaml
 let rec pos d = neg (d -. 2.0) +. 1.0 /. d

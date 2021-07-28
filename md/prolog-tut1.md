@@ -115,7 +115,7 @@ likes(X, course_236319).
 
 variables are universally quantified
 
-`$$\forall X,likes(X, course\_236319)$$`
+$$\forall X,likes(X, course\_236319)$$
 
 ---vert---
 
@@ -130,7 +130,7 @@ eats(X, salmon), eats(X, honey).
 
 variables are existentially quantified
 
-`$$\exists X,eats(X, salmon) \land eats(X, honey)$$`
+$$\exists X,eats(X, salmon) \land eats(X, honey)$$
 
 ---vert---
 

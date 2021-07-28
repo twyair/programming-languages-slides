@@ -194,9 +194,9 @@ let (--) = range;;
 
 ### `take` and `drop`
 
-`$$xs = [x_1, x_2, x_3, \ldots, x_k, x_{k+1}, \ldots, x_n]$$`
-`$$take(k, xs) = [x_1, x_2, x_3, \ldots, x_k]$$`
-`$$drop(k, xs) = [x_{k+1}, \ldots, x_n]$$`
+$$xs = [x_1, x_2, x_3, \ldots, x_k, x_{k+1}, \ldots, x_n]$$
+$$take(k, xs) = [x_1, x_2, x_3, \ldots, x_k]$$
+$$drop(k, xs) = [x_{k+1}, \ldots, x_n]$$
 
 ---vert---
 
@@ -435,7 +435,7 @@ let rec filter_map f = function
 
 a polynomial is represented as a list of `$(coeff,degree)$` pairs
 
-`$$5x^3 + 2x + 7$$`
+$$5x^3 + 2x + 7$$
 
 ```ocaml
 type polynomial = (int * int) list;;

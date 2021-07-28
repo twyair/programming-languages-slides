@@ -43,7 +43,7 @@ precedence and associativity are predefined and determined by the characters use
 
 ### currying
 
-any function of two arguments is actually a **curried** function of one argument `$$\alpha\rightarrow (\beta \rightarrow \gamma)$$`
+any function of two arguments is actually a **curried** function of one argument $$\alpha\rightarrow (\beta \rightarrow \gamma)$$
 
 ---vert---
 

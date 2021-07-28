@@ -792,7 +792,7 @@ g 2;;
 * functional - stateless. using expressions recursively to calculate the result
 * example: Euclid's algorithm for the Greatest Common Divisor (GCD) of two natural numbers:
 
-`$$gcd(m,n) = \begin{cases}n,\;m = 0&\\gcd(n\;mod\;m,m), \;m>0\end{cases}$$`
+$$gcd(m,n) = \begin{cases}n,\;m = 0&\\gcd(n\;mod\;m,m), \;m>0\end{cases}$$
 
 ---vert---
 
