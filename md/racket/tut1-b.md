@@ -880,27 +880,11 @@ the more traditional name for `cons?` is `pair?`
 ;; #t
 ```
 
-<!-- The only thing more confusing to new Racketeers than non-list pairs is
-the printing convention for pairs where the second element _is_ a pair,
-but _is not_ a list:
-
-```scheme
-> (cons 0 (cons 1 2))
-'(0 1 . 2)
-```
-
-In general, the rule for printing a pair is as follows: use the dot
-notation unless the dot is immediately followed by an open parenthesis.
-In that case, remove the dot, the open parenthesis, and the matching
-close parenthesis. Thus, `'(0 . (1 . 2))` becomes `'(0 1 . 2)`, and `'(1
-. (2 . (3 . ())))` becomes `'(1 2 3)`. -->
-
 ---
 
 ### TODO: Quoting Pairs and Symbols with `quote` <!-- 4.1 -->
 
-A list prints with a quote mark before it, but if an element of a list
-is itself a list, then no quote mark is printed for the inner list:
+A list prints with a quote mark before it, but if an element of a list is itself a list, then no quote mark is printed for the inner list:
 
 ```scheme
 > (list (list 1) (list 2 3) (list 4))
