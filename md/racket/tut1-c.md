@@ -36,7 +36,9 @@ in the result of a test expression for `if`, `cond`, `and`, `or`, etc., any valu
 
 ## Numbers <!-- 2 -->
 
-a Racket __number__ is either exact or inexact:
+---vert---
+
+a Racket _number_ is either exact or inexact
 
 an __exact__ number is one of:
 
@@ -99,28 +101,20 @@ Computations that involve an inexact number produce inexact results
 ;; 3602879701896397/36028797018963968
 ```
 
----vert---
+<!-- ---vert---
 
-Inexact results are also produced by procedures such as `sqrt`, `log`,
-and `sin` when an exact result would require representing real numbers
-that are not rational. Racket can represent only rational numbers and
-complex numbers with rational parts.
+Inexact results are also produced by procedures such as `sqrt`, `log`, and `sin` when an exact result would require representing real numbers that are not rational. Racket can represent only rational numbers and complex numbers with rational parts.
 
 ```scheme
 (sin 0)   ; rational...
 ;; 0
 (sin 1/2) ; not rational...
 ;; 0.479425538604203
-```
+``` -->
 
----vert---
+<!-- ---vert---
 
-In terms of performance, computations with small integers are typically
-the fastest, where "small" means that the number fits into one bit less
-than the machine's word-sized representation for signed numbers.
-Computation with very large exact integers or with non-integer exact
-numbers can be much more expensive than computation with inexact
-numbers.
+In terms of performance, computations with small integers are typically the fastest, where "small" means that the number fits into one bit less than the machine's word-sized representation for signed numbers. Computation with very large exact integers or with non-integer exact numbers can be much more expensive than computation with inexact numbers.
 
 ```scheme
 (define (sigma f a b)
@@ -134,15 +128,12 @@ numbers.
 (time (round (sigma (lambda (x) (/ 1.0 x)) 1 2000)))
 ;; cpu time: 0 real time: 0 gc time: 0
 ;; 8.0
-```
+``` -->
 
 ---vert---
 
-The number categories _integer_, _rational_, _real_ (always rational),
-and _complex_ are defined in the usual way, and are recognized by the
-procedures `integer?`, `rational?`, `real?`, and `complex?`, in addition
-to the generic `number?`. A few mathematical procedures accept only real
-numbers, but most implement standard extensions to complex numbers.
+the number categories _integer_, _rational_, _real_, and _complex_ are defined in the usual way, 
+<!-- A few mathematical procedures accept only real numbers, but most implement standard extensions to complex numbers. -->
 
 ```scheme
 (integer? 5)
@@ -157,38 +148,31 @@ numbers, but most implement standard extensions to complex numbers.
 ;; #t
 (complex? 1.0+2.0i)
 ;; #t
-(abs -5)
-;; 5
-(abs -5+2i)
-;; abs: contract violation
-;;  expected: real?
-;;  given: -5+2i
-(sin -5+2i)
-;; 3.6076607742131563+1.0288031496599335i
 ```
 
 ---vert---
 
-The `=` procedure compares numbers for numerical equality. If it is
-given both inexact and exact numbers to compare, it essentially converts
-the inexact numbers to exact before comparing. The `eqv?` (and therefore
-`equal?`) procedure, in contrast, compares numbers considering both
-exactness and numerical equality.
+`=` compares numbers for numerical equality
+
+<!-- If it is given both inexact and exact numbers to compare, it essentially converts the inexact numbers to exact before comparing. -->
 
 ```scheme
 (= 1 1.0)
 ;; #t
-(eqv? 1 1.0)
-;; #f
 ```
 
 ---vert---
 
-Beware of comparisons involving inexact numbers, which by their nature
-can have surprising behavior. Even apparently simple inexact numbers may
-not mean what you think they mean; for example, while a base-2 IEEE
-floating-point number can represent `1/2` exactly, it can only
-approximate `1/10`:
+`eqv?` (and `equal?`) compares numbers considering both exactness and numerical equality
+
+```scheme
+(eqv? 1 1.0)
+;; #f
+```
+
+<!-- ---vert---
+
+Beware of comparisons involving inexact numbers, which by their nature can have surprising behavior. Even apparently simple inexact numbers may not mean what you think they mean; for example, while a base-2 IEEE floating-point number can represent `1/2` exactly, it can only approximate `1/10`:
 
 ```scheme
 (= 1/2 0.5)
@@ -197,140 +181,119 @@ approximate `1/10`:
 ;; #f
 (inexact->exact 0.1)
 ;; 3602879701896397/36028797018963968
-```
+``` -->
 
 ---
 
 ## Characters <!-- 3 -->
 
-A Racket _character_ corresponds to a Unicode _scalar value_. Roughly, a
-scalar value is an unsigned integer whose representation fits into 21
-bits, and that maps to some notion of a natural-language character or
-piece of a character. Technically, a scalar value is a simpler notion
-than the concept called a "character" in the Unicode standard, but it's
-an approximation that works well for many purposes. For example, any
-accented Roman letter can be represented as a scalar value, as can any
-common Chinese character.
+---vert---
 
-Although each Racket character corresponds to an integer, the character
-datatype is separate from numbers. The `char->integer` and
-`integer->char` procedures convert between scalar-value numbers and the
-corresponding character.
+a Racket _character_ corresponds to a Unicode _scalar value_
 
-A printable character normally prints as `#\` followed by the
-represented character. An unprintable character normally prints as `#\u`
-followed by the scalar value as hexadecimal number. A few characters are
-printed specially; for example, the space and linefeed characters print
-as `#\space` and `#\newline`, respectively.
+a character literal is `#\` followed by the represented character
 
-> +\[missing\] in \[missing\] documents the fine points of the syntax of
-> characters.
-
-Examples:
+exceptions: `#\space` and `#\newline`
 
 ```scheme
-> (integer->char 65)
-#\A
-> (char->integer #\A)
-65
-> #\λ
+(integer->char 65)
+;; #\A
+(char->integer #\A)
+;; 65
 #\λ
-> #\u03BB
-#\λ
-> (integer->char 17)
-#\u0011
-> (char->integer #\space)
-32
+;; #\λ
 ```
 
-The `display` procedure directly writes a character to the current
-output port (see \[missing\]), in contrast to the character-constant
-syntax used to print a character result.
+---vert---
 
-Examples:
+a character literal can be given as a hexadecimal number prefixed by `#\u`
 
 ```scheme
-> #\A
+#\u03BB
+;; #\λ
+(integer->char 17)
+;; #\u0011
+(char->integer #\space)
+;; 32
+```
+
+---vert---
+
+`display` directly writes a character (i.e without `#\`)
+
+```scheme
 #\A
-> (display #\A)
-A
+;; #\A
+(display #\A)
+;; A
 ```
 
-Racket provides several classification and conversion procedures on
-characters. Beware, however, that conversions on some Unicode characters
-work as a human would expect only when they are in a string \(e.g.,
-upcasing "ß" or downcasing "Σ").
+---vert---
 
-Examples:
+some builtin functions on characters:
 
 ```scheme
-> (char-alphabetic? #\A)
-#t
-> (char-numeric? #\0)
-#t
-> (char-whitespace? #\newline)
-#t
-> (char-downcase #\A)
-#\a
-> (char-upcase #\ß)
-#\ß
+(char-alphabetic? #\A)
+;; #t
+(char-numeric? #\0)
+;; #t
+(char-whitespace? #\newline)
+;; #t
+(char-downcase #\A)
+;; #\a
+(char-upcase #\ß)
+;; #\ß
 ```
 
-The `char=?` procedure compares two or more characters, and `char-ci=?`
-compares characters ignoring case. The `eqv?` and `equal?` procedures
-behave the same as `char=?` on characters; use `char=?` when you want to
-more specifically declare that the values being compared are characters.
+---vert---
 
-Examples:
+`char=?` compares two or more characters and `char-ci=?` compares characters ignoring case
 
 ```scheme
-> (char=? #\a #\A)
-#f
-> (char-ci=? #\a #\A)
-#t
-> (eqv? #\a #\A)
-#f
+(char=? #\a #\A)
+;; #f
+(char-ci=? #\a #\A)
+;; #t
+(eqv? #\a #\A)
+;; #f
 ```
 
 ---
 
 ## Strings (Unicode) <!-- 4 -->
 
-A _string_ is a fixed-length array of characters. It prints using double
-quotes, where double quote and backslash characters within the string
-are escaped with backslashes. Other common string escapes are supported,
-including `\n` for a linefeed, `\r` for a carriage return, octal escapes
-using `\` followed by up to three octal digits, and hexadecimal escapes
-with `\u` \(up to four digits\).  Unprintable characters in a string are
-normally shown with `\u` when the string is printed.
+---vert---
 
-
-The `display` procedure directly writes the characters of a string to
-the current output port (see \[missing\]), in contrast to the
-string-constant syntax used to print a string result.
+a _string_ is a fixed-length array of characters
 
 ```scheme
-> "Apple"
-"Apple"
-> "\u03BB"
-"λ"
-> (display "Apple")
-Apple
-> (display "a \"quoted\" thing")
-a "quoted" thing
-> (display "two\nlines")
-two
-lines
-> (display "\u03BB")
-λ
+"racket\n"
+;; "racket\n"
 ```
 
-A string can be mutable or immutable; strings written directly as
-expressions are immutable, but most other strings are mutable. The
-`make-string` procedure creates a mutable string given a length and
-optional fill character. The `string-ref` procedure accesses a character
-from a string (with 0-based indexing); the `string-set!`  procedure
-changes a character in a mutable string.
+---vert---
+
+`display` directly writes the characters of a string
+
+```scheme
+"Apple"
+;; "Apple"
+"\u03BB"
+;; "λ"
+(display "Apple")
+;; Apple
+(display "a \"quoted\" thing")
+;; a "quoted" thing
+(display "two\nlines")
+;; two
+;; lines
+(display "\u03BB")
+;; λ
+```
+
+---vert---
+
+A string can be mutable or immutable; strings written directly as expressions are immutable, but most other strings are mutable. The `make-string` procedure creates a mutable string given a length and optional fill character. The `string-ref` procedure accesses a character from a string (with 0-based indexing); the `string-set!`  procedure changes a character in a mutable string.
 
 ```scheme
 > (string-ref "Apple" 0)
@@ -343,14 +306,9 @@ changes a character in a mutable string.
 "..λ.."
 ```
 
-String ordering and case operations are generally _locale-independent_;
-that is, they work the same for all users. A few _locale-dependent_
-operations are provided that allow the way that strings are case-folded
-and sorted to depend on the end-user's locale. If you're sorting
-strings, for example, use `string<?` or `string-ci<?` if the sort result
-should be consistent across machines and users, but use
-`string-locale<?` or `string-locale-ci<?` if the sort is purely to order
-strings for an end user.
+---vert---
+
+String ordering and case operations are generally _locale-independent_; that is, they work the same for all users. A few _locale-dependent_ operations are provided that allow the way that strings are case-folded and sorted to depend on the end-user's locale. If you're sorting strings, for example, use `string<?` or `string-ci<?` if the sort result should be consistent across machines and users, but use `string-locale<?` or `string-locale-ci<?` if the sort is purely to order strings for an end user.
 
 ```scheme
 > (string<? "apple" "Banana")
@@ -364,30 +322,24 @@ strings for an end user.
 "STRAßE"
 ```
 
-For working with plain ASCII, working with raw bytes, or
-encoding/decoding Unicode strings as bytes, use byte strings.
-
 ---
 
 ## Bytes and Byte Strings <!-- 5 -->
 
-A _byte_ is an exact integer between `0` and `255`, inclusive. The
-`byte?` predicate recognizes numbers that represent bytes.
+---vert---
+
+a _byte_ is an exact integer between `0` and `255`, inclusive
 
 ```scheme
-> (byte? 0)
-#t
-> (byte? 256)
-#f
+(byte? 0)
+;; #t
+(byte? 256)
+;; #f
 ```
 
-A _byte string_ is similar to a string—see Strings (Unicode)—but its
-content is a sequence of bytes instead of characters. Byte strings can
-be used in applications that process pure ASCII instead of Unicode text.
-The printed form of a byte string supports such uses in particular,
-because a byte string prints like the ASCII decoding of the byte string,
-but prefixed with a `#`. Unprintable ASCII characters or non-ASCII bytes
-in the byte string are written with octal notation.
+---vert---
+
+A _byte string_ is similar to a string—see Strings (Unicode)—but its content is a sequence of bytes instead of characters. Byte strings can be used in applications that process pure ASCII instead of Unicode text. The printed form of a byte string supports such uses in particular, because a byte string prints like the ASCII decoding of the byte string, but prefixed with a `#`. Unprintable ASCII characters or non-ASCII bytes in the byte string are written with octal notation.
 
 ```scheme
 > #"Apple"
@@ -405,13 +357,9 @@ in the byte string are written with octal notation.
 #"\1\377"
 ```
 
-The `display` form of a byte string writes its raw bytes to the current
-output port (see \[missing\]). Technically, `display` of a normal (i.e,.
-character) string prints the UTF-8 encoding of the string to the current
-output port, since output is ultimately defined in terms of bytes;
-`display` of a byte string, however, writes the raw bytes with no
-encoding. Along the same lines, when this documentation shows output, it
-technically shows the UTF-8-decoded form of the output.
+---vert---
+
+The `display` form of a byte string writes its raw bytes to the current output port (see \[missing\]). Technically, `display` of a normal (i.e,. character) string prints the UTF-8 encoding of the string to the current output port, since output is ultimately defined in terms of bytes; `display` of a byte string, however, writes the raw bytes with no encoding. Along the same lines, when this documentation shows output, it technically shows the UTF-8-decoded form of the output.
 
 ```scheme
 > (display #"Apple")
@@ -422,11 +370,9 @@ Apple
 λ
 ```
 
-For explicitly converting between strings and byte strings, Racket
-supports three kinds of encodings directly: UTF-8, Latin-1, and the
-current locale's encoding. General facilities for byte-to-byte
-conversions (especially to and from UTF-8) fill the gap to support
-arbitrary string encodings.
+---vert---
+
+For explicitly converting between strings and byte strings, Racket supports three kinds of encodings directly: UTF-8, Latin-1, and the current locale's encoding. General facilities for byte-to-byte conversions (especially to and from UTF-8) fill the gap to support arbitrary string encodings.
 
 ```scheme
 > (bytes->string/utf-8 #"\316\273")
@@ -451,58 +397,26 @@ for the current locale
 
 ## Symbols <!-- 6 -->
 
-A _symbol_ is an atomic value that prints like an identifier preceded
-with `'`.  An expression that starts with `'` and continues with an
-identifier produces a symbol value.
+---vert---
 
-Examples:
+a _symbol_ is an atomic value that prints like an identifier preceded with `'`
 
 ```scheme
-> 'a
 'a
-> (symbol? 'a)
-#t
+;; 'a
+(symbol? 'a)
+;; #t
 ```
 
-For any sequence of characters, exactly one corresponding symbol is
-_interned_; calling the `string->symbol` procedure, or `read`ing a
-syntactic identifier, produces an interned symbol. Since interned
-symbols can be cheaply compared with `eq?` (and thus `eqv?` or
-`equal?`), they serve as a convenient values to use for tags and
-enumerations.
+---vert---
 
-Symbols are case-sensitive. By using a `#ci` prefix or in other ways,
-the reader can be made to case-fold character sequences to arrive at a
-symbol, but the reader preserves case by default.
+Any string (i.e., any character sequence) can be supplied to `string->symbol` to obtain the corresponding symbol. For reader input, any character can appear directly in an identifier, except for whitespace and the following special characters: `(` `)` `[` `]` `{` `}` `"` `,` `'` `` ` `` `;` `#` `|` `\`
 
-```scheme
-> (eq? 'a 'a)
-#t
-> (eq? 'a (string->symbol "a"))
-#t
-> (eq? 'a 'b)
-#f
-> (eq? 'a 'A)
-#f
-> #ci'A
-'a
-```
+<!-- Actually, `#` is disallowed only at the beginning of a symbol, and then only if not followed by `%`; otherwise, `#` is allowed, too. Also, `.` by itself is not a symbol. -->
 
-Any string (i.e., any character sequence) can be supplied to
-`string->symbol` to obtain the corresponding symbol. For reader input,
-any character can appear directly in an identifier, except for
-whitespace and the following special characters:
+---vert---
 
-   `(` `)` `[` `]` `{` `}` `"` `,` `'` ` `;` `#` `|` `\`
-
-Actually, `#` is disallowed only at the beginning of a symbol, and then
-only if not followed by `%`; otherwise, `#` is allowed, too. Also, `.`
-by itself is not a symbol.
-
-Whitespace or special characters can be included in an identifier by
-quoting them with `|` or `\`. These quoting mechanisms are used in the
-printed form of identifiers that contain special characters or that
-might otherwise look like numbers.
+Whitespace or special characters can be included in an identifier by quoting them with `|` or `\`. These quoting mechanisms are used in the printed form of identifiers that contain special characters or that might otherwise look like numbers.
 
 ```scheme
 > (string->symbol "one, two")
@@ -511,8 +425,9 @@ might otherwise look like numbers.
 '|6|
 ```
 
-The `write` function prints a symbol without a `'` prefix. The `display`
-form of a symbol is the same as the corresponding string.
+---vert---
+
+The `write` function prints a symbol without a `'` prefix. The `display` form of a symbol is the same as the corresponding string.
 
 ```scheme
 > (write 'Apple)
@@ -525,10 +440,9 @@ Apple
 6
 ```
 
-The `gensym` and `string->uninterned-symbol` procedures generate fresh
-_uninterned_ symbols that are not equal \(according to `eq?`) to any
-previously interned or uninterned symbol. Uninterned symbols are useful
-as fresh tags that cannot be confused with any other value.
+<!-- ---vert---
+
+The `gensym` and `string->uninterned-symbol` procedures generate fresh _uninterned_ symbols that are not equal \(according to `eq?`) to any previously interned or uninterned symbol. Uninterned symbols are useful as fresh tags that cannot be confused with any other value.
 
 ```scheme
 > (define s (gensym))
@@ -538,31 +452,28 @@ as fresh tags that cannot be confused with any other value.
 #f
 > (eq? 'a (string->uninterned-symbol "a"))
 #f
-```
+``` -->
 
 ---
 
 ## Keywords <!-- 7 -->
 
-A _keyword_ value is similar to a symbol (see Symbols), but its printed
-form is prefixed with `#:`.
+---vert---
+
+a _keyword_ value is similar to a symbol but prefixed by `#:`
 
 ```scheme
-> (string->keyword "apple")
+(string->keyword "apple")
+;; '#:apple
 '#:apple
-> '#:apple
-'#:apple
-> (eq? '#:apple (string->keyword "apple"))
-#t
+;; '#:apple
+(eq? '#:apple (string->keyword "apple"))
+;; #t
 ```
 
-More precisely, a keyword is analogous to an identifier; in the same way
-that an identifier can be quoted to produce a symbol, a keyword can be
-quoted to produce a value. The same term "keyword" is used in both
-cases, but we sometimes use _keyword value_ to refer more specifically
-to the result of a quote-keyword expression or of `string->keyword`. An
-unquoted keyword is not an expression, just as an unquoted identifier
-does not produce a symbol:
+---vert---
+
+More precisely, a keyword is analogous to an identifier; in the same way that an identifier can be quoted to produce a symbol, a keyword can be quoted to produce a value. The same term "keyword" is used in both cases, but we sometimes use _keyword value_ to refer more specifically to the result of a quote-keyword expression or of `string->keyword`. An unquoted keyword is not an expression, just as an unquoted identifier does not produce a symbol:
 
 ```scheme
 > not-a-symbol-expression
@@ -574,11 +485,9 @@ eval:2:0: #%datum: keyword misused as an expression
   at: #:not-a-keyword-expression
 ```
 
-Despite their similarities, keywords are used in a different way than
-identifiers or symbols. Keywords are intended for use (unquoted) as
-special markers in argument lists and in certain syntactic forms.  For
-run-time flags and enumerations, use symbols instead of keywords.  The
-example below illustrates the distinct roles of keywords and symbols.
+---vert---
+
+Despite their similarities, keywords are used in a different way than identifiers or symbols. Keywords are intended for use (unquoted) as special markers in argument lists and in certain syntactic forms.  For run-time flags and enumerations, use symbols instead of keywords.  The example below illustrates the distinct roles of keywords and symbols.
 
 ```scheme
 > (define dir (find-system-path 'temp-dir)) ; not '#:temp-dir
@@ -594,14 +503,13 @@ example below illustrates the distinct roles of keywords and symbols.
 
 ## Pairs and Lists <!-- 8 -->
 
-A _pair_ joins two arbitrary values. The `cons` procedure constructs
-pairs, and the `car` and `cdr` procedures extract the first and second
-elements of the pair, respectively. The `pair?` predicate recognizes
-pairs.
+---vert---
 
-Some pairs print by wrapping parentheses around the printed forms of the
-two pair elements, putting a `'` at the beginning and a `.` between the
-elements.
+A _pair_ joins two arbitrary values. The `cons` procedure constructs pairs, and the `car` and `cdr` procedures extract the first and second elements of the pair, respectively. The `pair?` predicate recognizes pairs.
+
+---vert---
+
+Some pairs print by wrapping parentheses around the printed forms of the two pair elements, putting a `'` at the beginning and a `.` between the elements.
 
 ```scheme
 > (cons 1 2)
@@ -616,14 +524,13 @@ elements.
 #t
 ```
 
-A _list_ is a combination of pairs that creates a linked list. More
-precisely, a list is either the empty list `null`, or it is a pair whose
-first element is a list element and whose second element is a list. The
-`list?` predicate recognizes lists. The `null?`  predicate recognizes
-the empty list.
+---vert---
 
-A list normally prints as a `'` followed by a pair of parentheses
-wrapped around the list elements.
+A _list_ is a combination of pairs that creates a linked list. More precisely, a list is either the empty list `null`, or it is a pair whose first element is a list element and whose second element is a list. The `list?` predicate recognizes lists. The `null?`  predicate recognizes the empty list.
+
+---vert---
+
+A list normally prints as a `'` followed by a pair of parentheses wrapped around the list elements.
 
 ```scheme
 > null
@@ -638,10 +545,9 @@ wrapped around the list elements.
 #f
 ```
 
-A list or pair prints using `list` or `cons` when one of its elements
-cannot be written as a `quote`d value. For example, a value constructed
-with `srcloc` cannot be written using `quote`, and it prints using
-`srcloc`:
+---vert---
+
+A list or pair prints using `list` or `cons` when one of its elements cannot be written as a `quote`d value. For example, a value constructed with `srcloc` cannot be written using `quote`, and it prints using `srcloc`:
 
 ```scheme
 > (srcloc "file.rkt" 1 0 1 (+ 4 4))
@@ -654,13 +560,11 @@ with `srcloc` cannot be written using `quote`, and it prints using
 (list* 1 2 (srcloc "file.rkt" 1 0 1 8))
 ```
 
-As shown in the last example, `list*` is used to abbreviate a series of
-`cons`es that cannot be abbreviated using `list`.
+As shown in the last example, `list*` is used to abbreviate a series of `cons`es that cannot be abbreviated using `list`.
 
-The `write` and `display` functions print a pair or list without a
-leading `'`, `cons`, `list`, or `list*`. There is no difference between
-`write` and `display` for a pair or list, except as they apply to
-elements of the list:
+---vert---
+
+The `write` and `display` functions print a pair or list without a leading `'`, `cons`, `list`, or `list*`. There is no difference between `write` and `display` for a pair or list, except as they apply to elements of the list:
 
 ```scheme
 > (write (cons 1 2))
@@ -677,8 +581,9 @@ elements of the list:
 (1 2 3)
 ```
 
-Among the most important predefined procedures on lists are those that
-iterate through the list's elements:
+---vert---
+
+Among the most important predefined procedures on lists are those that iterate through the list's elements:
 
 ```scheme
 > (map (lambda (i) (/ 1 i))
@@ -708,11 +613,9 @@ iterate through the list's elements:
 '(where "Florida")
 ```
 
-Pairs are immutable (contrary to Lisp tradition), and `pair?` and
-`list?` recognize immutable pairs and lists, only. The `mcons` procedure
-creates a _mutable pair_, which works with `set-mcar!` and `set-mcdr!`,
-as well as `mcar` and `mcdr`. A mutable pair prints using `mcons`, while
-`write` and `display` print mutable pairs with `{` and `}`:
+---vert---
+
+Pairs are immutable (contrary to Lisp tradition), and `pair?` and `list?` recognize immutable pairs and lists, only. The `mcons` procedure creates a _mutable pair_, which works with `set-mcar!` and `set-mcdr!`, as well as `mcar` and `mcdr`. A mutable pair prints using `mcons`, while `write` and `display` print mutable pairs with `{` and `}`:
 
 ```scheme
 > (define p (mcons 1 2))
@@ -733,17 +636,15 @@ as well as `mcar` and `mcdr`. A mutable pair prints using `mcons`, while
 
 ## Vectors <!-- 9 -->
 
-A _vector_ is a fixed-length array of arbitrary values. Unlike a list, a
-vector supports constant-time access and update of its elements.
+---vert---
 
-A vector prints similar to a list—as a parenthesized sequence of its
-elements—but a vector is prefixed with `#` after `'`, or it uses
-`vector` if one of its elements cannot be expressed with `quote`.
+A _vector_ is a fixed-length array of arbitrary values. Unlike a list, a vector supports constant-time access and update of its elements.
 
-For a vector as an expression, an optional length can be supplied. Also,
-a vector as an expression implicitly `quote`s the forms for its content,
-which means that identifiers and parenthesized forms in a vector
-constant represent symbols and lists.
+A vector prints similar to a list—as a parenthesized sequence of its elements—but a vector is prefixed with `#` after `'`, or it uses `vector` if one of its elements cannot be expressed with `quote`.
+
+---vert---
+
+For a vector as an expression, an optional length can be supplied. Also, a vector as an expression implicitly `quote`s the forms for its content, which means that identifiers and parenthesized forms in a vector constant represent symbols and lists.
 
 ```scheme
 > #("a" "b" "c")
@@ -758,14 +659,13 @@ constant represent symbols and lists.
 '(that tune)
 ```
 
-Like strings, a vector is either mutable or immutable, and vectors
-written directly as expressions are immutable.
+---vert---
 
-Vectors can be converted to lists and vice versa via `vector->list` and
-`list->vector`; such conversions are particularly useful in combination
-with predefined procedures on lists. When allocating extra lists seems
-too expensive, consider using looping forms like `for/fold`, which
-recognize vectors as well as lists.
+Like strings, a vector is either mutable or immutable, and vectors written directly as expressions are immutable.
+
+---vert---
+
+Vectors can be converted to lists and vice versa via `vector->list` and `list->vector`; such conversions are particularly useful in combination with predefined procedures on lists. When allocating extra lists seems too expensive, consider using looping forms like `for/fold`, which recognize vectors as well as lists.
 
 ```scheme
 > (list->vector (map string-titlecase
@@ -777,13 +677,9 @@ recognize vectors as well as lists.
 
 ## Hash Tables <!-- 10 -->
 
-A _hash table_ implements a mapping from keys to values, where both keys
-and values can be arbitrary Racket values, and access and update to the
-table are normally constant-time operations. Keys are compared using
-`equal?`, `eqv?`, or `eq?`, depending on whether the hash table is
-created with `make-hash`, `make-hasheqv`, or `make-hasheq`.
+---vert---
 
-Examples:
+A _hash table_ implements a mapping from keys to values, where both keys and values can be arbitrary Racket values, and access and update to the table are normally constant-time operations. Keys are compared using `equal?`, `eqv?`, or `eq?`, depending on whether the hash table is created with `make-hash`, `make-hasheqv`, or `make-hasheq`.
 
 ```scheme
 > (define ht (make-hash))
@@ -798,11 +694,9 @@ hash-ref: no value found for key
 "not there"
 ```
 
-The `hash`, `hasheqv`, and `hasheq` functions create immutable hash
-tables from an initial set of keys and values, in which each value is
-provided as an argument after its key. Immutable hash tables can be
-extended with `hash-set`, which produces a new immutable hash table in
-constant time.
+---vert---
+
+The `hash`, `hasheqv`, and `hasheq` functions create immutable hash tables from an initial set of keys and values, in which each value is provided as an argument after its key. Immutable hash tables can be extended with `hash-set`, which produces a new immutable hash table in constant time.
 
 ```scheme
 > (define ht (hash "apple" 'red "banana" 'yellow))
@@ -816,12 +710,9 @@ hash-ref: no value found for key
 'brown
 ```
 
-A literal immutable hash table can be written as an expression by using
-`#hash` (for an `equal?`-based table), `#hasheqv` (for an `eqv?`-based
-table), or `#hasheq` (for an `eq?`-based table). A parenthesized
-sequence must immediately follow `#hash`, `#hasheq`, or `#hasheqv`,
-where each element is a dotted key-value pair. The `#hash`, etc. forms
-implicitly `quote` their key and value sub-forms.
+---vert---
+
+A literal immutable hash table can be written as an expression by using `#hash` (for an `equal?`-based table), `#hasheqv` (for an `eqv?`-based table), or `#hasheq` (for an `eq?`-based table). A parenthesized sequence must immediately follow `#hash`, `#hasheq`, or `#hasheqv`, where each element is a dotted key-value pair. The `#hash`, etc. forms implicitly `quote` their key and value sub-forms.
 
 ```scheme
 > (define ht #hash(("apple" . red)
@@ -830,10 +721,9 @@ implicitly `quote` their key and value sub-forms.
 'red
 ```
 
-Both mutable and immutable hash tables print like immutable hash tables,
-using a quoted `#hash`, `#hasheqv`, or `#hasheq` form if all keys and
-values can be expressed with `quote` or using `hash`, `hasheq`, or
-`hasheqv` otherwise:
+---vert---
+
+Both mutable and immutable hash tables print like immutable hash tables, using a quoted `#hash`, `#hasheqv`, or `#hasheq` form if all keys and values can be expressed with `quote` or using `hash`, `hasheq`, or `hasheqv` otherwise:
 
 ```scheme
 > #hash(("apple" . red)
@@ -843,8 +733,9 @@ values can be expressed with `quote` or using `hash`, `hasheq`, or
 (hash 1 (srcloc "file.rkt" 1 0 1 8))
 ```
 
-A mutable hash table can optionally retain its keys _weakly_, so each
-mapping is retained only so long as the key is retained elsewhere.
+---vert---
+
+A mutable hash table can optionally retain its keys _weakly_, so each mapping is retained only so long as the key is retained elsewhere.
 
 ```scheme
 > (define ht (make-weak-hasheq))
@@ -854,12 +745,9 @@ mapping is retained only so long as the key is retained elsewhere.
 0
 ```
 
-Beware that even a weak hash table retains its values strongly, as long
-as the corresponding key is accessible. This creates a catch-22
-dependency when a value refers back to its key, so that the mapping is
-retained permanently. To break the cycle, map the key to an _ephemeron_
-that pairs the value with its key (in addition to the implicit pairing
-of the hash table).
+---vert---
+
+Beware that even a weak hash table retains its values strongly, as long as the corresponding key is accessible. This creates a catch-22 dependency when a value refers back to its key, so that the mapping is retained permanently. To break the cycle, map the key to an _ephemeron_ that pairs the value with its key (in addition to the implicit pairing of the hash table).
 
 ```scheme
 > (define ht (make-weak-hasheq))
@@ -883,10 +771,7 @@ of the hash table).
 
 ## Boxes <!-- 11 -->
 
-A _box_ is like a single-element vector. It can print as a quoted `#&`
-followed by the printed form of the boxed value. A `#&` form can also be
-used as an expression, but since the resulting box is constant, it has
-practically no use.
+A _box_ is like a single-element vector. It can print as a quoted `#&` followed by the printed form of the boxed value. A `#&` form can also be used as an expression, but since the resulting box is constant, it has practically no use.
 
 ```scheme
 > (define b (box "apple"))
@@ -903,15 +788,13 @@ practically no use.
 
 ## Void and Undefined <!-- 12 -->
 
-Some procedures or expression forms have no need for a result value. For
-example, the `display` procedure is called only for the side-effect of
-writing output. In such cases the result value is normally a special
-constant that prints as `#<void>`.  When the result of an expression is
-simply `#<void>`, the REPL does not print anything.
+---vert---
 
-The `void` procedure takes any number of arguments and returns
-`#<void>`. (That is, the identifier `void` is bound to a procedure that
-returns `#<void>`, instead of being bound directly to `#<void>`.)
+Some procedures or expression forms have no need for a result value. For example, the `display` procedure is called only for the side-effect of writing output. In such cases the result value is normally a special constant that prints as `#<void>`.  When the result of an expression is simply `#<void>`, the REPL does not print anything.
+
+---vert---
+
+The `void` procedure takes any number of arguments and returns `#<void>`. (That is, the identifier `void` is bound to a procedure that returns `#<void>`, instead of being bound directly to `#<void>`.)
 
 ```scheme
 > (void)
@@ -920,14 +803,11 @@ returns `#<void>`, instead of being bound directly to `#<void>`.)
 '(#<void>)
 ```
 
-The `undefined` constant, which prints as `#<undefined>`, is sometimes
-used as the result of a reference whose value is not yet available. In
-previous versions of Racket (before version 6.1), referencing a local
-binding too early produced `#<undefined>`; too-early references now
-raise an exception, instead.
+---vert---
 
-> The `undefined` result can still be produced in some cases by the
-> `shared` form.
+The `undefined` constant, which prints as `#<undefined>`, is sometimes used as the result of a reference whose value is not yet available. In previous versions of Racket (before version 6.1), referencing a local binding too early produced `#<undefined>`; too-early references now raise an exception, instead.
+
+> The `undefined` result can still be produced in some cases by the `shared` form.
 
 ```scheme
 (define (fails)
