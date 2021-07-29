@@ -17,10 +17,8 @@
 
 ```ocaml
 type single = Only;;
-(*type single = Only*)
 
 Only;;
-(*- : single = Only*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -33,9 +31,6 @@ note that a constructor's name must be capitalized
 
 ```ocaml
 type single = only;;
-(* type single = only;;
-                 ^^^^
-Error: Unbound type constructor only*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -45,10 +40,8 @@ order doesn't matter
 
 ```ocaml
 type bool' = True | False;;
-(*type bool' = True | False*)
 
 True;;
-(*- : bool' = True*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -64,7 +57,6 @@ let value = function King -> Float.infinity
   | Rook -> 5.0
   | (Bishop | Knight) -> 3.0
   | Pawn -> 1.0;;
-(*val value : piece -> float = <fun>*)
 
 value Bishop;;
 ```
@@ -78,12 +70,10 @@ Newton's second law
 
 ```ocaml
 let a m f = f /. m;;
-(*val a : float -> float -> float = <fun>*)
 
 let body, engine = 0.0122, 50.0;;
 
 a engine body;; (* oops *)
-(*- : float = 0.000244*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -95,10 +85,8 @@ type aliasing doesn't help
 type mass = float and force = float and acceleration = float;;
 
 let a (m:mass) (f:force) : acceleration = f /. m;;
-(*val a : mass -> force -> acceleration = <fun>*)
 
 a engine body;; (* still oops *)
-(*- : float = 0.000244*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -112,18 +100,13 @@ type force = Newton of float;;
 type acceleration = M_s'2 of float;;
 
 let a (Kg m) (Newton f) = M_s'2 (f /. m);;
-(*val a : mass -> force -> acceleration = <fun>*)
 
 let body = Kg 2.0;;
 let engine = Newton 50.0;;
 
 a body engine;;
-(*- : acceleration = M_s'2 25.*)
 
 a engine body;;
-(*   a engine body;;
-       ^^^^^^
-Error: This expression has type force but an expression was expected of type mass*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -166,15 +149,10 @@ let r = Rectangle {width=5.; height=6.}
 
 ```ocaml
 let line = Line 5.3;;
-(*val line : shape = Line 5.3*)
 
 let Line length = line;;
-(*  ^^^^^^^^^^^
-Warning 8: this pattern-matching is not exhaustive.*)
-(*val length : float = 5.3*)
 
 let Circle radius = line;;
-(*Exception: Match_failure*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -192,7 +170,6 @@ type intlist =
 let rec length = function
   | Nil -> 0
   | (x::xs) -> 1 + length xs;;
-(*val length : intlist -> int = <fun>*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -207,7 +184,6 @@ type 'a list =
   | (::) of 'a * ('a list);;
 
 "hello" :: "world" :: [];;
-(*- : string list = ["hello"; "world"]*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -216,17 +192,16 @@ type 'a list =
 ```ocaml
 (*predefined*)
 type 'a option = None | Some of 'a;;
+```
 
+```ocaml
 let hd' = function
   | [] -> None
   | (x::_) -> Some x;;
-(*val hd' : 'a list -> 'a option = <fun>*)
 
 hd' [1; 2; 3];;
-(*- : int option = Some 1*)
 
 hd' [];;
-(*- : 'a option = None*)
 ```
 <!-- .element: data-thebe-executable -->
 
@@ -237,16 +212,12 @@ type ('a, 'b) union = Type1 of 'a
   | Type2 of 'b;;
 
 let five = Type1 5;;
-(*val five : (int, 'a) union = Type1 5*)
 
 let hello = Type2 "hello";;
-(*val hello : ('a, string) union = Type2 "hello"*)
 
 let five_or_hello = if true then five else hello;;
-(*val five_or_hello : (int, string) union = Type1 5*)
 
 let int_char_list = [Type1 5; Type2 'a'];;
-(*val int_char_list : (int, char) union list = [Type1 5; Type2 'a']*)
 ```
 <!-- .element: data-thebe-executable -->
 
