@@ -35,3 +35,4 @@ function generate_slides(template_name, dir) {
 
 generate_slides('ocaml-slide.hbs', 'ocaml');
 generate_slides('prolog-slide.hbs', 'prolog');
+generate_slides('racket-slide.hbs', 'racket');
