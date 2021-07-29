@@ -54,6 +54,7 @@ gulp.task("serve", () => {
     }
     generate_slides("ocaml-slide.hbs", "ocaml");
     generate_slides("prolog-slide.hbs", "prolog");
+    generate_slides("racket-slide.hbs", "racket");
 
     const cors = function (req, res, next) {
         res.setHeader("Access-Control-Allow-Private-Network", "true");
