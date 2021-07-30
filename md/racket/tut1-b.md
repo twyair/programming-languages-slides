@@ -304,16 +304,11 @@ the shorthand for a sequence of tests is the `cond` form:
 ( cond {[ <expr> <expr>* ]}* )
 ```
 
-TODO
-
-it contains a sequence of clauses between square brackets. In
-each clause, the first `<expr>` is a test expression. If it produces
-true, then the clause's remaining <_expr_>s are evaluated, and the last
-one in the clause provides the answer for the entire `cond` expression;
-the rest of the clauses are ignored. If the test `<expr>` produces `#f`,
-then the clause's remaining `<expr>`s are ignored, and evaluation
-continues with the next clause. The last clause can use `else` as a
-synonym for a `#t` test expression.
+* it contains a sequence of clauses
+* in each clause, the first `<expr>` is a test expression
+* if it's true, then the rest of the `<expr>`s are evaluated, and the last one is the value of the entire `cond` expression
+* otherwise evaluation continues with the next clause
+* the last clause can use `else` as a synonym for `#t`
 
 ---vert---
 
@@ -324,7 +319,6 @@ synonym for a `#t` test expression.
    [(string-prefix? s "goodbye ") "bye!"]
    [(string-suffix? s "?") "I don't know"]
    [else "huh?"]))
-
 (reply-more "hello racket")
 ;; "hi!"
 (reply-more "goodbye cruel world")
@@ -798,15 +792,6 @@ more precisely, an expression in _tail position_ with respect to another express
 
 ---vert---
 
-<!-- In the case of `my-map`, _O_\(_n_)__ space complexity is reasonable,
-since it has to generate a result of size _O_\(_n_)__. Nevertheless, you
-can reduce the constant factor by accumulating the result list. The only
-catch is that the accumulated list will be backwards, so you'll have to
-reverse it at the very end:
-
-> Attempting to reduce a constant factor like this is usually not
-> worthwhile, as discussed below. -->
-
 #### tail-recursive `map`
 
 ```scheme
@@ -882,114 +867,111 @@ the more traditional name for `cons?` is `pair?`
 
 ---
 
-### TODO: Quoting Pairs and Symbols with `quote` <!-- 4.1 -->
+### Quoting Pairs and Symbols with `quote` <!-- 4.1 -->
 
-A list prints with a quote mark before it, but if an element of a list is itself a list, then no quote mark is printed for the inner list:
-
-```scheme
-> (list (list 1) (list 2 3) (list 4))
-'((1) (2 3) (4))
-```
-
-For nested lists, especially, the `quote` form lets you write a list as
-an expression in essentially the same way that the list prints:
+a list prints with a `'` before it, but if an element of a list is itself a list no `'` is printed before it
 
 ```scheme
-> (quote ("red" "green" "blue"))
-'("red" "green" "blue")
-> (quote ((1) (2 3) (4)))
-'((1) (2 3) (4))
-> (quote ())
-'()
+(list (list 1) (list 2 3) (list 4))
+;; '((1) (2 3) (4))
 ```
 
-The `quote` form works with the dot notation, too, whether the quoted
-form is normalized by the dot-parenthesis elimination rule or not:
+---vert---
+
+`quote` lets you write a list as an expression in essentially the same way that it prints:
 
 ```scheme
-> (quote (1 . 2))
-'(1 . 2)
-> (quote (0 . (1 . 2)))
-'(0 1 . 2)
+(quote ("red" "green" "blue"))
+;; '("red" "green" "blue")
+(quote ((1) (2 3) (4)))
+;; '((1) (2 3) (4))
+(quote ())
+;; '()
 ```
 
-Naturally, lists of any kind can be nested:
+---vert---
+
+`quote` works with the dot notation too
 
 ```scheme
-> (list (list 1 2 3) 5 (list "a" "b" "c"))
-'((1 2 3) 5 ("a" "b" "c"))
-> (quote ((1 2 3) 5 ("a" "b" "c")))
-'((1 2 3) 5 ("a" "b" "c"))
+(quote (1 . 2))
+;; '(1 . 2)
+(quote (0 . (1 . 2)))
+;; '(0 1 . 2)
 ```
 
-If you wrap an identifier with `quote`, then you get output that looks
-like an identifier, but with a `'` prefix:
+---vert---
+
+lists of any kind can be nested
 
 ```scheme
-> (quote jane-doe)
-'jane-doe
+(list (list 1 2 3) 5 (list "a" "b" "c"))
+;; '((1 2 3) 5 ("a" "b" "c"))
+(quote ((1 2 3) 5 ("a" "b" "c")))
+;; '((1 2 3) 5 ("a" "b" "c"))
 ```
 
-A value that prints like a quoted identifier is a _symbol_. In the same
-way that parenthesized output should not be confused with expressions, a
-printed symbol should not be confused with an identifier. In particular,
-the symbol `(quote map)` has nothing to do with the `map` identifier or
-the predefined function that is bound to `map`, except that the symbol
-and the identifier happen to be made up of the same letters.
+---vert---
 
-Indeed, the intrinsic value of a symbol is nothing more than its
-character content. In this sense, symbols and strings are almost the
-same thing, and the main difference is how they print. The functions
-`symbol->string` and `string->symbol` convert between them.
-
-Examples:
+if you wrap an identifier with `quote`, then you get output that looks
+like an identifier but with a `'` prefix - a _symbol_
 
 ```scheme
-> map
-#<procedure:map>
-> (quote map)
-'map
-> (symbol? (quote map))
-#t
-> (symbol? map)
-#f
-> (procedure? map)
-#t
-> (string->symbol "map")
-'map
-> (symbol->string (quote map))
-"map"
+(quote jane-doe)
+;; 'jane-doe
 ```
 
-In the same way that `quote` for a list automatically applies itself to
-nested lists, `quote` on a parenthesized sequence of identifiers
-automatically applies itself to the identifiers to create a list of
-symbols:
+---vert---
 
 ```scheme
-> (car (quote (road map)))
-'road
-> (symbol? (car (quote (road map))))
-#t
+map
+;; #<procedure:map>
+(quote map)
+;; 'map
+(symbol? (quote map))
+;; #t
+(symbol? map)
+;; #f
+(procedure? map)
+;; #t
+(string->symbol "map")
+;; 'map
+(symbol->string (quote map))
+;; "map"
 ```
 
-When a symbol is inside a list that is printed with `'`, the `'` on the
-symbol is omitted, since `'` is doing the job already:
+---vert---
+
+`quote` on a parenthesized sequence of identifiers automatically applies itself to the identifiers to create a list of symbols
 
 ```scheme
-> (quote (road map))
-'(road map)
+(car (quote (road map)))
+;; 'road
+(symbol? (car (quote (road map))))
+;; #t
 ```
 
-The `quote` form has no effect on a literal expression such as a number
-or string:
+---vert---
+
+a symbol inside a list is printed without a `'`
 
 ```scheme
-> (quote 42)
-42
-> (quote "on the record")
-"on the record"
+(quote (road map))
+;; '(road map)
 ```
+
+---vert---
+
+`quote` has no effect on a literal expression such as a number or a string
+
+```scheme
+(quote 42)
+;; 42
+(quote "on the record")
+;; "on the record"
+```
+
+---
 
 ### Abbreviating `quote` with `'` <!-- 4.2 -->
 
@@ -1006,7 +988,7 @@ or string:
 
 ---vert---
 
-a `'` expands to a `quote` form in quite a literal way
+a `'` expands to a `quote` form in a literal way
 
 ```scheme
 (car ''road)
