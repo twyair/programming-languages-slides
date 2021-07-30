@@ -110,12 +110,12 @@ eats(salmon, warm).
 facts can contain variables
 
 ```prolog
-likes(X, course_236319).
+likes(X, course236319).
 ```
 
 variables are universally quantified
 
-$$\forall X,likes(X, course\_236319)$$
+$$\forall X,likes(X, course236319)$$
 
 ---vert---
 
@@ -417,7 +417,7 @@ gcd(X, Y, D) :-
 
 #### conjunction
 
-the `,/2` predicate: the goal `(G1, G2)` succeeds if the goal `G1` and the goal `G2` succeed
+the `,/2` predicate: the goal `(G1, G2)` succeeds if `G1` and `G2` succeed
 
 ```prolog
 TODO: example
@@ -489,7 +489,8 @@ why doesn't prolog answer with `X = rick` or simply with `true`?
 
 `person(X)` succeeds so its negation fails
 
-if `G` fails `\+ G` succeeds otherwise it fails
+* if `G` fails `\+ G` succeeds
+* if `G` succeeds `\+ G` fails
 
 ---vert---
 
