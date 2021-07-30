@@ -293,33 +293,32 @@ a _string_ is a fixed-length array of characters
 
 ---vert---
 
-A string can be mutable or immutable; strings written directly as expressions are immutable, but most other strings are mutable. The `make-string` procedure creates a mutable string given a length and optional fill character. The `string-ref` procedure accesses a character from a string (with 0-based indexing); the `string-set!`  procedure changes a character in a mutable string.
+* `make-string` creates a mutable string
+* `string-ref` accesses a character from a string
+* `string-set!` changes a character in a mutable string.
 
 ```scheme
-> (string-ref "Apple" 0)
-#\A
-> (define s (make-string 5 #\.))
-> s
-"....."
-> (string-set! s 2 #\λ)
-> s
-"..λ.."
+(string-ref "Apple" 0)
+;; #\A
+(define s (make-string 5 #\.))
+s
+;; "....."
+(string-set! s 2 #\λ)
+s
+;; "..λ.."
 ```
 
 ---vert---
 
-String ordering and case operations are generally _locale-independent_; that is, they work the same for all users. A few _locale-dependent_ operations are provided that allow the way that strings are case-folded and sorted to depend on the end-user's locale. If you're sorting strings, for example, use `string<?` or `string-ci<?` if the sort result should be consistent across machines and users, but use `string-locale<?` or `string-locale-ci<?` if the sort is purely to order strings for an end user.
+string procedures:
 
 ```scheme
-> (string<? "apple" "Banana")
-#f
-> (string-ci<? "apple" "Banana")
-#t
-> (string-upcase "Straße")
-"STRASSE"
-> (parameterize ([current-locale "C"])
-    (string-locale-upcase "Straße"))
-"STRAßE"
+(string<? "apple" "Banana")
+;; #f
+(string-ci<? "apple" "Banana")
+;; #t
+(string-upcase "racket")
+;; "RACKET"
 ```
 
 ---
@@ -339,58 +338,22 @@ a _byte_ is an exact integer between `0` and `255`, inclusive
 
 ---vert---
 
-A _byte string_ is similar to a string—see Strings (Unicode)—but its content is a sequence of bytes instead of characters. Byte strings can be used in applications that process pure ASCII instead of Unicode text. The printed form of a byte string supports such uses in particular, because a byte string prints like the ASCII decoding of the byte string, but prefixed with a `#`. Unprintable ASCII characters or non-ASCII bytes in the byte string are written with octal notation.
+a _byte string_ is a sequence of bytes
 
 ```scheme
-> #"Apple"
 #"Apple"
-> (bytes-ref #"Apple" 0)
-65
-> (make-bytes 3 65)
-#"AAA"
-> (define b (make-bytes 2 0))
-> b
-#"\0\0"
-> (bytes-set! b 0 1)
-> (bytes-set! b 1 255)
-> b
-#"\1\377"
-```
-
----vert---
-
-The `display` form of a byte string writes its raw bytes to the current output port (see \[missing\]). Technically, `display` of a normal (i.e,. character) string prints the UTF-8 encoding of the string to the current output port, since output is ultimately defined in terms of bytes; `display` of a byte string, however, writes the raw bytes with no encoding. Along the same lines, when this documentation shows output, it technically shows the UTF-8-decoded form of the output.
-
-```scheme
-> (display #"Apple")
-Apple
-> (display "\316\273")  ; same as "Î»"
-Î»
-> (display #"\316\273") ; UTF-8 encoding of λ
-λ
-```
-
----vert---
-
-For explicitly converting between strings and byte strings, Racket supports three kinds of encodings directly: UTF-8, Latin-1, and the current locale's encoding. General facilities for byte-to-byte conversions (especially to and from UTF-8) fill the gap to support arbitrary string encodings.
-
-```scheme
-> (bytes->string/utf-8 #"\316\273")
-"λ"
-> (bytes->string/latin-1 #"\316\273")
-"Î»"
-> (parameterize ([current-locale "C"])  ; C locale supports ASCII,
-    (bytes->string/locale #"\316\273")) ; only, so...
-bytes->string/locale: byte string is not a valid encoding
-for the current locale
-  byte string: #"\316\273"
-> (let ([cvt (bytes-open-converter "cp1253" ; Greek code page
-                                   "UTF-8")]
-        [dest (make-bytes 2)])
-    (bytes-convert cvt #"\353" 0 1 dest)
-    (bytes-close-converter cvt)
-    (bytes->string/utf-8 dest))
-"λ"
+;; #"Apple"
+(bytes-ref #"Apple" 0)
+;; 65
+(make-bytes 3 65)
+;; #"AAA"
+(define b (make-bytes 2 0))
+b
+;; #"\0\0"
+(bytes-set! b 0 1)
+(bytes-set! b 1 255)
+b
+;; #"\1\377"
 ```
 
 ---
@@ -410,49 +373,24 @@ a _symbol_ is an atomic value that prints like an identifier preceded with `'`
 
 ---vert---
 
-Any string (i.e., any character sequence) can be supplied to `string->symbol` to obtain the corresponding symbol. For reader input, any character can appear directly in an identifier, except for whitespace and the following special characters: `(` `)` `[` `]` `{` `}` `"` `,` `'` `` ` `` `;` `#` `|` `\`
+any string can be supplied to `string->symbol` to obtain the corresponding symbol
 
-<!-- Actually, `#` is disallowed only at the beginning of a symbol, and then only if not followed by `%`; otherwise, `#` is allowed, too. Also, `.` by itself is not a symbol. -->
+any character can appear directly in an identifier, except for whitespace and the following special characters: `(` `)` `[` `]` `{` `}` `"` `,` `'` `` ` `` `;` `#` `|` `\`
 
----vert---
-
-Whitespace or special characters can be included in an identifier by quoting them with `|` or `\`. These quoting mechanisms are used in the printed form of identifiers that contain special characters or that might otherwise look like numbers.
-
-```scheme
-> (string->symbol "one, two")
-'|one, two|
-> (string->symbol "6")
-'|6|
-```
+<!--Actually, `#` is disallowed only at the beginning of a symbol, and then only if not followed by `%`; otherwise, `#` is allowed, too. Also, `.` by itself is not a symbol. -->
 
 ---vert---
 
-The `write` function prints a symbol without a `'` prefix. The `display` form of a symbol is the same as the corresponding string.
+whitespace or special characters can be included in an identifier by quoting them with `|` or `\`
 
 ```scheme
-> (write 'Apple)
-Apple
-> (display 'Apple)
-Apple
-> (write '|6|)
-|6|
-> (display '|6|)
-6
+(string->symbol "one, two")
+;; '|one, two|
+(string->symbol "6")
+;; '|6|
+'\6
+;; '|6|
 ```
-
-<!-- ---vert---
-
-The `gensym` and `string->uninterned-symbol` procedures generate fresh _uninterned_ symbols that are not equal \(according to `eq?`) to any previously interned or uninterned symbol. Uninterned symbols are useful as fresh tags that cannot be confused with any other value.
-
-```scheme
-> (define s (gensym))
-> s
-'g42
-> (eq? s 'g42)
-#f
-> (eq? 'a (string->uninterned-symbol "a"))
-#f
-``` -->
 
 ---
 
@@ -473,30 +411,16 @@ a _keyword_ value is similar to a symbol but prefixed by `#:`
 
 ---vert---
 
-More precisely, a keyword is analogous to an identifier; in the same way that an identifier can be quoted to produce a symbol, a keyword can be quoted to produce a value. The same term "keyword" is used in both cases, but we sometimes use _keyword value_ to refer more specifically to the result of a quote-keyword expression or of `string->keyword`. An unquoted keyword is not an expression, just as an unquoted identifier does not produce a symbol:
+an unquoted keyword is not an expression, just as an unquoted identifier does not produce a symbol
 
 ```scheme
-> not-a-symbol-expression
-not-a-symbol-expression: undefined;
- cannot reference an identifier before its definition
-  in module: top-level
-> #:not-a-keyword-expression
-eval:2:0: #%datum: keyword misused as an expression
-  at: #:not-a-keyword-expression
-```
-
----vert---
-
-Despite their similarities, keywords are used in a different way than identifiers or symbols. Keywords are intended for use (unquoted) as special markers in argument lists and in certain syntactic forms.  For run-time flags and enumerations, use symbols instead of keywords.  The example below illustrates the distinct roles of keywords and symbols.
-
-```scheme
-> (define dir (find-system-path 'temp-dir)) ; not '#:temp-dir
-> (with-output-to-file (build-path dir "stuff.txt")
-    (lambda () (printf "example\n"))
-    ; optional #:mode argument can be 'text or 'binary
-    #:mode 'text
-    ; optional #:exists argument can be 'replace, 'truncate, ...
-    #:exists 'replace)
+not-a-symbol-expression
+;; not-a-symbol-expression: undefined;
+;;  cannot reference an identifier before its definition
+;;  in module: top-level
+#:not-a-keyword-expression
+;; eval:2:0: #%datum: keyword misused as an expression
+;;   at: #:not-a-keyword-expression
 ```
 
 ---
@@ -505,47 +429,50 @@ Despite their similarities, keywords are used in a different way than identifier
 
 ---vert---
 
-A _pair_ joins two arbitrary values. The `cons` procedure constructs pairs, and the `car` and `cdr` procedures extract the first and second elements of the pair, respectively. The `pair?` predicate recognizes pairs.
+a _pair_ joins two arbitrary values
 
----vert---
+* pairs are immutable
+* `cons` constructs pairs
+* `car` and `cdr` extract the first and second elements of the pair, respectively
 
-Some pairs print by wrapping parentheses around the printed forms of the two pair elements, putting a `'` at the beginning and a `.` between the elements.
+<!-- Some pairs print by wrapping parentheses around the printed forms of the two pair elements, putting a `'` at the beginning and a `.` between the elements. -->
 
 ```scheme
-> (cons 1 2)
-'(1 . 2)
-> (cons (cons 1 2) 3)
-'((1 . 2) . 3)
-> (car (cons 1 2))
-1
-> (cdr (cons 1 2))
-2
-> (pair? (cons 1 2))
-#t
+(cons 1 2)
+;; '(1 . 2)
+(cons (cons 1 2) 3)
+;; '((1 . 2) . 3)
+(car (cons 1 2))
+;; 1
+(cdr (cons 1 2))
+;; 2
+(pair? (cons 1 2))
+;; #t
 ```
 
 ---vert---
 
-A _list_ is a combination of pairs that creates a linked list. More precisely, a list is either the empty list `null`, or it is a pair whose first element is a list element and whose second element is a list. The `list?` predicate recognizes lists. The `null?`  predicate recognizes the empty list.
+a _list_ is either:
 
----vert---
+* the empty list `null`
+* or a pair whose first element is an element and whose second element is a list
 
-A list normally prints as a `'` followed by a pair of parentheses wrapped around the list elements.
+<!-- A list normally prints as a `'` followed by a pair of parentheses wrapped around the list elements. -->
 
 ```scheme
-> null
-'()
-> (cons 0 (cons 1 (cons 2 null)))
-'(0 1 2)
-> (list? null)
-#t
-> (list? (cons 1 (cons 2 null)))
-#t
-> (list? (cons 1 2))
-#f
+null
+;; '()
+(cons 0 (cons 1 (cons 2 null)))
+;; '(0 1 2)
+(list? null)
+;; #t
+(list? (cons 1 (cons 2 null)))
+;; #t
+(list? (cons 1 2))
+;; #f
 ```
 
----vert---
+<!-- ---vert---
 
 A list or pair prints using `list` or `cons` when one of its elements cannot be written as a `quote`d value. For example, a value constructed with `srcloc` cannot be written using `quote`, and it prints using `srcloc`:
 
@@ -560,9 +487,9 @@ A list or pair prints using `list` or `cons` when one of its elements cannot be 
 (list* 1 2 (srcloc "file.rkt" 1 0 1 8))
 ```
 
-As shown in the last example, `list*` is used to abbreviate a series of `cons`es that cannot be abbreviated using `list`.
+As shown in the last example, `list*` is used to abbreviate a series of `cons`es that cannot be abbreviated using `list`. -->
 
----vert---
+<!-- ---vert---
 
 The `write` and `display` functions print a pair or list without a leading `'`, `cons`, `list`, or `list*`. There is no difference between `write` and `display` for a pair or list, except as they apply to elements of the list:
 
@@ -579,57 +506,65 @@ The `write` and `display` functions print a pair or list without a leading `'`, 
 (1 2 "3")
 > (display (list 1 2 "3"))
 (1 2 3)
-```
+``` -->
 
 ---vert---
 
-Among the most important predefined procedures on lists are those that iterate through the list's elements:
+predefined procedures that iterate through a list's elements:
 
 ```scheme
-> (map (lambda (i) (/ 1 i))
+(map (lambda (i) (/ 1 i))
+     '(1 2 3))
+;; '(1 1/2 1/3)
+(andmap (lambda (i) (< i 3))
        '(1 2 3))
-'(1 1/2 1/3)
-> (andmap (lambda (i) (i . < . 3))
-         '(1 2 3))
-#f
-> (ormap (lambda (i) (i . < . 3))
-         '(1 2 3))
-#t
-> (filter (lambda (i) (i . < . 3))
-          '(1 2 3))
-'(1 2)
-> (foldl (lambda (v i) (+ v i))
-         10
-         '(1 2 3))
-16
-> (for-each (lambda (i) (display i))
-            '(1 2 3))
-123
-> (member "Keys"
-          '("Florida" "Keys" "U.S.A."))
-'("Keys" "U.S.A.")
-> (assoc 'where
-         '((when "3:30") (where "Florida") (who "Mickey")))
-'(where "Florida")
+;; #f
+(ormap (lambda (i) (< i 3))
+       '(1 2 3))
+;; #t
+(filter (lambda (i) (< i 3))
+        '(1 2 3))
+;; '(1 2)
 ```
 
 ---vert---
 
-Pairs are immutable (contrary to Lisp tradition), and `pair?` and `list?` recognize immutable pairs and lists, only. The `mcons` procedure creates a _mutable pair_, which works with `set-mcar!` and `set-mcdr!`, as well as `mcar` and `mcdr`. A mutable pair prints using `mcons`, while `write` and `display` print mutable pairs with `{` and `}`:
+```scheme
+(foldl (lambda (v i) (+ v i))
+       10
+       '(1 2 3))
+;; 16
+(for-each (lambda (i) (display i))
+          '(1 2 3))
+;; 123
+(member "Keys"
+        '("Florida" "Keys" "U.S.A."))
+;; '("Keys" "U.S.A.")
+(assoc 'where
+       '((when "3:30") (where "Florida") (who "Mickey")))
+;; '(where "Florida")
+```
+
+---vert---
+
+`mcons` creates a _mutable pair_
+
+* `set-mcar!` and `set-mcdr!` set the first and second element
+* `mcar` and `mcdr` extract the first and second element
+
+<!-- , while `write` and `display` print mutable pairs with `{` and `}`: -->
 
 ```scheme
-> (define p (mcons 1 2))
-> p
-(mcons 1 2)
-> (pair? p)
-#f
-> (mpair? p)
-#t
-> (set-mcar! p 0)
-> p
-(mcons 0 2)
-> (write p)
-{0 . 2}
+(define p (mcons 1 2))
+p
+;; (mcons 1 2)
+(pair? p)
+;; #f
+(mpair? p)
+;; #t
+(set-mcar! p 0)
+p
+;; (mcons 0 2)
 ```
 
 ---
