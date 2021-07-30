@@ -573,34 +573,28 @@ p
 
 ---vert---
 
-A _vector_ is a fixed-length array of arbitrary values. Unlike a list, a vector supports constant-time access and update of its elements.
-
-A vector prints similar to a list—as a parenthesized sequence of its elements—but a vector is prefixed with `#` after `'`, or it uses `vector` if one of its elements cannot be expressed with `quote`.
-
----vert---
-
-For a vector as an expression, an optional length can be supplied. Also, a vector as an expression implicitly `quote`s the forms for its content, which means that identifiers and parenthesized forms in a vector constant represent symbols and lists.
+a _vector_ is a fixed-length array of arbitrary values with constant-time access to its elements
 
 ```scheme
-> #("a" "b" "c")
-'#("a" "b" "c")
-> #(name (that tune))
-'#(name (that tune))
-> #4(baldwin bruce)
-'#(baldwin bruce bruce bruce)
-> (vector-ref #("a" "b" "c") 1)
-"b"
-> (vector-ref #(name (that tune)) 1)
-'(that tune)
+#("a" "b" "c")
+;; '#("a" "b" "c")
+#(name (that tune))
+;; '#(name (that tune))
+#4(baldwin bruce)
+;; '#(baldwin bruce bruce bruce)
+(vector-ref #("a" "b" "c") 1)
+;; "b"
+(vector-ref #(name (that tune)) 1)
+;; '(that tune)
 ```
 
+<!-- ---vert---
+
+Like strings, a vector is either mutable or immutable, and vectors written directly as expressions are immutable. -->
+
 ---vert---
 
-Like strings, a vector is either mutable or immutable, and vectors written directly as expressions are immutable.
-
----vert---
-
-Vectors can be converted to lists and vice versa via `vector->list` and `list->vector`; such conversions are particularly useful in combination with predefined procedures on lists. When allocating extra lists seems too expensive, consider using looping forms like `for/fold`, which recognize vectors as well as lists.
+convert a vector to a list and vice versa
 
 ```scheme
 > (list->vector (map string-titlecase
@@ -614,144 +608,90 @@ Vectors can be converted to lists and vice versa via `vector->list` and `list->v
 
 ---vert---
 
-A _hash table_ implements a mapping from keys to values, where both keys and values can be arbitrary Racket values, and access and update to the table are normally constant-time operations. Keys are compared using `equal?`, `eqv?`, or `eq?`, depending on whether the hash table is created with `make-hash`, `make-hasheqv`, or `make-hasheq`.
+a _hash table_ implements a mapping from keys to values, where both keys and values can be arbitrary Racket values
 
 ```scheme
-> (define ht (make-hash))
-> (hash-set! ht "apple" '(red round))
-> (hash-set! ht "banana" '(yellow long))
-> (hash-ref ht "apple")
-'(red round)
-> (hash-ref ht "coconut")
-hash-ref: no value found for key
-  key: "coconut"
-> (hash-ref ht "coconut" "not there")
-"not there"
+(define ht (make-hash))
+(hash-set! ht "apple" '(red round))
+(hash-set! ht "banana" '(yellow long))
+(hash-ref ht "apple")
+;; '(red round)
+(hash-ref ht "coconut")
+;; hash-ref: no value found for key
+;;   key: "coconut"
+(hash-ref ht "coconut" "not there")
+;; "not there"
 ```
 
 ---vert---
 
-The `hash`, `hasheqv`, and `hasheq` functions create immutable hash tables from an initial set of keys and values, in which each value is provided as an argument after its key. Immutable hash tables can be extended with `hash-set`, which produces a new immutable hash table in constant time.
+`hash`, `hasheqv`, and `hasheq` create immutable hash tables from an initial set of keys and values
+
+immutable hash tables can be extended with `hash-set`, which produces a new immutable hash table
 
 ```scheme
-> (define ht (hash "apple" 'red "banana" 'yellow))
-> (hash-ref ht "apple")
-'red
-> (define ht2 (hash-set ht "coconut" 'brown))
-> (hash-ref ht "coconut")
-hash-ref: no value found for key
-  key: "coconut"
-> (hash-ref ht2 "coconut")
-'brown
+(define ht (hash "apple" 'red "banana" 'yellow))
+(hash-ref ht "apple")
+;; 'red
+(define ht2 (hash-set ht "coconut" 'brown))
+(hash-ref ht "coconut")
+;; hash-ref: no value found for key
+;;   key: "coconut"
+(hash-ref ht2 "coconut")
+;; 'brown
 ```
 
 ---vert---
 
-A literal immutable hash table can be written as an expression by using `#hash` (for an `equal?`-based table), `#hasheqv` (for an `eqv?`-based table), or `#hasheq` (for an `eq?`-based table). A parenthesized sequence must immediately follow `#hash`, `#hasheq`, or `#hasheqv`, where each element is a dotted key-value pair. The `#hash`, etc. forms implicitly `quote` their key and value sub-forms.
-
-```scheme
-> (define ht #hash(("apple" . red)
-                   ("banana" . yellow)))
-> (hash-ref ht "apple")
-'red
-```
+* `hash` compares keys using `equal?`
+* `hasheqv` compares keys using `eqv?`
+* `hasheq` compares keys using `eq?`
 
 ---vert---
 
-Both mutable and immutable hash tables print like immutable hash tables, using a quoted `#hash`, `#hasheqv`, or `#hasheq` form if all keys and values can be expressed with `quote` or using `hash`, `hasheq`, or `hasheqv` otherwise:
+a literal immutable hash table can be written as an expression by using `#hash` (or `#hasheqv`, or `#hasheq`)
 
 ```scheme
-> #hash(("apple" . red)
-        ("banana" . yellow))
-'#hash(("apple" . red) ("banana" . yellow))
-> (hash 1 (srcloc "file.rkt" 1 0 1 (+ 4 4)))
-(hash 1 (srcloc "file.rkt" 1 0 1 8))
-```
-
----vert---
-
-A mutable hash table can optionally retain its keys _weakly_, so each mapping is retained only so long as the key is retained elsewhere.
-
-```scheme
-> (define ht (make-weak-hasheq))
-> (hash-set! ht (gensym) "can you see me?")
-> (collect-garbage)
-> (hash-count ht)
-0
-```
-
----vert---
-
-Beware that even a weak hash table retains its values strongly, as long as the corresponding key is accessible. This creates a catch-22 dependency when a value refers back to its key, so that the mapping is retained permanently. To break the cycle, map the key to an _ephemeron_ that pairs the value with its key (in addition to the implicit pairing of the hash table).
-
-```scheme
-> (define ht (make-weak-hasheq))
-> (let ([g (gensym)])
-    (hash-set! ht g (list g)))
-> (collect-garbage)
-> (hash-count ht)
-1
-```
-
-```scheme
-> (define ht (make-weak-hasheq))
-> (let ([g (gensym)])
-    (hash-set! ht g (make-ephemeron g (list g))))
-> (collect-garbage)
-> (hash-count ht)
-0
+(define ht #hash(("apple" . red)
+                 ("banana" . yellow)))
+(hash-ref ht "apple")
+;; 'red
 ```
 
 ---
 
 ## Boxes <!-- 11 -->
 
-A _box_ is like a single-element vector. It can print as a quoted `#&` followed by the printed form of the boxed value. A `#&` form can also be used as an expression, but since the resulting box is constant, it has practically no use.
+a _box_ is like a single-element vector
 
 ```scheme
-> (define b (box "apple"))
-> b
-'#&"apple"
-> (unbox b)
-"apple"
-> (set-box! b '(banana boat))
-> b
-'#&(banana boat)
+(define b (box "apple"))
+b
+;; '#&"apple"
+(unbox b)
+;; "apple"
+(set-box! b '(banana boat))
+b
+;; '#&(banana boat)
 ```
 
 ---
 
-## Void and Undefined <!-- 12 -->
+## Void <!-- 12 -->
 
 ---vert---
 
-Some procedures or expression forms have no need for a result value. For example, the `display` procedure is called only for the side-effect of writing output. In such cases the result value is normally a special constant that prints as `#<void>`.  When the result of an expression is simply `#<void>`, the REPL does not print anything.
+* some procedures or expression forms have no need for a result value, e.g. the `display` procedure
+* in such cases the result value is normally a special constant `#<void>`
+* when the result of an expression is simply `#<void>`, the REPL does not print anything.
 
 ---vert---
 
-The `void` procedure takes any number of arguments and returns `#<void>`. (That is, the identifier `void` is bound to a procedure that returns `#<void>`, instead of being bound directly to `#<void>`.)
+`void` takes any number of arguments and returns `#<void>`
 
 ```scheme
-> (void)
-> (void 1 2 3)
-> (list (void))
-'(#<void>)
-```
-
----vert---
-
-The `undefined` constant, which prints as `#<undefined>`, is sometimes used as the result of a reference whose value is not yet available. In previous versions of Racket (before version 6.1), referencing a local binding too early produced `#<undefined>`; too-early references now raise an exception, instead.
-
-> The `undefined` result can still be produced in some cases by the `shared` form.
-
-```scheme
-(define (fails)
-  (define x x)
-  x)
-```
-
-```scheme
-> (fails)
-x: undefined;
- cannot use before initialization
+(void)
+(void 1 2 3)
+(list (void))
+;; '(#<void>)
 ```
