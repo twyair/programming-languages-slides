@@ -25,5 +25,5 @@ gulp.task('serve', () => {
         }
     })
 
-    gulp.watch(['./md/*.md', 'index.html'], gulp.series('reload'))
+    gulp.watch(['./md/*/*.md', 'index.html'], gulp.series('reload'))
 })
