@@ -43,7 +43,7 @@
     ```ocaml
     2 + 2;;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 * the response is the computed value and its type
 
@@ -64,7 +64,7 @@ naming constants
 ```ocaml
 let seconds = 60;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -77,7 +77,7 @@ let hours = 24;;
 
 seconds * minutes * hours;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -130,7 +130,7 @@ h''3_H
     ```ocaml
     let (+-+-+) = 1415;;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 * avoid using it for values
 
@@ -140,7 +140,7 @@ h''3_H
     let (<->) x y = x * x + y * y;;
     3 <-> 4;;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -173,7 +173,7 @@ foo 1 2;; (*OK*)
 foo (1 2);; (*compilation error!*)
 foo (1, 2);; (*compilation error!*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -183,7 +183,7 @@ you might need to add parentheses at times
 foo (-1) (-2) (*OK*)
 foo -1 -2 (*compilation error! parsed as `((foo - 1) - 2)`*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -236,7 +236,7 @@ int_of_float 2.5;;
 (*converts int to float*)
 float_of_int 5;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 and many more: `sqrt`, `sin`, `cos`, `tan`, `exp`, `log` (all of type `float->float`)
 
@@ -251,7 +251,7 @@ constants are written in double quotes
 ```ocaml
 "ocaml is the best";;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 special characters `\n`, `\t`, `\"`, `\\`
 
@@ -262,7 +262,7 @@ concatenation
 ```ocaml
 "Objective" ^ " " ^ "Caml";;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -273,7 +273,7 @@ comparison
 
 "zzz" > "aaa";;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -282,7 +282,7 @@ comparison
 ```ocaml
 String.length "ABC";;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -295,7 +295,7 @@ chars are enclosed in single quotes
 ```ocaml
 'a';;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -306,7 +306,7 @@ String.make 1 'c';;
 
 String.get "hello" 0;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -317,7 +317,7 @@ Char.code 'a';;
 
 Char.chr 97;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -330,7 +330,7 @@ true;;
 
 false;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 operators: `&&`, `||`, `not`
 
@@ -343,7 +343,7 @@ has only one value
 ```ocaml
 ();;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -364,7 +364,7 @@ the tuple type is written using `*`
 ```ocaml
 (1, 2, 3);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -377,7 +377,7 @@ let a = (1.5, 6.8);;
 
 ("str", 1, true, ('0',0.1));;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -390,7 +390,7 @@ type person = {name: string; age: int};;
 
 let me = {name="Ofir"; age=30};;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -399,7 +399,7 @@ selecting a field using `.`
 ```ocaml
 me.name;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -408,7 +408,7 @@ a record is identified by its fields
 ```ocaml
 let me = {name="Ofir"; age=30};;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 note that `me` is of type `person`, it was inferred from the field names
 
@@ -419,7 +419,7 @@ you can destructure records using `let`
 ```ocaml
 let {name=name; age=age} = me;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -432,7 +432,7 @@ a list is a finite homogenous sequence of elements
 ["a"; "list"];;
 [];;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -443,7 +443,7 @@ note that elements are separated by a `;` and not by a `,`
 
 [1, 2 ; 3, 4];;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -456,7 +456,7 @@ elements may have any type but all elements must have the same type
 
 [1; "abc"];; (*Error!*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -487,7 +487,7 @@ let s = "abc";;
 s == s;;
 (*- : bool = true*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -496,7 +496,7 @@ s == s;;
 ```ocaml
 let sq (x: int) = x * x;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 * keyword `let` starts the function declaration
 * `sq` is the function name
@@ -517,21 +517,21 @@ let sq (x: int) = x * x;;
     ```ocaml
     sq 3;;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 * when a function is called the parameter is evaluated and then passed to the function
 
     ```ocaml
     sq (sq 3);;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 * note that parentheses are optional
 
     ```ocaml
     sq (3);;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -550,7 +550,7 @@ lengthvec a;;
 
 lengthvec (5.0, 12.0);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -564,7 +564,7 @@ let rec factorial n =
         then 1
         else n * (factorial (n - 1));;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -576,7 +576,7 @@ let factorial n =
         then 1
         else n * (factorial (n - 1));;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -589,7 +589,7 @@ let factorial n =
 
     (fun (x:int) -> x * x) 3;;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 * the following declarations are identical
 
@@ -597,7 +597,7 @@ let factorial n =
     let sq (x:int) = x * x;;
     let sq = fun (x:int) -> x * x;;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -608,7 +608,7 @@ let factorial n =
     ```ocaml
     let inttwice (f: (int->int)) = fun x -> f (f x);;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 * `->` is right associative so its type is equivalent to:
 
@@ -623,7 +623,7 @@ let factorial n =
 
     f 3;;
     ```
-    <!-- .element: data-thebe-executable -->
+    <!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -635,7 +635,7 @@ OCaml deduces the types in expressions
 let rec facti (n, p) =
     if n = 0 then p else facti (n - 1, n * p);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 * the constant `0` has type `int`
 * therefore `n=0` involve integers so `n` has type `int`
@@ -651,7 +651,7 @@ constraining parameters
 ```ocaml
 let foo (n: int) = n;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -660,7 +660,7 @@ constraining the return type
 ```ocaml
 let foo n : int = n;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -669,7 +669,7 @@ constraining an expression's type
 ```ocaml
 let foo n = (n : int);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -678,35 +678,35 @@ let foo n = (n : int);;
 ```ocaml
 let min (x: float) y = if x < y then x else y;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let min (x: string) y = if x < y then x else y;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let min x y: float = if x < y then x else y;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let min x y = if x < y then x else (y: string);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let min_abs x y = if x *. x < y *. y then x else y;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -721,7 +721,7 @@ but you can't use type annotations
 ```ocaml
 let foo
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -750,7 +750,7 @@ pairself 4.0;;
 
 let pair (x,y) = (y,x);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -761,28 +761,28 @@ let pair (x,y) = (y,x);;
 ```ocaml
 let twice f = fun x -> f (f x);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let ident x = x;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let g = twice (fun x -> x * x);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 g 2;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -817,6 +817,6 @@ a functional program in OCaml:
 let rec gcd m n =
     if m = 0 then n else gcd (n mod m) m;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 which one is more efficient? 🧐

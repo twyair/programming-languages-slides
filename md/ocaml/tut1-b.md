@@ -18,7 +18,7 @@ let (--) x y = sqrt(x *. x +. y *. y);;
 1.0 -- 3.0 -- 2.0 -- 5.0;;
 (*- : float = 6.24499799839839831*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -31,7 +31,7 @@ the operator can be used as a regular function
 (--) 1. 3.;;
 (*- : float = 3.16227766016837952*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -51,7 +51,7 @@ any function of two arguments is actually a **curried** function of one argument
 let prefix pre post = pre ^ post;;
 (*val prefix : string -> string -> string = <fun>*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 is equivalent to:
 
@@ -59,7 +59,7 @@ is equivalent to:
 let prefix pre = fun post -> pre ^ post;;
 (*val prefix : string -> string -> string = <fun>*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
@@ -88,7 +88,7 @@ let doctorify = prefix "Dr. ";;
 doctorify "Tomer";;
 (*- : string = "Dr. Tomer"*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -104,7 +104,7 @@ doctorify "Tomer";;
 prefix "Dr. " "Tomer";;
 (*- : string = "Dr. Tomer"*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -125,7 +125,7 @@ val times_4 = times 4;
 times_4 8;
 (*val it = 32 : int*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -147,7 +147,7 @@ let g = (fun x -> x - Char.code '0') ^^ Char.code;;
 g '1';;
 (*- : int = 1*)
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -160,25 +160,25 @@ g '1';;
 ```ocaml
 let rec f1 a b = f1 a b;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let rec f2 g x = g (f2 g) x;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let f3 x y z = (x, x y, y z);;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---vert---
 
 ```ocaml
 let rec f4 f = f f4;;
 ```
-<!-- .element: data-thebe-executable -->
+<!-- .element: data-thebe-executable-ocaml -->
