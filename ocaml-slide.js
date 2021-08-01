@@ -19,21 +19,19 @@ function thebe_init() {
             mode: "text/x-ocaml",
             theme: "monokai"
         },
-        on_output_change: () => { Reveal.layout(); }
+        on_output_change: () => { Reveal.layout(); },
+        on_execute: (cm) => {
+            cm.display.input.blur();
+        },
     });
 }
 
-// More info about initialization & config:
-// - https://revealjs.com/initialization/
-// - https://revealjs.com/config/
 Reveal.initialize({
     hash: true,
     slideNumber: true,
-
-    // Learn about plugins: https://revealjs.com/plugins/
     plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath ],
     keyboard: {
         39: 'next',
         37: 'prev'
     }
-}).then(() => {thebe_init();});
+}).then(thebe_init);
