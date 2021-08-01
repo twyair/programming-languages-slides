@@ -128,7 +128,7 @@ h''3_H
 * to name something with a symbolic name use parentheses:
 
     ```ocaml
-    let (+-+-+) = 1415;;
+    let ( +-+-+ ) = 1415;;
     ```
     <!-- .element: data-thebe-executable-ocaml -->
 
@@ -168,9 +168,17 @@ when
 say `foo` is a function that takes 2 arguments
 
 ```ocaml
-let foo x y = x;;
+let foo x y = x + y;;
 foo 1 2;; (*OK*)
+```
+<!-- .element: data-thebe-executable-ocaml -->
+
+```ocaml
 foo (1 2);; (*compilation error!*)
+```
+<!-- .element: data-thebe-executable-ocaml -->
+
+```ocaml
 foo (1, 2);; (*compilation error!*)
 ```
 <!-- .element: data-thebe-executable-ocaml -->
@@ -180,8 +188,12 @@ foo (1, 2);; (*compilation error!*)
 you might need to add parentheses at times
 
 ```ocaml
-foo (-1) (-2) (*OK*)
-foo -1 -2 (*compilation error! parsed as `((foo - 1) - 2)`*)
+foo (-1) (-2);; (*OK*)
+```
+<!-- .element: data-thebe-executable-ocaml -->
+
+```ocaml
+foo -1 -2;; (*compilation error! parsed as `((foo - 1) - 2)`*)
 ```
 <!-- .element: data-thebe-executable-ocaml -->
 
@@ -205,11 +217,13 @@ foo -1 -2 (*compilation error! parsed as `((foo - 1) - 2)`*)
 
 ---vert---
 
-conventional precedence (parenthesis can be dropped without change of meaning)
+conventional precedence (parentheses can be dropped without change of meaning)
 
 ```ocaml
-(((m * n) * l) - (m / j)) + j
+let m, n, l, j = 39, 41, 82, 85;;
+(((m * n) * l) - (m / j)) + j = m * n * l - m / j + j;;
 ```
+<!-- .element: data-thebe-executable-ocaml -->
 
 ---
 
@@ -453,7 +467,10 @@ elements may have any type but all elements must have the same type
 [(1, "one"); (2, "two")];;
 
 [[3.1;]; []; [1.0; -0.5]];;
+```
+<!-- .element: data-thebe-executable-ocaml -->
 
+```ocaml
 [1; "abc"];; (*Error!*)
 ```
 <!-- .element: data-thebe-executable-ocaml -->
@@ -790,9 +807,7 @@ g 2;;
 
 * imperative - using commands to change the state
 * functional - stateless. using expressions recursively to calculate the result
-* example: Euclid's algorithm for the Greatest Common Divisor (GCD) of two natural numbers:
-
-$$gcd(m,n) = \begin{cases}n,\;m = 0&\\gcd(n\;mod\;m,m), \;m>0\end{cases}$$
+* example: Euclid's algorithm for the Greatest Common Divisor (GCD) of two natural numbers: `$$gcd(m,n) = \begin{cases}n,\;m = 0&\\gcd(n\;mod\;m,m), \;m>0\end{cases}$$`
 
 ---vert---
 
@@ -814,8 +829,7 @@ int gcd(int m, int n) {
 a functional program in OCaml:
 
 ```ocaml
-let rec gcd m n =
-    if m = 0 then n else gcd (n mod m) m;;
+let rec gcd m n = if m = 0 then n else gcd (n mod m) m;;
 ```
 <!-- .element: data-thebe-executable-ocaml -->
 
