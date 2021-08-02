@@ -9,11 +9,12 @@ const root = yargs.argv.root || ".";
 const port = yargs.argv.port || 8000;
 
 function buildHtml(output_dir, renderTemplate, name, dir) {
-    console.log("generating slide for ", name);
     var html = renderTemplate({ tutorial_name: name });
     fs.writeFile(`${output_dir}/${dir}-${name}.html`, html, (err) => {
-        if (err) console.log(err);
-        console.log("File written succesfully");
+        if (err) {
+            console.log(err);
+            process.exit(1);
+        }
     });
 }
 
