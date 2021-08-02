@@ -1,12 +1,8 @@
-const yargs = require("yargs");
 const gulp = require("gulp");
 const connect = require("gulp-connect");
 var fs = require("fs");
 var path = require("path");
 var Handlebars = require("handlebars");
-
-const root = yargs.argv.root || ".";
-const port = yargs.argv.port || 8000;
 
 function buildHtml(output_dir, renderTemplate, name, dir) {
     var html = renderTemplate({ tutorial_name: name });
@@ -62,8 +58,8 @@ gulp.task("serve", () => {
     };
 
     connect.server({
-        root: root,
-        port: port,
+        root: ".",
+        port: 16788,
         host: "localhost",
         livereload: true,
         middleware: function () {
