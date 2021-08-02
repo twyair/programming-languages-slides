@@ -1,5 +1,3 @@
 node_modules
-.ipynb_checkpoints
 md-to-html.sh
 slides
-package-lock.json
