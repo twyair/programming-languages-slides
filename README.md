@@ -33,16 +33,9 @@ jupyter kernelspec install [ --user ] --name ocaml-jupyter "$(opam var share)/ju
 ## install
 
 ```bash
-git clone --recurse-submodules https://github.com/twyair/programming-languages-slides
+git clone https://github.com/twyair/programming-languages-slides
 
 npm install
-```
-
-## build
-
-```bash
-mkdir slides
-npm run generate-slides
 ```
 
 ## run
