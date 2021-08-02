@@ -50,7 +50,7 @@ and on a different terminal:
 npm run notebook
 ```
 
-go to <http://localhost:8000/>
+go to <http://localhost:16788/>
 
 ## TODO
 
