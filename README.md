@@ -36,13 +36,6 @@ jupyter kernelspec install [ --user ] --name ocaml-jupyter "$(opam var share)/ju
 git clone --recurse-submodules https://github.com/twyair/programming-languages-slides
 
 npm install
-
-cd reveal.js
-npm install
-
-cd ../thebe
-npm install
-npm run build
 ```
 
 ## build
