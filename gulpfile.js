@@ -54,6 +54,9 @@ gulp.task("serve", () => {
 
     const cors = function (req, res, next) {
         res.setHeader("Access-Control-Allow-Private-Network", "true");
+        if (req.url.startsWith("/thebe/")) {
+            req.url = "/node_modules" + req.url;
+        }
         next();
     };
 
